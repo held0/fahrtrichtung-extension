@@ -1,4 +1,10 @@
 const contentEl = document.getElementById('content');
+const msg = chrome.i18n.getMessage;
+
+// Set static i18n texts
+document.getElementById('disclaimer').textContent = msg('disclaimer');
+document.getElementById('donate-appeal').textContent = msg('donateAppeal');
+document.getElementById('donate-button-text').textContent = msg('donateButton');
 
 async function init() {
   try {
@@ -309,15 +315,15 @@ function renderResult(data, userFrom, userTo) {
   }
 
   if (displaySegments.length > 1) {
-    html.push(`<div class="validity">Die Fahrtrichtung \u00e4ndert sich w\u00e4hrend der Fahrt wie folgt:</div>`);
+    html.push(`<div class="validity">${escHtml(msg('directionChanges'))}</div>`);
   } else if (displaySegments.length === 1 && !data.validityExact) {
-    let hint = 'Keine Wagenreihung f\u00fcr dieses Datum verf\u00fcgbar.';
+    let hint = msg('noValidityHint');
     if (data.latestValidityTo) {
       const d = new Date(data.latestValidityTo);
       const dd = String(d.getDate()).padStart(2, '0');
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       const yy = String(d.getFullYear()).slice(2);
-      hint += ` Letzte verf\u00fcgbare Daten liegen vor ${dd}.${mm}.${yy}`;
+      hint += ' ' + msg('lastValidData', `${dd}.${mm}.${yy}`);
     }
     html.push(`<div class="validity">${escHtml(hint)}</div>`);
   }
@@ -343,7 +349,7 @@ function renderResult(data, userFrom, userTo) {
           ${durationStr ? `<span class="segment-duration">${escHtml(durationStr)}</span>` : ''}
         </div>
         <div class="segment-info">
-          ${frontWagon ? `<span class="front-wagon">Wagen ${escHtml(frontWagon)} f\u00e4hrt vorne</span>` : ''}
+          ${frontWagon ? `<span class="front-wagon">${escHtml(msg('wagonFront', frontWagon))}</span>` : ''}
         </div>
       </div>
     `);
@@ -382,7 +388,7 @@ async function showDonateIfMilestone() {
   const text = document.getElementById('milestone-text');
   if (!banner || !text) return;
 
-  text.textContent = `\uD83C\uDF89 Du hast Fahrtrichtung schon ${count}\u00d7 benutzt!`;
+  text.textContent = msg('donateMilestone', String(count));
   banner.style.display = '';
   startConfetti();
 }

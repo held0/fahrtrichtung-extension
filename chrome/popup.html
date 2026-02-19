@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 380px;
+      min-height: 100px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px;
+      color: #1a1a1a;
+      background: #fff;
+    }
+
+    .header {
+      background: #ec0016;
+      color: white;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header .arrow-icon {
+      font-size: 18px;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .status {
+      color: #666;
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    .status.error {
+      color: #ec0016;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ddd;
+      border-top-color: #ec0016;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .train-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .train-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .train-route {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .validity {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+
+    .segment {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .segment:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .segment.direction-left,
+    .segment.direction-right {
+      border-color: #333;
+    }
+
+    .segment-badge {
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      padding: 1px 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      background: #333;
+    }
+
+    .segment-badge .arrow-animated {
+      display: inline-block;
+      animation: arrow-slide 1.2s ease-in-out infinite;
+    }
+
+    @keyframes arrow-slide {
+      0%, 100% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(4px); opacity: 0.7; }
+    }
+
+    .segment.direction-left .segment-badge .arrow-animated {
+      animation: arrow-slide-left 1.2s ease-in-out infinite;
+    }
+
+    @keyframes arrow-slide-left {
+      0%, 100% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(-4px); opacity: 0.7; }
+    }
+
+    .segment-route {
+      font-weight: 600;
+      font-size: 13px;
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .segment-duration {
+      font-weight: 400;
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+
+    .segment-info {
+      font-size: 12px;
+      color: #444;
+    }
+
+    .front-wagon {
+      font-size: 11px;
+      color: #666;
+      margin-top: 3px;
+    }
+
+    .disclaimer {
+      font-size: 10.5px;
+      color: #999;
+      padding: 0 20px;
+      margin: 16px 0;
+    }
+
+    .ice-sketch {
+      width: 100%;
+      overflow: hidden;
+      margin-top: 0;
+    }
+
+    .ice-sketch img {
+      width: 100%;
+      display: block;
+    }
+
+    .donate-banner {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 16px 20px 18px;
+      margin: 12px 16px 12px;
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+    }
+
+    .donate-banner .confetti-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .donate-banner .milestone {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .donate-banner .appeal {
+      font-size: 11.5px;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .donate-banner a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #333;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      background: #ffc439;
+      border: none;
+      border-radius: 20px;
+      transition: background 0.15s;
+    }
+
+    .donate-banner a:hover {
+      background: #f0b72e;
+    }
+
+    .donate-banner a img {
+      height: 18px;
+      width: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="arrow-icon">&harr;</span>
+    Fahrtrichtung
+  </div>
+  <div class="content" id="content">
+    <div class="status" id="status">
+      <div class="spinner"></div>
+      <div>Lade Zugdaten...</div>
+    </div>
+  </div>
+
+  <div class="disclaimer" id="disclaimer" style="display:none">*Wagenreihungen k&ouml;nnen sich am Reisetag in Einzelf&auml;llen &auml;ndern.</div>
+  <div class="ice-sketch" id="ice-sketch" style="display:none">
+    <img src="ice-drawing.png" alt="ICE">
+  </div>
+
+  <div class="donate-banner" id="donate-banner" style="display:none">
+    <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+    <div class="milestone" id="milestone-text"></div>
+    <div class="appeal">Dies ist ein Hobby-Projekt &ndash; ich freue mich &uuml;ber eine kleine Spende!</div>
+    <a href="https://paypal.me/niklas87/1" target="_blank"><img src="https://www.paypalobjects.com/webstatic/de_DE/i/de-pp-logo-100px.png" alt="PayPal"> 1&euro; spenden</a>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

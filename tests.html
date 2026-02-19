@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Fahrtrichtung Tests</title>
+  <style>
+    body { font-family: monospace; font-size: 14px; margin: 20px; }
+    .pass { color: #080; }
+    .fail { color: #c00; font-weight: bold; }
+    .group { margin: 16px 0 4px; font-weight: bold; font-size: 15px; }
+    .summary { margin-top: 20px; padding: 10px; border: 2px solid; font-size: 16px; }
+    .summary.all-pass { border-color: #080; color: #080; }
+    .summary.has-fail { border-color: #c00; color: #c00; }
+  </style>
+</head>
+<body>
+<h1>Fahrtrichtung Unit Tests</h1>
+<div id="results"></div>
+
+<script src="chrome/utils.js"></script>
+<script>
+// ---- Test framework ----
+let passed = 0, failed = 0;
+const results = document.getElementById('results');
+
+function group(name) {
+  const el = document.createElement('div');
+  el.className = 'group';
+  el.textContent = name;
+  results.appendChild(el);
+}
+
+function assert(description, actual, expected) {
+  const ok = JSON.stringify(actual) === JSON.stringify(expected);
+  const el = document.createElement('div');
+  if (ok) {
+    el.className = 'pass';
+    el.textContent = `  PASS: ${description}`;
+    passed++;
+  } else {
+    el.className = 'fail';
+    el.textContent = `  FAIL: ${description} — got ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`;
+    failed++;
+  }
+  results.appendChild(el);
+}
+
+// ---- Copy functions from background.js that can't be importScripts'd in browser ----
+
+function stripHtml(html) {
+  return html.replace(/<[^>]+>/g, '');
+}
+
+function decodeEntities(text) {
+  return text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&ndash;/g, '\u2013')
+    .replace(/&mdash;/g, '\u2014')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n)));
+}
+
+function parseValidity(html) {
+  const text = decodeEntities(stripHtml(html)).replace(/\s+/g, ' ').replace(/\s*ansehen\s*$/, '').trim();
+  const timePattern = /<time\s+datetime="([^"]+)">/g;
+  const times = [];
+  let tm;
+  while ((tm = timePattern.exec(html)) !== null) {
+    times.push(tm[1]);
+  }
+  let from = times[0] || null;
+  let to = times[1] || null;
+  if (times.length === 1) {
+    if (text.includes(' bis ')) {
+      to = times[0];
+      from = null;
+    } else {
+      to = null;
+    }
+  }
+  const dayMap = { 'mo': 1, 'di': 2, 'mi': 3, 'do': 4, 'fr': 5, 'sa': 6, 'so': 0 };
+  let days = null;
+  if (text && !text.includes('tgl')) {
+    const dayPart = text.match(/gültig\s+(.+?)(?:\s+\d|\s+ab\s|\s+bis\s)/i);
+    if (dayPart) {
+      const dayStr = dayPart[1].trim();
+      const rangeMatch = dayStr.match(/^(Mo|Di|Mi|Do|Fr|Sa|So)-(Mo|Di|Mi|Do|Fr|Sa|So)$/i);
+      if (rangeMatch) {
+        const startDay = dayMap[rangeMatch[1].toLowerCase()];
+        const endDay = dayMap[rangeMatch[2].toLowerCase()];
+        days = [];
+        for (let d = startDay; ; d = (d + 1) % 7) {
+          days.push(d);
+          if (d === endDay) break;
+        }
+      } else {
+        const abbrs = dayStr.match(/\b(Mo|Di|Mi|Do|Fr|Sa|So)\b/gi);
+        if (abbrs?.length) {
+          days = abbrs.map(a => dayMap[a.toLowerCase()]);
+        }
+      }
+    }
+  }
+  return { text, from, to, days };
+}
+
+function findValidEntry(entries, dateStr) {
+  const date = new Date(dateStr);
+  const dayOfWeek = date.getUTCDay();
+  for (const entry of entries) {
+    const { from, to, days } = entry.validity;
+    if (days && !days.includes(dayOfWeek)) continue;
+    if (from && to) {
+      if (date >= new Date(from) && date <= new Date(to)) return entry;
+    } else if (from && !to) {
+      if (date >= new Date(from)) return entry;
+    } else if (!from && to) {
+      if (date <= new Date(to)) return entry;
+    } else {
+      return entry;
+    }
+  }
+  return null;
+}
+
+function parseRichtungswechsel(html) {
+  const segments = [];
+  const parts = html.split(/<br\s*\/?>/i).filter(p => p.trim());
+  for (const part of parts) {
+    const hasLeftArrow = part.includes('pfeillinks');
+    const hasRightArrow = part.includes('pfeilrechts');
+    const textContent = decodeEntities(stripHtml(part)).trim();
+    if (!textContent) continue;
+    const routeMatch = textContent.match(/(.+?)\s*[\u2013\u2014\-]\s*(.+)/);
+    const from = routeMatch ? routeMatch[1].trim() : textContent;
+    const to = routeMatch ? routeMatch[2].trim() : '';
+    segments.push({ from, to, direction: hasLeftArrow ? 'left' : (hasRightArrow ? 'right' : 'unknown'), text: textContent, firstWagonIsFront: hasLeftArrow });
+  }
+  return segments;
+}
+
+function parseSuperjsonStops(raw) {
+  const parsed = JSON.parse(raw);
+  const stopIndices = parsed[1];
+  if (!Array.isArray(stopIndices)) throw new Error('Unexpected bahn.expert response format');
+  const stations = [];
+  for (const stopIdx of stopIndices) {
+    const stop = parsed[stopIdx];
+    if (!stop?.stopPlace) continue;
+    const stopPlace = parsed[stop.stopPlace];
+    if (!stopPlace?.name) continue;
+    let depTime = null, arrTime = null;
+    if (stop.departure) {
+      const depObj = parsed[stop.departure];
+      if (depObj?.scheduledTime) {
+        const st = parsed[depObj.scheduledTime];
+        if (Array.isArray(st) && st[0] === 'Date') depTime = st[1];
+      }
+    }
+    if (stop.arrival) {
+      const arrObj = parsed[stop.arrival];
+      if (arrObj?.scheduledTime) {
+        const st = parsed[arrObj.scheduledTime];
+        if (Array.isArray(st) && st[0] === 'Date') arrTime = st[1];
+      }
+    }
+    stations.push({ name: parsed[stopPlace.name], dep: depTime, arr: arrTime });
+  }
+  return stations;
+}
+
+// From popup.js
+function getDisplayDirection(seg, wagonNumbers) {
+  if (!wagonNumbers?.length || wagonNumbers.length < 2) return seg.direction;
+  const frontWagon = seg.firstWagonIsFront ? wagonNumbers[0] : wagonNumbers[wagonNumbers.length - 1];
+  const nums = wagonNumbers.map(Number).filter(n => !isNaN(n));
+  if (!nums.length) return seg.direction;
+  const frontNum = Number(frontWagon);
+  return (frontNum > (Math.min(...nums) + Math.max(...nums)) / 2) ? 'right' : 'left';
+}
+
+function filterRelevantSegments(segments, fromSegIdx, toSegIdx) {
+  if (fromSegIdx >= 0 && toSegIdx >= 0) {
+    const lo = Math.min(fromSegIdx, toSegIdx);
+    const hi = Math.max(fromSegIdx, toSegIdx);
+    return { segments: segments.slice(lo, hi + 1), startIdx: lo };
+  }
+  return { segments, startIdx: 0 };
+}
+
+function formatDuration(duration) {
+  if (!duration) return '';
+  if (duration.hours > 0) {
+    return `${duration.hours}h${String(duration.minutes).padStart(2, '0')}min`;
+  }
+  return `${duration.minutes}min`;
+}
+
+// computeSegmentDuration is now in utils.js (loaded via script tag)
+
+// ============= TESTS =============
+
+// --- normalizeStation ---
+group('normalizeStation()');
+assert('basic with Hbf', normalizeStation('K\u00f6ln Hbf'), 'k\u00f6lnhauptbahnhof');
+assert('with hyphen', normalizeStation('Hamburg-Harburg'), 'hamburgharburg');
+assert('empty string', normalizeStation(''), '');
+assert('null', normalizeStation(null), '');
+assert('spaces', normalizeStation('  Spaces  '), 'spaces');
+assert('umlauts preserved', normalizeStation('M\u00fcnchen Hbf'), 'm\u00fcnchenhauptbahnhof');
+assert('(M) to (Main)', normalizeStation('Frankfurt(M)Hbf'), 'frankfurtmainhauptbahnhof');
+assert('Fernbf expansion', normalizeStation('Berlin Fernbf'), 'berlinfernbahnhof');
+
+// --- findInStationList ---
+group('findInStationList()');
+const testList = ['karlsruhehauptbahnhof', 'k\u00f6lnhauptbahnhof', 'hamburghauptbahnhof'];
+assert('exact match', findInStationList('hamburghauptbahnhof', testList), 2);
+assert('no match', findInStationList('berlinhauptbahnhof', testList), -1);
+assert('empty needle', findInStationList('', testList), -1);
+
+const ambiguousList = ['hamburgharburg', 'hamburghauptbahnhof'];
+// 'hamburgharburg' (14 chars) is closer to 'hamburg' (7 chars) than 'hamburghauptbahnhof' (19 chars)
+// In practice, the needle is always a normalized full station name, so exact match catches it.
+assert('closest length: hamburg -> hamburgharburg (closer len diff)', findInStationList('hamburg', ambiguousList), 0);
+assert('exact normalized name matches correctly', findInStationList('hamburghauptbahnhof', ambiguousList), 1);
+
+assert('substring match', findInStationList('frankfurtmain', ['frankfurtmainhauptbahnhof']), 0);
+
+// --- stationMatch ---
+group('stationMatch()');
+assert('exact', stationMatch('k\u00f6lnhauptbahnhof', 'k\u00f6lnhauptbahnhof'), true);
+assert('substring', stationMatch('k\u00f6ln', 'k\u00f6lnhauptbahnhof'), true);
+assert('no match', stationMatch('k\u00f6lnhauptbahnhof', 'berlinhauptbahnhof'), false);
+assert('empty a', stationMatch('', 'k\u00f6lnhauptbahnhof'), false);
+assert('empty b', stationMatch('k\u00f6lnhauptbahnhof', ''), false);
+assert('Hamburg Hbf vs Hamburg-Altona: NOT same station', stationMatch('hamburghauptbahnhof', 'hamburgaltona'), false);
+
+// --- stationMatchLoose ---
+group('stationMatchLoose()');
+assert('exact', stationMatchLoose('k\u00f6lnhauptbahnhof', 'k\u00f6lnhauptbahnhof'), true);
+assert('substring', stationMatchLoose('k\u00f6ln', 'k\u00f6lnhauptbahnhof'), true);
+assert('Hamburg Hbf vs Altona: loose match', stationMatchLoose('hamburghauptbahnhof', 'hamburgaltona'), true);
+assert('no match across cities', stationMatchLoose('k\u00f6lnhauptbahnhof', 'berlinhauptbahnhof'), false);
+
+// --- cleanStationName ---
+group('cleanStationName()');
+const stationList = ['Karlsruhe Hbf', 'K\u00f6ln Hbf', 'Hamburg Hbf'];
+assert('dirty with button labels', cleanStationName('Pr\u00fcfen Angebote Abbrechen Karlsruhe Hbf', stationList), 'Karlsruhe Hbf');
+assert('already clean', cleanStationName('K\u00f6ln Hbf', stationList), 'K\u00f6ln Hbf');
+assert('no match falls back', cleanStationName('Unbekannt', stationList), 'Unbekannt');
+assert('null input', cleanStationName(null, stationList), null);
+assert('empty list', cleanStationName('K\u00f6ln Hbf', []), 'K\u00f6ln Hbf');
+
+// --- getDisplayDirection ---
+group('getDisplayDirection()');
+assert('first wagon is front, low number -> left',
+  getDisplayDirection({ firstWagonIsFront: true, direction: 'left' }, ['1', '2', '3', '14']),
+  'left');
+assert('first wagon NOT front, high number at end -> right',
+  getDisplayDirection({ firstWagonIsFront: false, direction: 'left' }, ['1', '2', '3', '14']),
+  'right');
+assert('fallback on empty wagons',
+  getDisplayDirection({ direction: 'left' }, []),
+  'left');
+assert('single wagon fallback',
+  getDisplayDirection({ direction: 'right' }, ['5']),
+  'right');
+// ICE 549 wagon order: 37,36,35,34,33,32,31 - first wagon is front (pfeillinks)
+// frontWagon = wagonNumbers[0] = "37", which is > midpoint (34) -> right
+assert('ICE 549 real wagons: first is front, high number',
+  getDisplayDirection({ firstWagonIsFront: true, direction: 'left' }, ['37', '36', '35', '34', '33', '32', '31']),
+  'right');
+
+// --- filterRelevantSegments ---
+group('filterRelevantSegments()');
+const segs4 = [{id:0},{id:1},{id:2},{id:3}];
+assert('both indices valid', filterRelevantSegments(segs4, 1, 2),
+  { segments: [{id:1},{id:2}], startIdx: 1 });
+assert('reversed indices', filterRelevantSegments(segs4, 2, 1),
+  { segments: [{id:1},{id:2}], startIdx: 1 });
+assert('from=-1 returns all', filterRelevantSegments(segs4, -1, 2),
+  { segments: segs4, startIdx: 0 });
+assert('both=-1 returns all', filterRelevantSegments(segs4, -1, -1),
+  { segments: segs4, startIdx: 0 });
+
+// --- formatDuration ---
+group('formatDuration()');
+assert('hours and minutes', formatDuration({ hours: 2, minutes: 6 }), '2h06min');
+assert('minutes only', formatDuration({ hours: 0, minutes: 45 }), '45min');
+assert('null', formatDuration(null), '');
+assert('zero minutes', formatDuration({ hours: 1, minutes: 0 }), '1h00min');
+
+// --- parseValidity ---
+group('parseValidity()');
+const v1 = parseValidity('Reihung g\u00fcltig <abbr title="t\u00e4glich">tgl</abbr> <time datetime="2026-02-07">07.02.2026</time> bis <time datetime="2026-06-13">13.06.2026</time>\t\t\t<span class="reihungsverzeichnis-eintrag-zug-link">\n\t\t\t\t<a href="?zug_id=20260100549">ansehen</a>\n\t\t\t</span>');
+assert('two dates: from', v1.from, '2026-02-07');
+assert('two dates: to', v1.to, '2026-06-13');
+assert('two dates: text', v1.text, 'Reihung g\u00fcltig tgl 07.02.2026 bis 13.06.2026');
+
+const v2 = parseValidity('Reihung g\u00fcltig <abbr title="Montag">Mo</abbr> bis <time datetime="2026-06-08">08.06.2026</time>\t\t\t<span class="reihungsverzeichnis-eintrag-zug-link"><a href="?zug_id=20260100378">ansehen</a></span>');
+assert('"bis" single date: from is null', v2.from, null);
+assert('"bis" single date: to is set', v2.to, '2026-06-08');
+
+const v3 = parseValidity('Reihung g\u00fcltig <abbr title="t\u00e4glich">tgl</abbr> ab <time datetime="2026-10-02">02.10.2026</time>\t\t\t<span class="reihungsverzeichnis-eintrag-zug-link"><a href="?zug_id=20260300549">ansehen</a></span>');
+assert('"ab" single date: from is set', v3.from, '2026-10-02');
+assert('"ab" single date: to is null', v3.to, null);
+
+// Day-of-week parsing
+assert('tgl = all days', v1.days, null);
+assert('"bis" Mo = Monday only', v2.days, [1]);
+assert('"ab" tgl = all days', v3.days, null);
+
+const v4 = parseValidity('Reihung g\u00fcltig <abbr title="Montag bis Samstag">Mo-Sa</abbr> bis <time datetime="2026-06-13">13.06.2026</time><span class="reihungsverzeichnis-eintrag-zug-link"><a href="?zug_id=1">ansehen</a></span>');
+assert('Mo-Sa range', v4.days, [1, 2, 3, 4, 5, 6]);
+
+const v5 = parseValidity('Reihung g\u00fcltig <abbr title="Dienstag">Di</abbr>, <abbr title="Mittwoch">Mi</abbr>, <abbr title="Donnerstag">Do</abbr>, <abbr title="Freitag">Fr</abbr>, <abbr title="Samstag">Sa</abbr>, <abbr title="Sonntag">So</abbr> ab <time datetime="2026-10-02">02.10.2026</time><span class="reihungsverzeichnis-eintrag-zug-link"><a href="?zug_id=1">ansehen</a></span>');
+assert('Di-So comma list', v5.days, [2, 3, 4, 5, 6, 0]);
+
+// --- findValidEntry ---
+group('findValidEntry()');
+const entries = [
+  { name: 'A', validity: { from: null, to: '2026-06-08' } },
+  { name: 'B', validity: { from: '2026-06-15', to: '2026-09-28' } },
+  { name: 'C', validity: { from: '2026-10-05', to: null } }
+];
+assert('date in "bis" range', findValidEntry(entries, '2026-05-01')?.name, 'A');
+assert('date in from-to range', findValidEntry(entries, '2026-08-15')?.name, 'B');
+assert('date in "ab" range', findValidEntry(entries, '2026-10-31')?.name, 'C');
+assert('boundary: exactly on to', findValidEntry(entries, '2026-06-08')?.name, 'A');
+assert('boundary: exactly on from', findValidEntry(entries, '2026-06-15')?.name, 'B');
+assert('no match (gap)', findValidEntry(entries, '2026-06-10'), null);
+// Entry with no dates = always valid
+const entriesNoDate = [{ name: 'X', validity: { from: null, to: null } }];
+assert('no dates = always valid', findValidEntry(entriesNoDate, '2026-10-31')?.name, 'X');
+
+// Day-of-week matching (ICE 378 scenario)
+const entriesDow = [
+  { name: 'Mo', validity: { from: '2026-10-05', to: null, days: [1] } },
+  { name: 'Di-So', validity: { from: '2026-10-02', to: null, days: [2, 3, 4, 5, 6, 0] } }
+];
+// 2026-10-05 = Monday
+assert('Mon Oct 5 matches Mo entry', findValidEntry(entriesDow, '2026-10-05')?.name, 'Mo');
+// 2026-10-06 = Tuesday
+assert('Tue Oct 6 matches Di-So entry', findValidEntry(entriesDow, '2026-10-06')?.name, 'Di-So');
+// 2026-10-11 = Sunday
+assert('Sun Oct 11 matches Di-So entry', findValidEntry(entriesDow, '2026-10-11')?.name, 'Di-So');
+// 2026-10-12 = Monday
+assert('Mon Oct 12 matches Mo entry', findValidEntry(entriesDow, '2026-10-12')?.name, 'Mo');
+// 2026-10-03 = Saturday, before Mo entry starts but after Di-So starts
+assert('Sat Oct 3 matches Di-So entry', findValidEntry(entriesDow, '2026-10-03')?.name, 'Di-So');
+
+// --- parseRichtungswechsel ---
+group('parseRichtungswechsel()');
+const richHtml = '<img src="images/pfeillinks.svg" height="8" width="10" alt="Pfeil Links">&nbsp;K\u00f6ln Hbf \u2013 Berlin Ostbahnhof<br>';
+const segs = parseRichtungswechsel(richHtml);
+assert('single segment count', segs.length, 1);
+assert('segment from', segs[0].from, 'K\u00f6ln Hbf');
+assert('segment to', segs[0].to, 'Berlin Ostbahnhof');
+assert('segment direction', segs[0].direction, 'left');
+assert('firstWagonIsFront', segs[0].firstWagonIsFront, true);
+
+const richHtml2 = '<img src="images/pfeillinks.svg" height="8" width="10" alt="Pfeil Links">&nbsp;Basel Bad Bf \u2013 Frankfurt(M)Hbf<br>Frankfurt(M)Hbf \u2013 Berlin Ostbahnhof <img src="images/pfeilrechts.svg" height="8" width="10" alt="Pfeil Rechts"><br>';
+const segs2 = parseRichtungswechsel(richHtml2);
+assert('two segments count', segs2.length, 2);
+assert('seg1 direction left', segs2[0].direction, 'left');
+assert('seg2 direction right', segs2[1].direction, 'right');
+
+// --- parseSuperjsonStops ---
+group('parseSuperjsonStops()');
+// Minimal synthetic superjson fixture (3 stops: A -> B -> C)
+const fixture = JSON.stringify([
+  // [0] = template object
+  { stops: 1, journeyId: 'test' },
+  // [1] = stop indices array
+  [2, 6, 10],
+  // [2] = stop 1 (departure only)
+  { stopPlace: 3, departure: 4 },
+  // [3] = stopPlace for stop 1
+  { evaNumber: 'eva1', name: 14 },
+  // [4] = departure for stop 1
+  { scheduledTime: 5 },
+  // [5] = time value
+  ['Date', '2026-02-19T10:00:00.000Z'],
+  // [6] = stop 2 (arrival + departure)
+  { stopPlace: 7, arrival: 8, departure: 9 },
+  // [7] = stopPlace for stop 2
+  { evaNumber: 'eva2', name: 15 },
+  // [8] = arrival for stop 2
+  { scheduledTime: 11 },
+  // [9] = departure for stop 2
+  { scheduledTime: 12 },
+  // [10] = stop 3 (arrival only)
+  { stopPlace: 13, arrival: 16 },
+  // [11] = arrival time for stop 2
+  ['Date', '2026-02-19T11:00:00.000Z'],
+  // [12] = departure time for stop 2
+  ['Date', '2026-02-19T11:02:00.000Z'],
+  // [13] = stopPlace for stop 3
+  { evaNumber: 'eva3', name: 17 },
+  // [14] = name for stop 1
+  'Station A',
+  // [15] = name for stop 2
+  'Station B',
+  // [16] = arrival for stop 3
+  { scheduledTime: 18 },
+  // [17] = name for stop 3
+  'Station C',
+  // [18] = arrival time for stop 3
+  ['Date', '2026-02-19T12:30:00.000Z']
+]);
+const stops = parseSuperjsonStops(fixture);
+assert('stop count', stops.length, 3);
+assert('first stop name', stops[0].name, 'Station A');
+assert('first stop has dep', stops[0].dep, '2026-02-19T10:00:00.000Z');
+assert('first stop no arr', stops[0].arr, null);
+assert('middle stop name', stops[1].name, 'Station B');
+assert('middle stop has arr', stops[1].arr, '2026-02-19T11:00:00.000Z');
+assert('middle stop has dep', stops[1].dep, '2026-02-19T11:02:00.000Z');
+assert('last stop name', stops[2].name, 'Station C');
+assert('last stop has arr', stops[2].arr, '2026-02-19T12:30:00.000Z');
+assert('last stop no dep', stops[2].dep, null);
+
+// Test error case
+let superjsonError = false;
+try { parseSuperjsonStops(JSON.stringify([{}, 'not-an-array'])); } catch (e) { superjsonError = true; }
+assert('throws on non-array stopIndices', superjsonError, true);
+
+// --- computeSegmentDuration ---
+group('computeSegmentDuration()');
+const stationOrder = [
+  { name: 'Karlsruhe Hbf', dep: '2026-02-19T10:00:00.000Z', arr: null },
+  { name: 'Mannheim Hbf', dep: '2026-02-19T10:30:00.000Z', arr: '2026-02-19T10:28:00.000Z' },
+  { name: 'Frankfurt(M)Hbf', dep: '2026-02-19T11:15:00.000Z', arr: '2026-02-19T11:12:00.000Z' },
+  { name: 'K\u00f6ln Hbf', dep: null, arr: '2026-02-19T12:06:00.000Z' }
+];
+assert('Karlsruhe to K\u00f6ln',
+  computeSegmentDuration('Karlsruhe Hbf', 'K\u00f6ln Hbf', stationOrder),
+  { hours: 2, minutes: 6 });
+assert('Mannheim to Frankfurt',
+  computeSegmentDuration('Mannheim Hbf', 'Frankfurt(M)Hbf', stationOrder),
+  { hours: 0, minutes: 42 });
+assert('missing station returns null',
+  computeSegmentDuration('Berlin Hbf', 'Hamburg Hbf', stationOrder),
+  null);
+assert('empty stationOrder returns null',
+  computeSegmentDuration('Karlsruhe Hbf', 'K\u00f6ln Hbf', []),
+  null);
+
+// Fallback: segment boundary not in list -> fall back to list edges
+assert('unknown from falls back to first station',
+  computeSegmentDuration('Basel Bad Bf', 'K\u00f6ln Hbf', stationOrder),
+  { hours: 2, minutes: 6 });
+
+// Duration with adjusted segment boundaries (the bug fix)
+assert('sub-segment: Mannheim to K\u00f6ln',
+  computeSegmentDuration('Mannheim Hbf', 'K\u00f6ln Hbf', stationOrder),
+  { hours: 1, minutes: 36 });
+
+// ---- Summary ----
+const summary = document.createElement('div');
+summary.className = `summary ${failed === 0 ? 'all-pass' : 'has-fail'}`;
+summary.textContent = `${passed + failed} tests: ${passed} passed, ${failed} failed`;
+results.appendChild(summary);
+</script>
+</body>
+</html>

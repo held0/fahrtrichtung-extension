@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Fahrtrichtung Anzeige",
+  "version": "1.0",
+  "description": "Zeigt die Fahrtrichtung der Züge auf bahn.de an (Daten von fernbahn.de)",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["https://www.fernbahn.de/*", "https://bahn.expert/*", "https://*.bahn.de/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "scripts": ["utils.js", "background.js"]
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fahrtrichtung@extension",
+      "strict_min_version": "109.0"
+    }
+  }
+}

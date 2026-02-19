@@ -1,0 +1,32 @@
+{
+  "extDescription": {
+    "message": "Shows the travel direction of ICE/IC/EC trains on bahn.de"
+  },
+  "wagonFront": {
+    "message": "Wagon $1 is at the front",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "directionChanges": {
+    "message": "The travel direction changes during the journey as follows:"
+  },
+  "noValidityHint": {
+    "message": "No wagon order available for this date."
+  },
+  "lastValidData": {
+    "message": "Last available data is before $1",
+    "placeholders": { "date": { "content": "$1" } }
+  },
+  "disclaimer": {
+    "message": "*Wagon orders may change on the day of travel."
+  },
+  "donateMilestone": {
+    "message": "\uD83C\uDF89 You\u2019ve used Fahrtrichtung $1 times!",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "donateAppeal": {
+    "message": "This is a hobby project \u2013 I\u2019d appreciate a small donation!"
+  },
+  "donateButton": {
+    "message": "Donate 1\u20ac"
+  }
+}

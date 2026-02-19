@@ -1,0 +1,32 @@
+{
+  "extDescription": {
+    "message": "Zeigt die Fahrtrichtung von ICE/IC/EC-Zügen auf bahn.de an"
+  },
+  "wagonFront": {
+    "message": "Wagen $1 fährt vorne",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "directionChanges": {
+    "message": "Die Fahrtrichtung ändert sich während der Fahrt wie folgt:"
+  },
+  "noValidityHint": {
+    "message": "Keine Wagenreihung für dieses Datum verfügbar."
+  },
+  "lastValidData": {
+    "message": "Letzte verfügbare Daten liegen vor $1",
+    "placeholders": { "date": { "content": "$1" } }
+  },
+  "disclaimer": {
+    "message": "*Wagenreihungen können sich am Reisetag in Einzelfällen ändern."
+  },
+  "donateMilestone": {
+    "message": "\uD83C\uDF89 Du hast Fahrtrichtung schon $1\u00d7 benutzt!",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "donateAppeal": {
+    "message": "Dies ist ein Hobby-Projekt \u2013 ich freue mich über eine kleine Spende!"
+  },
+  "donateButton": {
+    "message": "1\u20ac spenden"
+  }
+}

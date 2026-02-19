@@ -283,33 +283,12 @@ function renderResult(data, userFrom, userTo) {
     relevantStartIdx = result.startIdx;
   }
 
-  if (relevantSegments.length > 1) {
-    html.push(`<div class="validity">Die Fahrtrichtung \u00e4ndert sich w\u00e4hrend der Fahrt wie folgt:</div>`);
-  } else if (!data.validityExact) {
-    let hint = 'Keine Wagenreihung f\u00fcr dieses Datum verf\u00fcgbar.';
-    if (data.latestValidityTo) {
-      const d = new Date(data.latestValidityTo);
-      const dd = String(d.getDate()).padStart(2, '0');
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const yy = String(d.getFullYear()).slice(2);
-      hint += ` Letzte verf\u00fcgbare Daten liegen vor ${dd}.${mm}.${yy}`;
-    }
-    html.push(`<div class="validity">${escHtml(hint)}</div>`);
-  }
-
+  // Build segment display data, applying boundary adjustments and skipping empty segments
+  const displaySegments = [];
   for (let si = 0; si < relevantSegments.length; si++) {
     const seg = relevantSegments[si];
     const isFirst = si === 0;
     const isLast = si === relevantSegments.length - 1;
-
-    const displayDir = getDisplayDirection(seg, data.wagonNumbers);
-    const dirClass = displayDir === 'left' ? 'direction-left' : displayDir === 'right' ? 'direction-right' : '';
-    const arrow = displayDir === 'left' ? '\u2190' : displayDir === 'right' ? '\u2192' : '?';
-
-    let frontWagon = '';
-    if (data.wagonNumbers?.length) {
-      frontWagon = seg.firstWagonIsFront ? data.wagonNumbers[0] : data.wagonNumbers[data.wagonNumbers.length - 1];
-    }
 
     let segFrom = seg.from;
     let segTo = seg.to;
@@ -326,8 +305,34 @@ function renderResult(data, userFrom, userTo) {
       continue;
     }
 
+    displaySegments.push({ seg, segFrom, segTo });
+  }
+
+  if (displaySegments.length > 1) {
+    html.push(`<div class="validity">Die Fahrtrichtung \u00e4ndert sich w\u00e4hrend der Fahrt wie folgt:</div>`);
+  } else if (displaySegments.length === 1 && !data.validityExact) {
+    let hint = 'Keine Wagenreihung f\u00fcr dieses Datum verf\u00fcgbar.';
+    if (data.latestValidityTo) {
+      const d = new Date(data.latestValidityTo);
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yy = String(d.getFullYear()).slice(2);
+      hint += ` Letzte verf\u00fcgbare Daten liegen vor ${dd}.${mm}.${yy}`;
+    }
+    html.push(`<div class="validity">${escHtml(hint)}</div>`);
+  }
+
+  for (const { seg, segFrom, segTo } of displaySegments) {
+    const displayDir = getDisplayDirection(seg, data.wagonNumbers);
+    const dirClass = displayDir === 'left' ? 'direction-left' : displayDir === 'right' ? 'direction-right' : '';
+    const arrow = displayDir === 'left' ? '\u2190' : displayDir === 'right' ? '\u2192' : '?';
+
+    let frontWagon = '';
+    if (data.wagonNumbers?.length) {
+      frontWagon = seg.firstWagonIsFront ? data.wagonNumbers[0] : data.wagonNumbers[data.wagonNumbers.length - 1];
+    }
+
     const segText = segTo ? `${segFrom} \u2013 ${segTo}` : segFrom;
-    // Compute duration using the ADJUSTED segment boundaries (not the original fernbahn.de ones)
     const durationStr = formatDuration(computeSegmentDuration(segFrom, segTo, data.stationOrder));
 
     html.push(`

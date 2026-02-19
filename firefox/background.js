@@ -54,7 +54,7 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   // Fetch definitive station list from bahn.expert
   let stationOrder = [];
   try {
-    stationOrder = await fetchBahnExpertStations(trainType, trainNumber);
+    stationOrder = await fetchBahnExpertStations(trainType, trainNumber, dateStr);
   } catch (e) {
     console.warn('bahn.expert fetch failed, trying fernbahn fallback:', e.message);
     // Fallback: try fernbahn.de detail page
@@ -90,9 +90,10 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
 }
 
 // Fetch complete station list from bahn.expert API
-async function fetchBahnExpertStations(trainType, trainNumber) {
-  // Step 1: Get journeyId from redirect
-  const detailUrl = `https://bahn.expert/details/${trainType}%20${trainNumber}/0`;
+async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
+  // Step 1: Get journeyId from redirect (pass travel date for correct schedule)
+  const datePart = travelDate || '0';
+  const detailUrl = `https://bahn.expert/details/${trainType}%20${trainNumber}/${datePart}`;
   const resp = await fetch(detailUrl);
   const journeyIdMatch = resp.url.match(/\/j\/([^\/\?]+)/);
   if (!journeyIdMatch) {

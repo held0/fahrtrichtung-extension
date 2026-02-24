@@ -1,6 +1,9 @@
 {
+  "extName": {
+    "message": "Fahrtrichtung – Train Direction Display"
+  },
   "extDescription": {
-    "message": "Shows the travel direction of ICE/IC/EC trains on bahn.de"
+    "message": "Shows the travel direction of long-distance trains during seat booking on bahn.de"
   },
   "wagonFront": {
     "message": "Wagon $1 is at the front",

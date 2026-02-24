@@ -1,6 +1,6 @@
 # Fahrtrichtung - Browser Extension
 
-Zeigt die Fahrtrichtung von ICE/IC/EC-Zuegen auf bahn.de an.
+Zeigt die Fahrtrichtung von ICE/IC/EC/ECE/TGV/RJX/RJ/NJ/EN-Zuegen auf bahn.de an.
 
 ## Unterstuetzte Browser
 

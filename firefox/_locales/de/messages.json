@@ -1,6 +1,9 @@
 {
+  "extName": {
+    "message": "Fahrtrichtung Anzeige"
+  },
   "extDescription": {
-    "message": "Zeigt die Fahrtrichtung von ICE/IC/EC-Zügen auf bahn.de an"
+    "message": "Zeigt die Fahrtrichtung von Fernverkehrszügen während der Sitzplatzbuchung auf bahn.de an"
   },
   "wagonFront": {
     "message": "Wagen $1 fährt vorne",

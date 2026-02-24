@@ -26,7 +26,10 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   }
 
   const html = await response.text();
-  const entries = parseEntries(html);
+  const allEntries = parseEntries(html);
+
+  // Filter entries by train type (fernbahn.de searches by number only, may return multiple types)
+  const entries = allEntries.filter(e => e.trainName.toUpperCase().startsWith(trainType.toUpperCase()));
 
   if (entries.length === 0) {
     throw new Error(`Keine Wagenreihung gefunden für ${trainType} ${trainNumber}`);
@@ -309,21 +312,23 @@ function parseValidity(html) {
     const dayPart = text.match(/gültig\s+(.+?)(?:\s+\d|\s+ab\s|\s+bis\s)/i);
     if (dayPart) {
       const dayStr = dayPart[1].trim();
-      // Range: "Mo-Sa"
-      const rangeMatch = dayStr.match(/^(Mo|Di|Mi|Do|Fr|Sa|So)-(Mo|Di|Mi|Do|Fr|Sa|So)$/i);
-      if (rangeMatch) {
-        const startDay = dayMap[rangeMatch[1].toLowerCase()];
-        const endDay = dayMap[rangeMatch[2].toLowerCase()];
-        days = [];
-        for (let d = startDay; ; d = (d + 1) % 7) {
-          days.push(d);
-          if (d === endDay) break;
-        }
-      } else {
-        // Comma-separated: "Di, Mi, Do, Fr, Sa, So"
-        const abbrs = dayStr.match(/\b(Mo|Di|Mi|Do|Fr|Sa|So)\b/gi);
-        if (abbrs?.length) {
-          days = abbrs.map(a => dayMap[a.toLowerCase()]);
+      // Parse comma-separated parts, each can be a range ("Mo-Fr") or single day ("So")
+      days = [];
+      const parts = dayStr.split(/,\s*/);
+      for (const part of parts) {
+        const rangeMatch = part.match(/^(Mo|Di|Mi|Do|Fr|Sa|So)-(Mo|Di|Mi|Do|Fr|Sa|So)$/i);
+        if (rangeMatch) {
+          const startDay = dayMap[rangeMatch[1].toLowerCase()];
+          const endDay = dayMap[rangeMatch[2].toLowerCase()];
+          for (let d = startDay; ; d = (d + 1) % 7) {
+            days.push(d);
+            if (d === endDay) break;
+          }
+        } else {
+          const abbrs = part.match(/\b(Mo|Di|Mi|Do|Fr|Sa|So)\b/gi);
+          if (abbrs?.length) {
+            days = days.concat(abbrs.map(a => dayMap[a.toLowerCase()]));
+          }
         }
       }
     }

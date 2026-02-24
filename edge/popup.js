@@ -112,7 +112,7 @@ function extractTrainInfoFromPage() {
   const allText = bodyText + '\n' + shadowText;
 
   // Regex without trailing \b - shadow DOM may have "ICE 549nach" without space
-  const trainPattern = /\b(ICE|IC|EC|RJ|TGV|EST)\s*(\d{1,5})/g;
+  const trainPattern = /\b(ICE|ECE|IC|EC|RJX|RJ|TGV|EST|NJ|EN)\s*(\d{1,5})/g;
   let match;
 
   while ((match = trainPattern.exec(allText)) !== null) {
@@ -175,7 +175,7 @@ function extractTrainInfoFromPage() {
 
   // Fallback: try loose pattern (no colon required) for route extraction
   if (!fromStation) {
-    const routePattern = /(ICE|IC|EC|RJ|TGV|EST)\s+(\d{1,5})\s*[:\.]?\s*(.+?)\s*[-–—]\s*(.+?)(?:\n|$)/;
+    const routePattern = /(ICE|ECE|IC|EC|RJX|RJ|TGV|EST|NJ|EN)\s+(\d{1,5})\s*[:\.]?\s*(.+?)\s*[-–—]\s*(.+?)(?:\n|$)/;
     const routeMatch = bodyText.match(routePattern);
     if (routeMatch) {
       let rawFrom = routeMatch[3].trim();
@@ -203,8 +203,6 @@ function extractTrainInfoFromPage() {
 
 function showStatus(message) {
   contentEl.innerHTML = `<div class="status">${escHtml(message)}</div>`;
-  const ice = document.getElementById('ice-sketch');
-  if (ice) ice.style.display = '';
 }
 
 async function fetchAndDisplay(train, fromStation, toStation, travelDate) {
@@ -357,11 +355,9 @@ function renderResult(data, userFrom, userTo) {
 
   contentEl.innerHTML = html.join('');
 
-  // Show disclaimer and ICE image when results are displayed
+  // Show disclaimer when results are displayed
   const disc = document.getElementById('disclaimer');
-  const ice = document.getElementById('ice-sketch');
   if (disc) disc.style.display = '';
-  if (ice) ice.style.display = '';
 
   // Track usage and show donate banner at milestones
   showDonateIfMilestone();

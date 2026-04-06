@@ -81,30 +81,18 @@ jobs:
         env:
           EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
-          EDGE_CLIENT_SECRET: ${{ secrets.EDGE_CLIENT_SECRET }}
-          EDGE_ACCESS_TOKEN_URL: ${{ secrets.EDGE_ACCESS_TOKEN_URL }}
+          EDGE_API_KEY: ${{ secrets.EDGE_CLIENT_SECRET }}
         run: |
-          # Get access token
-          TOKEN_RESPONSE=$(curl -s -X POST "$EDGE_ACCESS_TOKEN_URL" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "client_id=$EDGE_CLIENT_ID" \
-            -d "scope=https://api.addons.microsoftedge.microsoft.com/.default" \
-            -d "client_secret=$EDGE_CLIENT_SECRET" \
-            -d "grant_type=client_credentials")
-          ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.access_token')
-          if [ "$ACCESS_TOKEN" = "null" ] || [ -z "$ACCESS_TOKEN" ]; then
-            echo "::error::Failed to get Edge access token"
-            echo "$TOKEN_RESPONSE"
-            exit 1
-          fi
-
+          # Edge Add-ons API v1.1: direct API key auth (no OAuth2 token needed)
           # Upload package
-          UPLOAD_RESPONSE=$(curl -s -X POST \
+          UPLOAD_RESPONSE=$(curl -s -D /tmp/edge-headers -X POST \
             "https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions/draft/package" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "Authorization: ApiKey $EDGE_API_KEY" \
+            -H "X-ClientID: $EDGE_CLIENT_ID" \
             -H "Content-Type: application/zip" \
             --data-binary @fahrtrichtung-edge.zip)
           echo "Upload response: $UPLOAD_RESPONSE"
+          cat /tmp/edge-headers
           OPERATION_ID=$(echo "$UPLOAD_RESPONSE" | jq -r '.operationId // empty')
           if [ -z "$OPERATION_ID" ]; then
             echo "::warning::Edge upload may have failed — check Partner Center"
@@ -113,7 +101,8 @@ jobs:
           # Publish (submit for review)
           curl -s -X POST \
             "https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "Authorization: ApiKey $EDGE_API_KEY" \
+            -H "X-ClientID: $EDGE_CLIENT_ID" \
             -H "Content-Type: application/json" \
             -d '{}' || echo "::warning::Edge publish request failed — check Partner Center"
 

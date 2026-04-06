@@ -65,6 +65,7 @@ jobs:
             --refresh-token "$REFRESH_TOKEN"
 
       - name: Upload to Firefox AMO
+        continue-on-error: true
         env:
           WEB_EXT_API_KEY: ${{ secrets.FIREFOX_JWT_ISSUER }}
           WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
@@ -76,6 +77,7 @@ jobs:
             --api-secret "$WEB_EXT_API_SECRET"
 
       - name: Upload to Edge Add-ons
+        continue-on-error: true
         env:
           EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}

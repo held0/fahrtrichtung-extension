@@ -36,7 +36,10 @@ function findChrome() {
 }
 
 async function run() {
-  const launchOptions = { headless: true };
+  const launchOptions = {
+    headless: true,
+    args: process.env.CI ? ['--no-sandbox', '--disable-setuid-sandbox'] : []
+  };
   const chrome = findChrome();
   if (chrome) launchOptions.executablePath = chrome;
   const browser = await puppeteer.launch(launchOptions);

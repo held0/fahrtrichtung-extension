@@ -106,7 +106,7 @@ async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
 
   // Step 2: Call tRPC API to get journey details
   const input = JSON.stringify({ '0': JSON.stringify([journeyId]) });
-  const apiUrl = `https://bahn.expert/rpc/journeys.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
+  const apiUrl = `https://bahn.expert/rpc/journey.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
   const apiResp = await fetch(apiUrl);
   if (!apiResp.ok) {
     throw new Error(`bahn.expert API returned ${apiResp.status}`);

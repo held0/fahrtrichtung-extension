@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "fahrtrichtung-ci",
+  "description": "CI/CD tooling for Fahrtrichtung browser extension",
+  "scripts": {
+    "test:headless": "node run-tests-headless.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.0.0",
+    "chrome-webstore-upload-cli": "^3.0.0",
+    "web-ext": "^8.0.0"
+  }
+}

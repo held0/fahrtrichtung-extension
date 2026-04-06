@@ -5,54 +5,40 @@
 import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import { existsSync } from 'fs';
-import { execSync } from 'child_process';
+import { existsSync, readdirSync } from 'fs';
+import { homedir } from 'os';
+import { join } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const testsPath = resolve(__dirname, 'tests.html');
 
-// Resolve the best available Chrome/Chromium executable.
-// Priority: puppeteer's own cache -> system Chrome (macOS)
+// Find a working Chrome binary. On CI (Linux, matching arch), Puppeteer's bundled
+// Chrome works out of the box — return null to let Puppeteer auto-detect.
+// Locally (e.g. x64 Node on arm64 Mac), the bundled download may fail — search
+// the Puppeteer cache for any available chrome-headless-shell binary.
+// Override with PUPPETEER_EXECUTABLE_PATH env var if needed.
 function findChrome() {
-  const puppeteerCache = '/Users/resistance/.cache/puppeteer';
-  const candidates = [
-    // chrome-headless-shell builds in the puppeteer cache (sorted newest-first at runtime)
-    ...['chrome-headless-shell', 'chrome'].flatMap(kind => {
-      const base = `${puppeteerCache}/${kind}`;
-      if (!existsSync(base)) return [];
-      try {
-        return execSync(`ls "${base}"`, { encoding: 'utf8' })
-          .trim().split('\n')
-          .sort().reverse()
-          .flatMap(ver => {
-            const sub = `${base}/${ver}`;
-            try {
-              return execSync(`ls "${sub}"`, { encoding: 'utf8' })
-                .trim().split('\n')
-                .map(dir => {
-                  const bin = kind === 'chrome-headless-shell'
-                    ? `${sub}/${dir}/chrome-headless-shell`
-                    : `${sub}/${dir}/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`;
-                  return bin;
-                })
-                .filter(p => existsSync(p));
-            } catch { return []; }
-          });
-      } catch { return []; }
-    }),
-    // System Chrome as last resort
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  ];
-  return candidates.find(p => existsSync(p)) || null;
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
+  const cacheDir = join(homedir(), '.cache', 'puppeteer', 'chrome-headless-shell');
+  if (!existsSync(cacheDir)) return null;
+  try {
+    const versions = readdirSync(cacheDir).filter(d => d.startsWith('mac-') || d.startsWith('linux-')).sort().reverse();
+    for (const ver of versions) {
+      const verDir = join(cacheDir, ver);
+      const subdirs = readdirSync(verDir);
+      for (const sub of subdirs) {
+        const bin = join(verDir, sub, 'chrome-headless-shell');
+        if (existsSync(bin)) return bin;
+      }
+    }
+  } catch {}
+  return null;
 }
 
 async function run() {
-  const executablePath = findChrome();
   const launchOptions = { headless: true };
-  if (executablePath) {
-    launchOptions.executablePath = executablePath;
-  }
-
+  const chrome = findChrome();
+  if (chrome) launchOptions.executablePath = chrome;
   const browser = await puppeteer.launch(launchOptions);
   const page = await browser.newPage();
 

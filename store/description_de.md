@@ -1,7 +1,7 @@
 # Store-Listing: Deutsch
 
 ## Kurzbeschreibung (max 132 Zeichen)
-Zeigt die Fahrtrichtung von Fernverkehrszügen auf bahn.de an – nie wieder falsch herum im Zug sitzen!
+Zeigt die Fahrtrichtung von Fernverkehrszügen während der Sitzplatzbuchung auf bahn.de an
 
 ## Ausführliche Beschreibung
 
@@ -10,7 +10,7 @@ Kennst du das? Du möchtest einen Fensterplatz in Fahrtrichtung buchen – aber 
 So funktioniert es:
 • Öffne bahn.de und suche eine Verbindung
 • Klicke auf „Sitzplatz auswählen"
-• Klicke auf das Fahrtrichtung-Icon in der Browser-Leiste
+• Klicke auf das Extension-Icon in der Browser-Leiste
 • Die Extension zeigt dir sofort die Fahrtrichtung mit Pfeil an
 
 Funktionen:

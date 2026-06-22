@@ -1,16 +1,16 @@
 # Store Listing: English
 
 ## Short Description (max 132 chars)
-Shows the travel direction of long-distance trains on bahn.de – never sit backwards on the train again!
+Shows the travel direction of long-distance trains during seat booking on bahn.de
 
 ## Full Description
 
-Want to book a window seat facing forward – but bahn.de doesn't show which direction the train is going? "Fahrtrichtung Anzeige" shows you the travel direction based on official Deutsche Bahn wagon order data. In rare cases, the data may change up until the day of travel – but it's better than no info at all!
+Want to book a window seat facing forward – but bahn.de doesn't show which direction the train is going? "Train Direction Display" shows you the travel direction based on official Deutsche Bahn wagon order data. In rare cases, the data may change up until the day of travel – but it's better than no info at all!
 
 How it works:
 • Open bahn.de and search for a connection
 • Click "Sitzplatz auswählen" (select seat)
-• Click the Fahrtrichtung icon in your browser toolbar
+• Click the extension icon in your browser toolbar
 • The extension instantly shows the travel direction with an arrow
 
 Features:

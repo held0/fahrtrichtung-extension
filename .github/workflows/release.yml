@@ -62,7 +62,8 @@ jobs:
             --extension-id "$EXTENSION_ID" \
             --client-id "$CLIENT_ID" \
             --client-secret "$CLIENT_SECRET" \
-            --refresh-token "$REFRESH_TOKEN"
+            --refresh-token "$REFRESH_TOKEN" \
+            --auto-publish
 
       - name: Upload to Firefox AMO
         continue-on-error: true
@@ -83,28 +84,52 @@ jobs:
           EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
           EDGE_API_KEY: ${{ secrets.EDGE_CLIENT_SECRET }}
         run: |
-          # Edge Add-ons API v1.1: direct API key auth (no OAuth2 token needed)
-          # Upload package
-          UPLOAD_RESPONSE=$(curl -s -D /tmp/edge-headers -X POST \
-            "https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions/draft/package" \
-            -H "Authorization: ApiKey $EDGE_API_KEY" \
-            -H "X-ClientID: $EDGE_CLIENT_ID" \
-            -H "Content-Type: application/zip" \
-            --data-binary @fahrtrichtung-edge.zip)
-          echo "Upload response: $UPLOAD_RESPONSE"
-          cat /tmp/edge-headers
-          OPERATION_ID=$(echo "$UPLOAD_RESPONSE" | jq -r '.operationId // empty')
-          if [ -z "$OPERATION_ID" ]; then
-            echo "::warning::Edge upload may have failed — check Partner Center"
-          fi
+          set -euo pipefail
+          # Edge Add-ons API v1.1: ApiKey-Auth. Operation-ID kommt aus dem Location-Header,
+          # NICHT aus dem (leeren) Response-Body. Mit Status-Polling für Upload + Publish.
+          BASE="https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions"
+          loc() { tr -d '\r' | awk -F': ' '/^[Ll]ocation:/{print $2}'; }
 
-          # Publish (submit for review)
-          curl -s -X POST \
-            "https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions" \
-            -H "Authorization: ApiKey $EDGE_API_KEY" \
-            -H "X-ClientID: $EDGE_CLIENT_ID" \
+          echo "== Upload package =="
+          OP=$(curl -sS -X POST "$BASE/draft/package" \
+            -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" \
+            -H "Content-Type: application/zip" \
+            --data-binary @fahrtrichtung-edge.zip \
+            -D - -o /dev/null | loc)
+          echo "Upload operation: ${OP:-<empty>}"
+          if [ -z "${OP:-}" ]; then echo "::error::Edge upload failed (no operation header — API key/client ID expired?)"; exit 1; fi
+
+          echo "== Poll upload status =="
+          for i in $(seq 1 30); do
+            R=$(curl -sS "$BASE/draft/package/operations/$OP" \
+              -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID")
+            S=$(echo "$R" | jq -r '.status // "Unknown"')
+            echo "  status: $S"
+            [ "$S" = "Succeeded" ] && break
+            if [ "$S" = "Failed" ]; then echo "::error::Edge upload processing failed: $R"; exit 1; fi
+            sleep 10
+          done
+
+          echo "== Submit for publication =="
+          POP=$(curl -sS -X POST "$BASE" \
+            -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID" \
             -H "Content-Type: application/json" \
-            -d '{}' || echo "::warning::Edge publish request failed — check Partner Center"
+            -d '{"notes":"Automated submission"}' \
+            -D - -o /dev/null | loc)
+          echo "Publish operation: ${POP:-<empty>}"
+          if [ -z "${POP:-}" ]; then echo "::error::Edge submission failed (no operation header)"; exit 1; fi
+
+          echo "== Poll publish status =="
+          for i in $(seq 1 30); do
+            R=$(curl -sS "$BASE/operations/$POP" \
+              -H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID")
+            S=$(echo "$R" | jq -r '.status // "Unknown"')
+            echo "  status: $S"
+            if [ "$S" = "Succeeded" ]; then echo "✅ Edge submission succeeded"; exit 0; fi
+            if [ "$S" = "Failed" ]; then echo "::error::Edge publish failed: $R"; exit 1; fi
+            sleep 10
+          done
+          echo "::warning::Edge publish still in progress after polling — check Partner Center"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

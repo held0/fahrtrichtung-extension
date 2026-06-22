@@ -1,0 +1,80 @@
+name: Edge Upload (manual)
+
+# Manuell auslösbarer Workflow, der NUR zu Edge Add-ons hochlädt & veröffentlicht.
+# Nützlich, wenn der Edge-Schritt im Haupt-Release fehlschlug (z. B. abgelaufener API-Key),
+# ohne Chrome/Firefox mit derselben Version erneut hochzuladen.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  edge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Edge ZIP
+        run: |
+          chmod +x sync-browsers.sh
+          ./sync-browsers.sh
+
+      - name: Upload & publish to Edge Add-ons
+        env:
+          PID: ${{ secrets.EDGE_PRODUCT_ID }}
+          CID: ${{ secrets.EDGE_CLIENT_ID }}
+          KEY: ${{ secrets.EDGE_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          BASE="https://api.addons.microsoftedge.microsoft.com/v1/products/$PID/submissions"
+          loc() { tr -d '\r' | awk -F': ' '/^[Ll]ocation:/{print $2}'; }
+
+          echo "== Paket hochladen =="
+          OP=$(curl -sS -X POST "$BASE/draft/package" \
+            -H "Authorization: ApiKey $KEY" -H "X-ClientID: $CID" \
+            -H "Content-Type: application/zip" \
+            --data-binary @fahrtrichtung-edge.zip \
+            -D - -o /dev/null | loc)
+          echo "Upload-Operation: ${OP:-<leer>}"
+          if [ -z "${OP:-}" ]; then
+            echo "::error::Upload fehlgeschlagen (kein Operation-Header) — API-Key/Client-ID prüfen"
+            exit 1
+          fi
+
+          echo "== Upload-Status pollen =="
+          for i in $(seq 1 30); do
+            R=$(curl -sS "$BASE/draft/package/operations/$OP" \
+              -H "Authorization: ApiKey $KEY" -H "X-ClientID: $CID")
+            S=$(echo "$R" | jq -r '.status // "Unknown"')
+            echo "  status: $S"
+            [ "$S" = "Succeeded" ] && break
+            if [ "$S" = "Failed" ]; then echo "::error::Upload-Verarbeitung fehlgeschlagen: $R"; exit 1; fi
+            sleep 10
+          done
+
+          echo "== Zur Veröffentlichung einreichen =="
+          POP=$(curl -sS -X POST "$BASE" \
+            -H "Authorization: ApiKey $KEY" -H "X-ClientID: $CID" \
+            -H "Content-Type: application/json" \
+            -d '{"notes":"Automated submission via edge-upload workflow"}' \
+            -D - -o /dev/null | loc)
+          echo "Publish-Operation: ${POP:-<leer>}"
+          if [ -z "${POP:-}" ]; then
+            echo "::error::Einreichung fehlgeschlagen (kein Operation-Header)"
+            exit 1
+          fi
+
+          echo "== Publish-Status pollen =="
+          for i in $(seq 1 30); do
+            R=$(curl -sS "$BASE/operations/$POP" \
+              -H "Authorization: ApiKey $KEY" -H "X-ClientID: $CID")
+            S=$(echo "$R" | jq -r '.status // "Unknown"')
+            echo "  status: $S"
+            if [ "$S" = "Succeeded" ]; then echo "✅ Edge-Einreichung erfolgreich"; exit 0; fi
+            if [ "$S" = "Failed" ]; then echo "::error::Veröffentlichung fehlgeschlagen: $R"; exit 1; fi
+            sleep 10
+          done
+          echo "::warning::Publish nach Polling noch nicht abgeschlossen — im Partner Center prüfen"

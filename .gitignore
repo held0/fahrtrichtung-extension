@@ -1,1 +1,6 @@
 node_modules/
+.superpowers/
+
+# Intern — NICHT ins oeffentliche Extension-Repo (Marketing-Seite + Strategie-Doku)
+landing/
+docs/

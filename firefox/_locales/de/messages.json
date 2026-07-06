@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "Fahrtrichtung Anzeige"
+    "message": "Fahrtrichtung"
   },
   "extDescription": {
     "message": "Zeigt die Fahrtrichtung von Fernverkehrszügen während der Sitzplatzbuchung auf bahn.de an"
@@ -23,7 +23,7 @@
     "message": "*Wagenreihungen können sich am Reisetag in Einzelfällen ändern."
   },
   "donateMilestone": {
-    "message": "\uD83C\uDF89 Du hast Fahrtrichtung Anzeige schon $1\u00d7 benutzt!",
+    "message": "\uD83C\uDF89 Du hast Fahrtrichtung schon $1\u00d7 benutzt!",
     "placeholders": { "count": { "content": "$1" } }
   },
   "donateAppeal": {

@@ -5,7 +5,7 @@ Shows the travel direction of long-distance trains during seat booking on bahn.d
 
 ## Full Description
 
-Want to book a window seat facing forward – but bahn.de doesn't show which direction the train is going? "Train Direction Display" shows you the travel direction based on official Deutsche Bahn wagon order data. In rare cases, the data may change up until the day of travel – but it's better than no info at all!
+Want to book a window seat facing forward – but bahn.de doesn't show which direction the train is going? "Train Direction" shows you the travel direction based on official Deutsche Bahn wagon order data. In rare cases, the data may change up until the day of travel – but it's better than no info at all!
 
 How it works:
 • Open bahn.de and search for a connection

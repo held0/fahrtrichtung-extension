@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "Train Direction Display"
+    "message": "Train Direction"
   },
   "extDescription": {
     "message": "Shows the travel direction of long-distance trains during seat booking on bahn.de"
@@ -23,7 +23,7 @@
     "message": "*Wagon orders may change on the day of travel."
   },
   "donateMilestone": {
-    "message": "\uD83C\uDF89 You\u2019ve used Train Direction Display $1 times!",
+    "message": "\uD83C\uDF89 You\u2019ve used Train Direction $1 times!",
     "placeholders": { "count": { "content": "$1" } }
   },
   "donateAppeal": {

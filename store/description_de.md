@@ -5,7 +5,7 @@ Zeigt die Fahrtrichtung von Fernverkehrszügen während der Sitzplatzbuchung auf
 
 ## Ausführliche Beschreibung
 
-Kennst du das? Du möchtest einen Fensterplatz in Fahrtrichtung buchen – aber auf bahn.de gibt es keine Info, in welche Richtung der Zug fährt? „Fahrtrichtung Anzeige" zeigt dir die Fahrtrichtung auf Basis der offiziellen Wagenreihungsdaten der Deutschen Bahn. Die Daten können sich in Einzelfällen bis zum Reisetag noch ändern – aber besser als gar keine Info!
+Kennst du das? Du möchtest einen Fensterplatz in Fahrtrichtung buchen – aber auf bahn.de gibt es keine Info, in welche Richtung der Zug fährt? „Fahrtrichtung" zeigt dir die Fahrtrichtung auf Basis der offiziellen Wagenreihungsdaten der Deutschen Bahn. Die Daten können sich in Einzelfällen bis zum Reisetag noch ändern – aber besser als gar keine Info!
 
 So funktioniert es:
 • Öffne bahn.de und suche eine Verbindung

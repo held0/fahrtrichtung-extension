@@ -134,7 +134,7 @@ function parseRichtungswechsel(html) {
     const hasRightArrow = part.includes('pfeilrechts');
     const textContent = decodeEntities(stripHtml(part)).trim();
     if (!textContent) continue;
-    const routeMatch = textContent.match(/(.+?)\s*[\u2013\u2014\-]\s*(.+)/);
+    const routeMatch = textContent.match(/(.+?)\s+[\u2013\u2014-]\s+(.+)/);
     const from = routeMatch ? routeMatch[1].trim() : textContent;
     const to = routeMatch ? routeMatch[2].trim() : '';
     segments.push({ from, to, direction: hasLeftArrow ? 'left' : (hasRightArrow ? 'right' : 'unknown'), text: textContent, firstWagonIsFront: hasLeftArrow });
@@ -367,6 +367,18 @@ const segs2 = parseRichtungswechsel(richHtml2);
 assert('two segments count', segs2.length, 2);
 assert('seg1 direction left', segs2[0].direction, 'left');
 assert('seg2 direction right', segs2[1].direction, 'right');
+
+// Regression: station names containing a hyphen (Berlin-Gesundbrunnen, München-Pasing)
+// must NOT be split at the internal hyphen — only at the spaced separator " – ".
+const richHyphen = '<img src="images/pfeillinks.svg">&nbsp;Berlin-Gesundbrunnen – Leipzig Hbf<br>';
+const segsHy = parseRichtungswechsel(richHyphen);
+assert('hyphen seg count', segsHy.length, 1);
+assert('hyphen seg from (name kept intact)', segsHy[0].from, 'Berlin-Gesundbrunnen');
+assert('hyphen seg to', segsHy[0].to, 'Leipzig Hbf');
+const richHyphen2 = '<img src="images/pfeilrechts.svg">&nbsp;Stuttgart Hbf – München-Pasing<br>';
+const segsHy2 = parseRichtungswechsel(richHyphen2);
+assert('hyphen2 seg from', segsHy2[0].from, 'Stuttgart Hbf');
+assert('hyphen2 seg to (trailing hyphen name kept)', segsHy2[0].to, 'München-Pasing');
 
 // --- parseSuperjsonStops ---
 group('parseSuperjsonStops()');

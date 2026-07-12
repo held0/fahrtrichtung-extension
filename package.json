@@ -3,7 +3,8 @@
   "name": "fahrtrichtung-ci",
   "description": "CI/CD tooling for Fahrtrichtung browser extension",
   "scripts": {
-    "test:headless": "node run-tests-headless.mjs"
+    "test:headless": "node run-tests-headless.mjs",
+    "test:e2e": "node test-e2e-live.mjs"
   },
   "devDependencies": {
     "puppeteer": "^24.0.0",

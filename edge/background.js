@@ -263,7 +263,10 @@ function parseRichtungswechsel(html) {
     const textContent = decodeEntities(stripHtml(part)).trim();
     if (!textContent) continue;
 
-    const routeMatch = textContent.match(/(.+?)\s*[–—\-]\s*(.+)/);
+    // Segment separator is a dash surrounded by whitespace (" – ").
+    // Require whitespace on BOTH sides so hyphens *inside* station names
+    // (Berlin-Gesundbrunnen, München-Pasing, Baden-Baden) don't split a segment.
+    const routeMatch = textContent.match(/(.+?)\s+[–—-]\s+(.+)/);
     const from = routeMatch ? routeMatch[1].trim() : textContent;
     const to = routeMatch ? routeMatch[2].trim() : '';
 

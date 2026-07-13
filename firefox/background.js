@@ -5,7 +5,7 @@
 
 // utils.js is loaded via manifest.json background.scripts
 
-const BG_VERSION = 2;
+const BG_VERSION = 3;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'fetchFernbahn') {
@@ -59,19 +59,26 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   try {
     stationOrder = await fetchBahnExpertStations(trainType, trainNumber, dateStr);
   } catch (e) {
-    console.warn('bahn.expert fetch failed, trying fernbahn fallback:', e.message);
-    // Fallback: try fernbahn.de detail page
-    if (validEntry.zugId) {
-      try {
-        const detailUrl = `https://www.fernbahn.de/datenbank/suche/?zug_id=${validEntry.zugId}`;
-        const detailResp = await fetch(detailUrl);
-        if (detailResp.ok) {
-          stationOrder = parseFernbahnStationOrder(await detailResp.text()).map(name => ({ name, dep: null, arr: null }));
-        }
-      } catch (e2) {
-        console.warn('Fernbahn detail fallback failed:', e2.message);
-      }
-    }
+    console.warn('[Fahrtrichtung] bahn.expert fetch failed, trying fernbahn fallback:', e.message);
+  }
+
+  // bahn.expert resolves journeys by train NUMBER and can return a *different*
+  // train that happens to share the number (e.g. "ICE 20" Wien–München vs. a
+  // number-20 train Milano–Zürich). Such a list has zero overlap with the route
+  // we parsed from fernbahn.de and would produce wrong/empty directions, so reject
+  // it and fall back to fernbahn.de's own station order.
+  if (stationOrder.length && !stationOrderMatchesEntry(stationOrder, validEntry)) {
+    console.warn('[Fahrtrichtung] bahn.expert station list does not match fernbahn.de route',
+      '| route:', validEntry.route,
+      '| bahn.expert:', stationNames(stationOrder).join(' > '),
+      '— falling back to fernbahn.de');
+    stationOrder = [];
+  }
+
+  // Fallback: use fernbahn.de's own station order (guaranteed consistent with the
+  // segments we parsed) whenever bahn.expert failed or returned the wrong train.
+  if (!stationOrder.length) {
+    stationOrder = await fetchFernbahnStationOrder(validEntry);
   }
 
   const fromSegmentIdx = findSegmentForStation(validEntry.segments, fromStation, stationOrder);
@@ -117,6 +124,46 @@ async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
   if (!raw) throw new Error('Empty response from bahn.expert');
 
   return parseSuperjsonStops(raw);
+}
+
+// Fetch the station order from fernbahn.de's own detail page (via zug_id).
+// This list always belongs to the exact entry we parsed, so it's the reliable
+// fallback when bahn.expert is unreachable or returns the wrong train.
+async function fetchFernbahnStationOrder(validEntry) {
+  if (!validEntry.zugId) return [];
+  try {
+    const detailUrl = `https://www.fernbahn.de/datenbank/suche/?zug_id=${validEntry.zugId}`;
+    const detailResp = await fetch(detailUrl);
+    if (!detailResp.ok) return [];
+    return parseFernbahnStationOrder(await detailResp.text()).map(name => ({ name, dep: null, arr: null }));
+  } catch (e) {
+    console.warn('[Fahrtrichtung] Fernbahn station-order fallback failed:', e.message);
+    return [];
+  }
+}
+
+// Verify a bahn.expert station list actually belongs to the train we parsed from
+// fernbahn.de. We anchor on stations we KNOW are on the route — the route
+// endpoints ("Wien Hbf — München Hbf") and every segment boundary. If not a
+// single anchor appears in the list, it's a different train sharing the number.
+function stationOrderMatchesEntry(stationOrder, validEntry) {
+  if (!stationOrder.length) return false;
+  const names = stationNames(stationOrder).map(normalizeStation);
+
+  const anchors = [];
+  if (validEntry.route) {
+    for (const part of validEntry.route.split(/\s+[–—-]+\s+/)) {
+      const p = part.trim();
+      if (p) anchors.push(p);
+    }
+  }
+  for (const seg of validEntry.segments) {
+    if (seg.from) anchors.push(seg.from);
+    if (seg.to) anchors.push(seg.to);
+  }
+  if (!anchors.length) return true; // nothing to check against — don't reject
+
+  return anchors.some(a => findSegBoundary(a, names) >= 0);
 }
 
 // Parse the superjson flat-array response from bahn.expert into station objects

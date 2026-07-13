@@ -65,6 +65,8 @@ const DEFAULT_TRAINS = [
   { trainType: 'ICE', trainNumber: '549' },   // Rhein/Ruhr -> Berlin
   { trainType: 'ICE', trainNumber: '77' },    // Hamburg -> Basel
   { trainType: 'ICE', trainNumber: '11' },    // Berlin -> München
+  { trainType: 'ICE', trainNumber: '20' },    // Wien -> München; bahn.expert returns a
+                                              // number-20 Milano–Zürich train (wrong-train guard)
 ];
 
 const MIN_TRAINS_WITH_DATA = 3;      // below this we can't conclude -> exit 2

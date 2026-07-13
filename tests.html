@@ -172,6 +172,38 @@ function parseSuperjsonStops(raw) {
   return stations;
 }
 
+function stationNames(stationOrder) {
+  return stationOrder.map(s => typeof s === 'string' ? s : s.name);
+}
+
+function findSegBoundary(stationName, normNames) {
+  const norm = normalizeStation(stationName);
+  const idx = findInStationList(norm, normNames);
+  if (idx >= 0) return idx;
+  for (let i = 0; i < normNames.length; i++) {
+    if (stationMatchLoose(norm, normNames[i])) return i;
+  }
+  return -1;
+}
+
+function stationOrderMatchesEntry(stationOrder, validEntry) {
+  if (!stationOrder.length) return false;
+  const names = stationNames(stationOrder).map(normalizeStation);
+  const anchors = [];
+  if (validEntry.route) {
+    for (const part of validEntry.route.split(/\s+[–—-]+\s+/)) {
+      const p = part.trim();
+      if (p) anchors.push(p);
+    }
+  }
+  for (const seg of validEntry.segments) {
+    if (seg.from) anchors.push(seg.from);
+    if (seg.to) anchors.push(seg.to);
+  }
+  if (!anchors.length) return true;
+  return anchors.some(a => findSegBoundary(a, names) >= 0);
+}
+
 // From popup.js
 function getDisplayDirection(seg, wagonNumbers) {
   if (!wagonNumbers?.length || wagonNumbers.length < 2) return seg.direction;
@@ -439,6 +471,35 @@ assert('last stop no dep', stops[2].dep, null);
 let superjsonError = false;
 try { parseSuperjsonStops(JSON.stringify([{}, 'not-an-array'])); } catch (e) { superjsonError = true; }
 assert('throws on non-array stopIndices', superjsonError, true);
+
+// --- stationOrderMatchesEntry (bahn.expert wrong-train guard) ---
+// bahn.expert resolves journeys by train NUMBER and can return a different train
+// sharing the number (e.g. "ICE 20" Wien–München vs. a number-20 Milano–Zürich
+// train). We must reject a station list that has no overlap with the fernbahn.de
+// route/segments, so the pipeline falls back to fernbahn.de's own order.
+group('stationOrderMatchesEntry()');
+const ice20Entry = {
+  route: 'Wien Hbf — München Hbf',
+  segments: [
+    { from: 'Wien Hbf', to: 'Regensburg Hbf' },
+    { from: 'Regensburg Hbf', to: 'München Hbf' }
+  ]
+};
+// The wrong train bahn.expert returned for "ICE 20" (Milano – Zürich):
+const wrongTrainStops = ['Milano Centrale', 'Como S. Giovanni', 'Chiasso', 'Lugano',
+  'Bellinzona', 'Arth-Goldau', 'Zug (CH)', 'Zürich HB'].map(name => ({ name }));
+assert('rejects a station list from a different train sharing the number',
+  stationOrderMatchesEntry(wrongTrainStops, ice20Entry), false);
+// The correct fernbahn.de fallback order for ICE 20:
+const rightTrainStops = ['Wien', 'Linz', 'Passau', 'Regensburg', 'München'].map(name => ({ name }));
+assert('accepts the correct station list (matches route/segments)',
+  stationOrderMatchesEntry(rightTrainStops, ice20Entry), true);
+assert('accepts when only one anchor overlaps',
+  stationOrderMatchesEntry([{ name: 'Regensburg Hbf' }, { name: 'Somewhere Else' }], ice20Entry), true);
+assert('rejects an empty station list',
+  stationOrderMatchesEntry([], ice20Entry), false);
+assert('accepts any list when the entry has no anchors to check against',
+  stationOrderMatchesEntry([{ name: 'Anywhere' }], { route: '', segments: [] }), true);
 
 // --- computeSegmentDuration ---
 group('computeSegmentDuration()');

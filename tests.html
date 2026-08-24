@@ -143,7 +143,7 @@ function parseRichtungswechsel(html) {
 }
 
 function parseSuperjsonStops(raw) {
-  const parsed = JSON.parse(raw);
+  const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
   const stopIndices = parsed[1];
   if (!Array.isArray(stopIndices)) throw new Error('Unexpected bahn.expert response format');
   const stations = [];
@@ -183,6 +183,32 @@ function findSegBoundary(stationName, normNames) {
   for (let i = 0; i < normNames.length; i++) {
     if (stationMatchLoose(norm, normNames[i])) return i;
   }
+  return -1;
+}
+
+function findSegmentForStation(segments, station, stationOrder) {
+  if (!station || !segments.length) return -1;
+  const names = stationNames(stationOrder).map(normalizeStation);
+  const stationIdx = findInStationList(normalizeStation(station), names);
+  if (stationIdx < 0) return -1;
+  let coverLo = -1, coverLoSeg = -1;
+  let coverHi = -1, coverHiSeg = -1;
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    let segFromIdx = findSegBoundary(seg.from, names);
+    let segToIdx = findSegBoundary(seg.to, names);
+    if (segFromIdx < 0 && segToIdx >= 0) segFromIdx = 0;
+    if (segToIdx < 0 && segFromIdx >= 0) segToIdx = names.length - 1;
+    if (segFromIdx >= 0 && segToIdx >= 0) {
+      const lo = Math.min(segFromIdx, segToIdx);
+      const hi = Math.max(segFromIdx, segToIdx);
+      if (stationIdx >= lo && stationIdx <= hi) return i;
+      if (coverLo < 0 || lo < coverLo) { coverLo = lo; coverLoSeg = i; }
+      if (coverHi < 0 || hi > coverHi) { coverHi = hi; coverHiSeg = i; }
+    }
+  }
+  if (coverLo >= 0 && stationIdx < coverLo) return coverLoSeg;
+  if (coverHi >= 0 && stationIdx > coverHi) return coverHiSeg;
   return -1;
 }
 
@@ -472,6 +498,11 @@ let superjsonError = false;
 try { parseSuperjsonStops(JSON.stringify([{}, 'not-an-array'])); } catch (e) { superjsonError = true; }
 assert('throws on non-array stopIndices', superjsonError, true);
 
+// bahn.expert delivers result.data sometimes as a JSON string, sometimes
+// already parsed — parseSuperjsonStops must accept both.
+assert('accepts an already-parsed flat array (not just a JSON string)',
+  parseSuperjsonStops(JSON.parse(fixture)).length, stops.length);
+
 // --- stationOrderMatchesEntry (bahn.expert wrong-train guard) ---
 // bahn.expert resolves journeys by train NUMBER and can return a different train
 // sharing the number (e.g. "ICE 20" Wien–München vs. a number-20 Milano–Zürich
@@ -500,6 +531,39 @@ assert('rejects an empty station list',
   stationOrderMatchesEntry([], ice20Entry), false);
 assert('accepts any list when the entry has no anchors to check against',
   stationOrderMatchesEntry([{ name: 'Anywhere' }], { route: '', segments: [] }), true);
+
+// --- findSegmentForStation (reroute clamp) ---
+// Today's actual route can extend beyond the stretch fernbahn.de covers:
+// a rerouted ICE 691 starts in Hamburg while the fernbahn.de wagon-order
+// diagram begins at Berlin-Gesundbrunnen (which today's train doesn't even
+// serve). Stations outside the covered range must clamp to the outermost
+// segment instead of mapping to no segment at all.
+group('findSegmentForStation()');
+const ice691Segments = [
+  { from: 'Berlin-Gesundbrunnen', to: 'Leipzig Hbf' },
+  { from: 'Leipzig Hbf', to: 'Frankfurt(M)Hbf' },
+  { from: 'Frankfurt(M)Hbf', to: 'Stuttgart Hbf' },
+  { from: 'Stuttgart Hbf', to: 'München Hbf' }
+];
+const ice691Reroute = ['Hamburg Hbf', 'Büchen', 'Ludwigslust', 'Wittenberge',
+  'Berlin Hbf', 'Berlin Südkreuz', 'Lutherstadt Wittenberg Hbf', 'Leipzig Hbf',
+  'Erfurt Hbf', 'Frankfurt (Main) Hbf', 'Mannheim Hbf', 'Stuttgart Hbf',
+  'Ulm Hbf', 'München Hbf'].map(name => ({ name }));
+assert('station inside a covered segment maps normally',
+  findSegmentForStation(ice691Segments, 'Erfurt Hbf', ice691Reroute), 1);
+assert('station before the covered range clamps to the first segment',
+  findSegmentForStation(ice691Segments, 'Büchen', ice691Reroute), 0);
+assert('very first station of the extended route clamps to the first segment',
+  findSegmentForStation(ice691Segments, 'Hamburg Hbf', ice691Reroute), 0);
+assert('last station still maps to the last segment',
+  findSegmentForStation(ice691Segments, 'München Hbf', ice691Reroute), 3);
+assert('station not on the route at all maps to no segment',
+  findSegmentForStation(ice691Segments, 'Köln Hbf', ice691Reroute), -1);
+// Route extended beyond the covered range at the END (mirror case):
+const shortSegments = [{ from: 'Berlin Hbf', to: 'Leipzig Hbf' }];
+const extendedStops = ['Berlin Hbf', 'Leipzig Hbf', 'Nürnberg Hbf'].map(name => ({ name }));
+assert('station after the covered range clamps to the last segment',
+  findSegmentForStation(shortSegments, 'Nürnberg Hbf', extendedStops), 0);
 
 // --- computeSegmentDuration ---
 group('computeSegmentDuration()');

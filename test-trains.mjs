@@ -165,7 +165,7 @@ function findSegBoundary(stationName, normNames) {
 }
 
 function parseSuperjsonStops(raw) {
-  const parsed = JSON.parse(raw);
+  const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
   const stopIndices = parsed[1];
   if (!Array.isArray(stopIndices)) throw new Error('Unexpected bahn.expert response format');
   const stations = [];
@@ -238,8 +238,9 @@ async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
   if (!journeyIdMatch) throw new Error('No journeyId in redirect');
   const journeyId = decodeURIComponent(journeyIdMatch[1]);
   const input = JSON.stringify({ '0': JSON.stringify([journeyId]) });
-  const apiUrl = `https://bahn.expert/rpc/journey.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
-  const apiResp = await fetch(apiUrl);
+  const query = `journey.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
+  let apiResp = await fetch(`https://bahn.expert/api/trpc/${query}`);
+  if (!apiResp.ok) apiResp = await fetch(`https://bahn.expert/rpc/${query}`);
   if (!apiResp.ok) throw new Error(`bahn.expert API ${apiResp.status}`);
   const data = await apiResp.json();
   const raw = data[0]?.result?.data;

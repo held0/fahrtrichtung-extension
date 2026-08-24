@@ -111,10 +111,15 @@ async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
   }
   const journeyId = decodeURIComponent(journeyIdMatch[1]);
 
-  // Step 2: Call tRPC API to get journey details
+  // Step 2: Call tRPC API to get journey details.
+  // bahn.expert has switched its tRPC base path back and forth between
+  // /api/trpc/ and /rpc/ — try the current one first, then the other.
   const input = JSON.stringify({ '0': JSON.stringify([journeyId]) });
-  const apiUrl = `https://bahn.expert/rpc/journey.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
-  const apiResp = await fetch(apiUrl);
+  const query = `journey.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
+  let apiResp = await fetch(`https://bahn.expert/api/trpc/${query}`);
+  if (!apiResp.ok) {
+    apiResp = await fetch(`https://bahn.expert/rpc/${query}`);
+  }
   if (!apiResp.ok) {
     throw new Error(`bahn.expert API returned ${apiResp.status}`);
   }
@@ -168,7 +173,9 @@ function stationOrderMatchesEntry(stationOrder, validEntry) {
 
 // Parse the superjson flat-array response from bahn.expert into station objects
 function parseSuperjsonStops(raw) {
-  const parsed = JSON.parse(raw);
+  // raw is the superjson flat array — sometimes delivered as a JSON string,
+  // sometimes already parsed, depending on the bahn.expert version.
+  const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
   // superjson format: parsed[0] = template, parsed[1] = array of stop indices
   // Each stop: parsed[stopIdx] = { stopPlace: idx }, parsed[idx] = { name: nameIdx }
   const stopIndices = parsed[1];
@@ -226,6 +233,8 @@ function findSegmentForStation(segments, station, stationOrder) {
 
   // Find which segment contains this station by locating segment boundaries in the station list.
   // Uses stationMatchLoose for boundary lookup (e.g. "Hamburg Hbf" within "Hamburg-Altona" segment).
+  let coverLo = -1, coverLoSeg = -1;   // lowest covered list index across all segments
+  let coverHi = -1, coverHiSeg = -1;   // highest covered list index across all segments
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
     let segFromIdx = findSegBoundary(seg.from, names);
@@ -239,8 +248,17 @@ function findSegmentForStation(segments, station, stationOrder) {
       const lo = Math.min(segFromIdx, segToIdx);
       const hi = Math.max(segFromIdx, segToIdx);
       if (stationIdx >= lo && stationIdx <= hi) return i;
+      if (coverLo < 0 || lo < coverLo) { coverLo = lo; coverLoSeg = i; }
+      if (coverHi < 0 || hi > coverHi) { coverHi = hi; coverHiSeg = i; }
     }
   }
+
+  // Today's actual route can extend beyond the stretch fernbahn.de covers
+  // (e.g. a rerouted ICE 691 starting in Hamburg while the wagon-order diagram
+  // begins at Berlin). Stations outside the covered range belong to the
+  // outermost segment on that side.
+  if (coverLo >= 0 && stationIdx < coverLo) return coverLoSeg;
+  if (coverHi >= 0 && stationIdx > coverHi) return coverHiSeg;
 
   return -1;
 }

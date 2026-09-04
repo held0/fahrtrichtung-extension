@@ -7,7 +7,11 @@
   },
   "wagonFront": {
     "message": "Wagen $1 fährt vorne",
-    "placeholders": { "number": { "content": "$1" } }
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
   },
   "directionChanges": {
     "message": "Die Fahrtrichtung ändert sich während der Fahrt wie folgt:"
@@ -17,19 +21,72 @@
   },
   "lastValidData": {
     "message": "Letzte verfügbare Daten liegen vor $1",
-    "placeholders": { "date": { "content": "$1" } }
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
   },
   "disclaimer": {
     "message": "*Wagenreihungen können sich am Reisetag in Einzelfällen ändern."
   },
   "donateMilestone": {
-    "message": "\uD83C\uDF89 Du hast Fahrtrichtung schon $1\u00d7 benutzt!",
-    "placeholders": { "count": { "content": "$1" } }
+    "message": "🎉 Du hast Fahrtrichtung schon $1× benutzt!",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
   "donateAppeal": {
-    "message": "Dies ist ein Hobby-Projekt \u2013 ich freue mich über eine kleine Spende!"
+    "message": "Dies ist ein Hobby-Projekt – ich freue mich über eine kleine Spende!"
   },
   "donateButton": {
-    "message": "1\u20ac spenden"
+    "message": "1€ spenden"
+  },
+  "obTitle": {
+    "message": "Fahrtrichtung"
+  },
+  "obSkip": {
+    "message": "Überspringen"
+  },
+  "obWelcomeHeading": {
+    "message": "Willkommen bei Fahrtrichtung!"
+  },
+  "obWelcomeSub": {
+    "message": "Nie wieder rückwärts fahren: Diese Erweiterung zeigt dir bei der Sitzplatzwahl auf bahn.de, in welche Richtung dein ICE, IC oder EC fährt."
+  },
+  "obHowHeading": {
+    "message": "So funktioniert's"
+  },
+  "obStep1": {
+    "message": "Suche auf bahn.de wie gewohnt eine Verbindung mit ICE, IC oder EC."
+  },
+  "obStep2": {
+    "message": "Öffne bei deiner Verbindung „Sitzplatz auswählen“ — dort erscheint der Wagenplan."
+  },
+  "obStep3": {
+    "message": "Klicke auf das Fahrtrichtung-Icon in der Symbolleiste."
+  },
+  "obResultHeading": {
+    "message": "Das siehst du dann"
+  },
+  "obMockInfo": {
+    "message": "Der Pfeil zeigt die Fahrtrichtung im Wagenplan"
+  },
+  "obReadyHeading": {
+    "message": "Gute Fahrt! 🚄"
+  },
+  "obReadySub": {
+    "message": "Beim nächsten Ticketkauf bist du startklar — die Erweiterung meldet sich nicht von selbst und sammelt keine Daten."
+  },
+  "obCta": {
+    "message": "Jetzt Verbindung suchen"
+  },
+  "obPinTip": {
+    "message": "Tipp: Klicke auf das Puzzle-Symbol 🧩 neben der Adressleiste und pinne Fahrtrichtung an, damit das Icon immer sichtbar ist."
+  },
+  "obPrivacy": {
+    "message": "Kostenlos · Open Source · Kein Tracking"
   }
 }

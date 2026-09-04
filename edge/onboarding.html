@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fahrtrichtung</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f5f5f7;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 720px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #ec0016;
+      color: #fff;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header .arrow-icon { font-size: 20px; }
+    .header .skip {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    .header .skip:hover { color: #fff; text-decoration: underline; }
+
+    /* ---- Stage & scenes ---- */
+    .stage {
+      position: relative;
+      height: 460px;
+      overflow: hidden;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      padding: 36px 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      transform: translateX(28px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+    }
+
+    .scene.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .scene.leaving {
+      opacity: 0;
+      transform: translateX(-28px);
+    }
+
+    .scene h1 { font-size: 26px; margin-bottom: 10px; }
+    .scene h2 { font-size: 21px; margin-bottom: 18px; }
+    .scene p.sub { font-size: 14.5px; color: #666; line-height: 1.5; max-width: 460px; }
+
+    /* Scene 1: welcome + train drive-by */
+    .big-arrow {
+      font-size: 52px;
+      color: #ec0016;
+      margin-bottom: 6px;
+    }
+    .scene.active .big-arrow { animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+
+    .train-track {
+      width: 100%;
+      margin-top: 34px;
+      border-bottom: 3px solid #e0e0e0;
+      overflow: hidden;
+      position: relative;
+      height: 92px;
+    }
+    .train-track img {
+      position: absolute;
+      bottom: 0;
+      left: -35%;
+      height: 84px;
+      width: auto;
+    }
+    .scene.active .train-track img { animation: drive 3.8s cubic-bezier(0.25, 0.6, 0.4, 1) forwards; }
+    @keyframes drive {
+      0%   { left: -35%; }
+      100% { left: 105%; }
+    }
+
+    /* Scene 2: steps checklist */
+    .steps { margin-top: 8px; text-align: left; max-width: 460px; }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin: 18px 0;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .scene.active .step { animation: step-in 0.5s ease forwards; }
+    .scene.active .step:nth-child(1) { animation-delay: 0.3s; }
+    .scene.active .step:nth-child(2) { animation-delay: 1.3s; }
+    .scene.active .step:nth-child(3) { animation-delay: 2.3s; }
+    @keyframes step-in { to { opacity: 1; transform: translateY(0); } }
+
+    .step-num {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ec0016;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-text { font-size: 14.5px; line-height: 1.45; padding-top: 3px; }
+    .step-text b { color: #ec0016; }
+
+    /* Scene 3: toolbar + popup mock */
+    .toolbar-mock {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f1f3f4;
+      border: 1px solid #ddd;
+      border-radius: 24px;
+      padding: 8px 16px;
+      margin-bottom: 22px;
+    }
+    .toolbar-mock .urlbar {
+      background: #fff;
+      border-radius: 14px;
+      padding: 5px 14px;
+      font-size: 12.5px;
+      color: #555;
+      min-width: 220px;
+      text-align: left;
+    }
+    .toolbar-mock .puzzle { font-size: 17px; }
+    .ext-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: #ec0016;
+      color: #fff;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .scene.active .ext-icon { animation: icon-pulse 1.4s ease-in-out 3; }
+    @keyframes icon-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(236,0,22,0.45); }
+      50% { box-shadow: 0 0 0 9px rgba(236,0,22,0); }
+    }
+
+    .popup-mock {
+      width: 330px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+      text-align: left;
+      opacity: 0;
+      transform: translateY(12px);
+      background: #fff;
+      overflow: hidden;
+    }
+    .scene.active .popup-mock { animation: step-in 0.5s ease 1.6s forwards; }
+    .popup-mock .mini-header {
+      background: #ec0016;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 12px;
+    }
+    .popup-mock .mini-body { padding: 18px 14px 14px; }
+
+    .segment {
+      border: 2px solid #333;
+      border-radius: 8px;
+      padding: 12px;
+      position: relative;
+    }
+    .segment-badge {
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      padding: 1px 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      background: #333;
+    }
+    .segment-badge .arrow-animated {
+      display: inline-block;
+      animation: arrow-slide 1.2s ease-in-out infinite;
+    }
+    @keyframes arrow-slide {
+      0%, 100% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(4px); opacity: 0.7; }
+    }
+    .segment-route { font-weight: 600; font-size: 13px; margin-top: 4px; }
+    .segment-info { font-size: 12px; color: #444; margin-top: 4px; }
+
+    /* Scene 4: CTA */
+    .cta {
+      display: inline-block;
+      margin-top: 24px;
+      background: #ec0016;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 30px;
+      border-radius: 26px;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .cta:hover { background: #c50012; transform: translateY(-1px); }
+    .pin-tip {
+      margin-top: 22px;
+      font-size: 12.5px;
+      color: #888;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+    .privacy-note { margin-top: 10px; font-size: 11.5px; color: #aaa; }
+
+    /* ---- Progress dots ---- */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 0 20px;
+      background: #fff;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #ddd;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .dot.active { background: #ec0016; transform: scale(1.25); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <span class="arrow-icon">&harr;</span>
+      <span data-i18n="obTitle">Fahrtrichtung</span>
+      <button class="skip" id="skip" data-i18n="obSkip">Überspringen</button>
+    </div>
+
+    <div class="stage" id="stage">
+      <!-- Scene 1: Welcome -->
+      <section class="scene active">
+        <div class="big-arrow">&harr;</div>
+        <h1 data-i18n="obWelcomeHeading">Willkommen bei Fahrtrichtung!</h1>
+        <p class="sub" data-i18n="obWelcomeSub">Nie wieder rückwärts fahren: Diese Erweiterung zeigt dir bei der Sitzplatzwahl auf bahn.de, in welche Richtung dein ICE, IC oder EC fährt.</p>
+        <div class="train-track"><img src="ice-drawing.png" alt="ICE"></div>
+      </section>
+
+      <!-- Scene 2: How to -->
+      <section class="scene">
+        <h2 data-i18n="obHowHeading">So funktioniert's</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text" data-i18n="obStep1">Suche auf bahn.de wie gewohnt eine Verbindung mit ICE, IC oder EC.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text" data-i18n="obStep2">Öffne bei deiner Verbindung „Sitzplatz auswählen“ — dort erscheint der Wagenplan.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text" data-i18n="obStep3">Klicke auf das Fahrtrichtung-Icon in der Symbolleiste.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 3: What you see -->
+      <section class="scene">
+        <h2 data-i18n="obResultHeading">Das siehst du dann</h2>
+        <div class="toolbar-mock">
+          <div class="urlbar">bahn.de/buchung/sitzplatz</div>
+          <span class="puzzle">🧩</span>
+          <div class="ext-icon">&harr;</div>
+        </div>
+        <div class="popup-mock">
+          <div class="mini-header">&harr; Fahrtrichtung</div>
+          <div class="mini-body">
+            <div class="segment">
+              <div class="segment-badge"><span class="arrow-animated">&rarr;</span></div>
+              <div class="segment-route">Berlin Hbf &rarr; München Hbf</div>
+              <div class="segment-info" data-i18n="obMockInfo">Der Pfeil zeigt die Fahrtrichtung im Wagenplan</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 4: CTA -->
+      <section class="scene">
+        <h2 data-i18n="obReadyHeading">Gute Fahrt! 🚄</h2>
+        <p class="sub" data-i18n="obReadySub">Beim nächsten Ticketkauf bist du startklar — die Erweiterung meldet sich nicht von selbst und sammelt keine Daten.</p>
+        <a class="cta" href="https://www.bahn.de" target="_blank" rel="noopener" data-i18n="obCta">Jetzt Verbindung suchen</a>
+        <p class="pin-tip" data-i18n="obPinTip">Tipp: Klicke auf das Puzzle-Symbol 🧩 neben der Adressleiste und pinne Fahrtrichtung an, damit das Icon immer sichtbar ist.</p>
+        <p class="privacy-note" data-i18n="obPrivacy">Kostenlos · Open Source · Kein Tracking</p>
+      </section>
+    </div>
+
+    <div class="controls" id="controls"></div>
+  </div>
+
+  <script src="onboarding.js"></script>
+</body>
+</html>

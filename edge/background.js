@@ -7,6 +7,15 @@ importScripts('utils.js');
 
 const BG_VERSION = 3;
 
+// Nach der Erst-Installation einmalig die Onboarding-Tour öffnen.
+// Bewusst NUR bei reason === 'install' — Updates und Browser-Starts
+// dürfen kein Tab aufreißen.
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+  }
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'fetchFernbahn') {
     handleFetchFernbahn(request)

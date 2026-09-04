@@ -45,7 +45,17 @@ const browserFetch = (url, opts = {}) => fetch(url, {
 // Silence the extension's internal debug logging ([Fahrtrichtung] …) so the
 // watchdog output stays clean; keep warnings/errors visible.
 const quietConsole = { log: () => {}, warn: console.warn, error: console.error };
-const ctx = { fetch: browserFetch, console: quietConsole, URLSearchParams, TextDecoder, Date, JSON, Math, String, Array, Object, parseInt, isNaN };
+// Minimaler chrome-Stub: background.js registriert Listener (onInstalled,
+// onMessage) beim Laden — im Test sollen die einfach ins Leere laufen.
+const chromeStub = {
+  runtime: {
+    onInstalled: { addListener: () => {} },
+    onMessage: { addListener: () => {} },
+    getURL: p => p,
+  },
+  tabs: { create: () => {} },
+};
+const ctx = { fetch: browserFetch, console: quietConsole, chrome: chromeStub, URLSearchParams, TextDecoder, Date, JSON, Math, String, Array, Object, parseInt, isNaN };
 vm.createContext(ctx);
 vm.runInContext(utils, ctx);
 vm.runInContext(bg, ctx);

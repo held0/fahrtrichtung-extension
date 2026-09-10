@@ -172,6 +172,33 @@ function parseSuperjsonStops(raw) {
   return stations;
 }
 
+function parseOrpcBatchFrames(arrayBuffer) {
+  const view = new DataView(arrayBuffer);
+  const decoder = new TextDecoder();
+  const frames = [];
+  let offset = 0;
+  while (offset + 4 <= view.byteLength) {
+    const len = view.getUint32(offset);
+    offset += 4;
+    if (len === 0 || offset + len > view.byteLength) break;
+    try {
+      frames.push(JSON.parse(decoder.decode(new Uint8Array(arrayBuffer, offset, len))));
+    } catch (e) { /* Frame kein JSON — ueberspringen */ }
+    offset += len;
+  }
+  return frames;
+}
+
+function parseOrpcStops(stops) {
+  return stops
+    .filter(s => s?.stopPlace?.name)
+    .map(s => ({
+      name: s.stopPlace.name,
+      dep: s.departure?.scheduledTime || null,
+      arr: s.arrival?.scheduledTime || null,
+    }));
+}
+
 function stationNames(stationOrder) {
   return stationOrder.map(s => typeof s === 'string' ? s : s.name);
 }
@@ -502,6 +529,42 @@ assert('throws on non-array stopIndices', superjsonError, true);
 // already parsed — parseSuperjsonStops must accept both.
 assert('accepts an already-parsed flat array (not just a JSON string)',
   parseSuperjsonStops(JSON.parse(fixture)).length, stops.length);
+
+// --- oRPC batch parsing (bahn.expert API seit Sept. 2026) ---
+group('parseOrpcBatchFrames() / parseOrpcStops()');
+function buildOrpcBatch(frames) {
+  const enc = new TextEncoder();
+  const parts = frames.map(f => (typeof f === 'string' ? enc.encode(f) : enc.encode(JSON.stringify(f))));
+  const total = parts.reduce((n, p) => n + 4 + p.length, 0);
+  const buf = new ArrayBuffer(total);
+  const view = new DataView(buf);
+  const bytes = new Uint8Array(buf);
+  let off = 0;
+  for (const p of parts) {
+    view.setUint32(off, p.length); off += 4;
+    bytes.set(p, off); off += p.length;
+  }
+  return buf;
+}
+const orpcFrames = parseOrpcBatchFrames(buildOrpcBatch([
+  { id: '0', json: { body: { json: { unrelated: true } } } },
+  { id: '1', json: { body: { json: { stops: [
+    { stopPlace: { name: 'Berlin Gesundbrunnen' }, departure: { scheduledTime: '2026-09-10T11:09:00.000Z' } },
+    { stopPlace: { name: 'München Hbf' }, arrival: { scheduledTime: '2026-09-10T15:02:00.000Z' } },
+    { departure: { scheduledTime: '2026-09-10T12:00:00.000Z' } }
+  ] } } } },
+]));
+assert('parses all frames', orpcFrames.length, 2);
+const orpcDetails = orpcFrames.map(f => f?.json?.body?.json).find(d => Array.isArray(d?.stops));
+assert('finds the frame with stops', Boolean(orpcDetails), true);
+const orpcStops = parseOrpcStops(orpcDetails.stops);
+assert('maps stops with stopPlace.name (drops nameless)', orpcStops.length, 2);
+assert('first stop name', orpcStops[0].name, 'Berlin Gesundbrunnen');
+assert('first stop dep', orpcStops[0].dep, '2026-09-10T11:09:00.000Z');
+assert('first stop arr is null', orpcStops[0].arr, null);
+assert('last stop arr', orpcStops[1].arr, '2026-09-10T15:02:00.000Z');
+assert('non-JSON frame is skipped', parseOrpcBatchFrames(buildOrpcBatch(['not json', { id: '9' }])).length, 1);
+assert('empty buffer -> no frames', parseOrpcBatchFrames(new ArrayBuffer(0)).length, 0);
 
 // --- stationOrderMatchesEntry (bahn.expert wrong-train guard) ---
 // bahn.expert resolves journeys by train NUMBER and can return a different train

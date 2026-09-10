@@ -120,9 +120,40 @@ async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
   }
   const journeyId = decodeURIComponent(journeyIdMatch[1]);
 
-  // Step 2: Call tRPC API to get journey details.
-  // bahn.expert has switched its tRPC base path back and forth between
-  // /api/trpc/ and /rpc/ — try the current one first, then the other.
+  // Step 2: bahn.expert hat sein Backend im Sept. 2026 von tRPC auf oRPC
+  // umgestellt (die tRPC-Pfade liefern nur noch "Only HTML requests are
+  // supported here"). oRPC zuerst, tRPC als Fallback falls sie zurueckwechseln.
+  try {
+    return await fetchOrpcStops(journeyId);
+  } catch (e) {
+    console.warn('[Fahrtrichtung] bahn.expert oRPC failed, trying tRPC:', e.message);
+  }
+  return fetchTrpcStops(journeyId);
+}
+
+// Aktuelles bahn.expert-API: oRPC-Batch. Antwort ist ein Stream aus
+// length-prefixed JSON-Frames (4 Byte Laenge Big-Endian, dann JSON).
+async function fetchOrpcStops(journeyId) {
+  const batchBody = JSON.stringify([
+    { id: '1', kind: 'request', json: { url: '/api/orpc/journey/detailsByJourneyId', body: { json: journeyId } } },
+  ]);
+  const resp = await fetch('https://bahn.expert/api/orpc/journey/detailsByJourneyId/__batch__', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'orpc-batch': 'streaming', 'Accept': 'application/json' },
+    body: batchBody,
+  });
+  if (!resp.ok) throw new Error(`oRPC HTTP ${resp.status}`);
+
+  const details = parseOrpcBatchFrames(await resp.arrayBuffer())
+    .map(f => f?.json?.body?.json)
+    .find(d => Array.isArray(d?.stops));
+  if (!details) throw new Error('No stops in oRPC batch response');
+
+  return parseOrpcStops(details.stops);
+}
+
+// Altes bahn.expert-API: tRPC mit superjson-Antwort. Nur noch Fallback.
+async function fetchTrpcStops(journeyId) {
   const input = JSON.stringify({ '0': JSON.stringify([journeyId]) });
   const query = `journey.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
   let apiResp = await fetch(`https://bahn.expert/api/trpc/${query}`);
@@ -138,6 +169,36 @@ async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
   if (!raw) throw new Error('Empty response from bahn.expert');
 
   return parseSuperjsonStops(raw);
+}
+
+// Zerlegt einen oRPC-Batch-Body in seine JSON-Frames.
+// Kein Buffer im Service Worker — DataView + TextDecoder.
+function parseOrpcBatchFrames(arrayBuffer) {
+  const view = new DataView(arrayBuffer);
+  const decoder = new TextDecoder();
+  const frames = [];
+  let offset = 0;
+  while (offset + 4 <= view.byteLength) {
+    const len = view.getUint32(offset);
+    offset += 4;
+    if (len === 0 || offset + len > view.byteLength) break;
+    try {
+      frames.push(JSON.parse(decoder.decode(new Uint8Array(arrayBuffer, offset, len))));
+    } catch (e) { /* Frame kein JSON — ueberspringen */ }
+    offset += len;
+  }
+  return frames;
+}
+
+// Mappt oRPC-stops auf das interne Stationsformat ({name, dep, arr}).
+function parseOrpcStops(stops) {
+  return stops
+    .filter(s => s?.stopPlace?.name)
+    .map(s => ({
+      name: s.stopPlace.name,
+      dep: s.departure?.scheduledTime || null,
+      arr: s.arrival?.scheduledTime || null,
+    }));
 }
 
 // Fetch the station order from fernbahn.de's own detail page (via zug_id).

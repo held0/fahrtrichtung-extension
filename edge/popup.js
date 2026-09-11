@@ -23,7 +23,7 @@ async function init() {
         func: extractTrainInfoFromPage
       });
       // Merge results from all frames
-      trainInfo = { trains: [], fromStation: '', toStation: '', dialogTrain: '', travelDate: '' };
+      trainInfo = { trains: [], fromStation: '', toStation: '', dialogTrain: '', travelDate: '', journeyHint: null };
       for (const r of results) {
         const res = r?.result;
         if (!res) continue;
@@ -38,6 +38,8 @@ async function init() {
           trainInfo.dialogTrain = res.dialogTrain;
           trainInfo.fromStation = res.fromStation || trainInfo.fromStation;
           trainInfo.toStation = res.toStation || trainInfo.toStation;
+          if (res.journeyHint) trainInfo.journeyHint = res.journeyHint;
+          if (res.travelDate) trainInfo.travelDate = res.travelDate;
         }
       }
       // Deduplicate trains
@@ -67,12 +69,12 @@ async function init() {
     const travelDate = trainInfo.travelDate || new Date().toISOString().slice(0, 10);
 
     if (trainInfo.trains.length === 1) {
-      await fetchAndDisplay(trainInfo.trains[0], trainInfo.fromStation, trainInfo.toStation, travelDate);
+      await fetchAndDisplay(trainInfo.trains[0], trainInfo.fromStation, trainInfo.toStation, travelDate, trainInfo.journeyHint);
     } else {
       // dialogTrain is set but multiple trains found - shouldn't happen, but pick the dialog one
       const match = trainInfo.trains.find(t => t.full === trainInfo.dialogTrain);
       if (match) {
-        await fetchAndDisplay(match, trainInfo.fromStation, trainInfo.toStation, travelDate);
+        await fetchAndDisplay(match, trainInfo.fromStation, trainInfo.toStation, travelDate, trainInfo.journeyHint);
       } else {
         showStatus('Zug aus Dialog nicht gefunden.');
       }
@@ -127,6 +129,7 @@ function extractTrainInfoFromPage() {
   // JSON with zugbezeichnung, abfahrtsbahnhof, ankunftsbahnhof
   let dialogTrain = '';
   let travelDate = '';
+  let journeyHint = null;
   const isGsd = /\/web\/api\/gsd\//.test(location.href);
   if (isGsd) {
     try {
@@ -139,6 +142,22 @@ function extractTrainInfoFromPage() {
           dialogTrain = di.zugbezeichnung;
           fromStation = di.abfahrtsbahnhof || '';
           toStation = di.ankunftsbahnhof || '';
+        }
+        // Exakte Zugkennung fuer die bahn.de-Fahrplanabfrage: Abfahrtsbahnhof
+        // (EVA-Nummer) + Abfahrtszeit identifizieren den Zuglauf eindeutig.
+        const bk = data.buchungskontext?.buchungsKontextDaten;
+        if (bk?.abfahrtHalt?.locationId && bk?.abfahrtHalt?.abfahrtZeit) {
+          journeyHint = {
+            trainNumber: bk.zugnummer || '',
+            departureEva: String(bk.abfahrtHalt.locationId),
+            departureTime: bk.abfahrtHalt.abfahrtZeit,
+            arrivalEva: bk.ankunftHalt?.locationId ? String(bk.ankunftHalt.locationId) : '',
+            arrivalTime: bk.ankunftHalt?.ankunftZeit || '',
+            zugfahrtKey: bk.zugfahrtKey || ''
+          };
+          if (!travelDate && /^\d{4}-\d{2}-\d{2}T/.test(bk.abfahrtHalt.abfahrtZeit)) {
+            travelDate = bk.abfahrtHalt.abfahrtZeit.slice(0, 10);
+          }
         }
       }
     } catch (e) {
@@ -198,14 +217,14 @@ function extractTrainInfoFromPage() {
     }
   }
 
-  return { trains, fromStation, toStation, dialogTrain, travelDate };
+  return { trains, fromStation, toStation, dialogTrain, travelDate, journeyHint };
 }
 
 function showStatus(message) {
   contentEl.innerHTML = `<div class="status">${escHtml(message)}</div>`;
 }
 
-async function fetchAndDisplay(train, fromStation, toStation, travelDate) {
+async function fetchAndDisplay(train, fromStation, toStation, travelDate, journeyHint) {
   try {
     const result = await chrome.runtime.sendMessage({
       type: 'fetchFernbahn',
@@ -213,7 +232,8 @@ async function fetchAndDisplay(train, fromStation, toStation, travelDate) {
       trainType: train.type,
       fromStation: fromStation || '',
       toStation: toStation || '',
-      travelDate: travelDate || new Date().toISOString().slice(0, 10)
+      travelDate: travelDate || new Date().toISOString().slice(0, 10),
+      journeyHint: journeyHint || null
     });
 
     if (result.error) {
@@ -262,7 +282,7 @@ function renderResult(data, userFrom, userTo) {
   // Extract station names from stationOrder (which now contains full objects with times)
   const stationNames = data.stationOrder?.map(s => typeof s === 'string' ? s : s.name) || [];
 
-  // Clean station names using bahn.expert station list if available
+  // Clean station names using the bahn.de station list if available
   if (stationNames.length) {
     userFrom = cleanStationName(userFrom, stationNames);
     userTo = cleanStationName(userTo, stationNames);

@@ -56,7 +56,7 @@ function stationMatchLoose(a, b) {
 }
 
 // Compute duration between two station names using the stationOrder (with times).
-// stationOrder = [{name, dep, arr}, ...] from bahn.de (times = local ISO strings without zone)
+// stationOrder = [{name, dep, arr}, ...] from bahn.expert
 function computeSegmentDuration(fromName, toName, stationOrder) {
   if (!stationOrder?.length || !fromName || !toName) return null;
 
@@ -86,7 +86,7 @@ function computeSegmentDuration(fromName, toName, stationOrder) {
   return { hours: Math.floor(diffMin / 60), minutes: diffMin % 60 };
 }
 
-// Find the correct station name from the bahn.de station list that matches the (possibly dirty) input
+// Find the correct station name from bahn.expert list that matches the (possibly dirty) input
 // e.g. "Prüfen Angebote Abbrechen Karlsruhe Hbf" -> "Karlsruhe Hbf"
 function cleanStationName(dirty, stationOrder) {
   if (!dirty || !stationOrder?.length) return dirty;

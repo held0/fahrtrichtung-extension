@@ -32,7 +32,7 @@ Zeigt die Fahrtrichtung von ICE/IC/EC/ECE/TGV/RJX/RJ/NJ/EN-Zuegen auf bahn.de an
 ## Datenquellen
 
 - **[fernbahn.de](https://www.fernbahn.de)** - Wagenreihung, Fahrtrichtung, Gueltigkeitszeitraeume
-- **[bahn.expert](https://bahn.expert)** - Stationsliste mit Abfahrts-/Ankunftszeiten
+- **[bahn.de](https://www.bahn.de)** - Stationsliste mit Abfahrts-/Ankunftszeiten (Fahrplan-API der Bahn-Website selbst)
 
 ## Entwicklung
 

@@ -142,61 +142,53 @@ function parseRichtungswechsel(html) {
   return segments;
 }
 
-function parseSuperjsonStops(raw) {
-  const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-  const stopIndices = parsed[1];
-  if (!Array.isArray(stopIndices)) throw new Error('Unexpected bahn.expert response format');
-  const stations = [];
-  for (const stopIdx of stopIndices) {
-    const stop = parsed[stopIdx];
-    if (!stop?.stopPlace) continue;
-    const stopPlace = parsed[stop.stopPlace];
-    if (!stopPlace?.name) continue;
-    let depTime = null, arrTime = null;
-    if (stop.departure) {
-      const depObj = parsed[stop.departure];
-      if (depObj?.scheduledTime) {
-        const st = parsed[depObj.scheduledTime];
-        if (Array.isArray(st) && st[0] === 'Date') depTime = st[1];
-      }
-    }
-    if (stop.arrival) {
-      const arrObj = parsed[stop.arrival];
-      if (arrObj?.scheduledTime) {
-        const st = parsed[arrObj.scheduledTime];
-        if (Array.isArray(st) && st[0] === 'Date') arrTime = st[1];
-      }
-    }
-    stations.push({ name: parsed[stopPlace.name], dep: depTime, arr: arrTime });
+// bahn.de "reiseloesung" parsing (copied from chrome/background.js)
+function parseBahnDeBoard(entries) {
+  if (!Array.isArray(entries)) return [];
+  const out = [];
+  for (const e of entries) {
+    const name = (e?.verkehrmittel?.name || e?.verkehrmittel?.mittelText || '').replace(/\s+/g, ' ').trim();
+    if (!name || !e.journeyId) continue;
+    out.push({ name, zeit: e.zeit || '', journeyId: e.journeyId });
   }
-  return stations;
+  return out;
 }
 
-function parseOrpcBatchFrames(arrayBuffer) {
-  const view = new DataView(arrayBuffer);
-  const decoder = new TextDecoder();
-  const frames = [];
-  let offset = 0;
-  while (offset + 4 <= view.byteLength) {
-    const len = view.getUint32(offset);
-    offset += 4;
-    if (len === 0 || offset + len > view.byteLength) break;
-    try {
-      frames.push(JSON.parse(decoder.decode(new Uint8Array(arrayBuffer, offset, len))));
-    } catch (e) { /* Frame kein JSON — ueberspringen */ }
-    offset += len;
-  }
-  return frames;
-}
-
-function parseOrpcStops(stops) {
-  return stops
-    .filter(s => s?.stopPlace?.name)
-    .map(s => ({
-      name: s.stopPlace.name,
-      dep: s.departure?.scheduledTime || null,
-      arr: s.arrival?.scheduledTime || null,
+function parseBahnDeHalte(halte) {
+  if (!Array.isArray(halte)) return [];
+  return halte
+    .filter(h => h?.name)
+    .map(h => ({
+      name: h.name.replace(/\s+/g, ' ').trim(),
+      dep: h.abfahrt?.sollzeit || null,
+      arr: h.ankunft?.sollzeit || null,
     }));
+}
+
+function shiftTime(hhmm, deltaMin) {
+  const [h, m] = hhmm.split(':').map(Number);
+  let total = h * 60 + m + deltaMin;
+  if (total < 0) total = 0;
+  if (total > 23 * 60 + 59) total = 23 * 60 + 59;
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}:00`;
+}
+
+// Kern von findJourneyByHint(): Eintrag mit exaktem Namen UND Minute bevorzugen,
+// sonst erster Namenstreffer (synchroner Teil, damit er hier testbar ist)
+const LONG_DISTANCE_TYPES = new Set(['ICE', 'IC', 'EC', 'ECE', 'RJ', 'RJX', 'NJ', 'EN', 'TGV', 'EST', 'IR', 'D']);
+function boardEntryMatches(entryName, trainName) {
+  if (entryName === trainName) return true;
+  const a = entryName.match(/^([A-Z]+)\s+(\d+)$/);
+  const b = trainName.match(/^([A-Z]+)\s+(\d+)$/);
+  if (!a || !b || a[2] !== b[2]) return false;
+  return LONG_DISTANCE_TYPES.has(a[1]) && LONG_DISTANCE_TYPES.has(b[1]);
+}
+function pickBoardEntry(entries, trainName, wantedMinute) {
+  const pick = entries.find(e => e.name === trainName && e.zeit.slice(0, 16) === wantedMinute)
+    || entries.find(e => e.name === trainName)
+    || entries.find(e => boardEntryMatches(e.name, trainName) && e.zeit.slice(0, 16) === wantedMinute)
+    || entries.find(e => boardEntryMatches(e.name, trainName));
+  return pick ? pick.journeyId : null;
 }
 
 function stationNames(stationOrder) {
@@ -465,112 +457,67 @@ const segsHy2 = parseRichtungswechsel(richHyphen2);
 assert('hyphen2 seg from', segsHy2[0].from, 'Stuttgart Hbf');
 assert('hyphen2 seg to (trailing hyphen name kept)', segsHy2[0].to, 'München-Pasing');
 
-// --- parseSuperjsonStops ---
-group('parseSuperjsonStops()');
-// Minimal synthetic superjson fixture (3 stops: A -> B -> C)
-const fixture = JSON.stringify([
-  // [0] = template object
-  { stops: 1, journeyId: 'test' },
-  // [1] = stop indices array
-  [2, 6, 10],
-  // [2] = stop 1 (departure only)
-  { stopPlace: 3, departure: 4 },
-  // [3] = stopPlace for stop 1
-  { evaNumber: 'eva1', name: 14 },
-  // [4] = departure for stop 1
-  { scheduledTime: 5 },
-  // [5] = time value
-  ['Date', '2026-02-19T10:00:00.000Z'],
-  // [6] = stop 2 (arrival + departure)
-  { stopPlace: 7, arrival: 8, departure: 9 },
-  // [7] = stopPlace for stop 2
-  { evaNumber: 'eva2', name: 15 },
-  // [8] = arrival for stop 2
-  { scheduledTime: 11 },
-  // [9] = departure for stop 2
-  { scheduledTime: 12 },
-  // [10] = stop 3 (arrival only)
-  { stopPlace: 13, arrival: 16 },
-  // [11] = arrival time for stop 2
-  ['Date', '2026-02-19T11:00:00.000Z'],
-  // [12] = departure time for stop 2
-  ['Date', '2026-02-19T11:02:00.000Z'],
-  // [13] = stopPlace for stop 3
-  { evaNumber: 'eva3', name: 17 },
-  // [14] = name for stop 1
-  'Station A',
-  // [15] = name for stop 2
-  'Station B',
-  // [16] = arrival for stop 3
-  { scheduledTime: 18 },
-  // [17] = name for stop 3
-  'Station C',
-  // [18] = arrival time for stop 3
-  ['Date', '2026-02-19T12:30:00.000Z']
-]);
-const stops = parseSuperjsonStops(fixture);
-assert('stop count', stops.length, 3);
-assert('first stop name', stops[0].name, 'Station A');
-assert('first stop has dep', stops[0].dep, '2026-02-19T10:00:00.000Z');
-assert('first stop no arr', stops[0].arr, null);
-assert('middle stop name', stops[1].name, 'Station B');
-assert('middle stop has arr', stops[1].arr, '2026-02-19T11:00:00.000Z');
-assert('middle stop has dep', stops[1].dep, '2026-02-19T11:02:00.000Z');
-assert('last stop name', stops[2].name, 'Station C');
-assert('last stop has arr', stops[2].arr, '2026-02-19T12:30:00.000Z');
-assert('last stop no dep', stops[2].dep, null);
+// --- bahn.de Abfahrtstafel (reiseloesung/abfahrten) ---
+group('parseBahnDeBoard()');
+const boardFixture = { entries: [
+  { bahnhofsId: '8098160', zeit: '2026-09-12T08:31:00', gleis: '5', journeyId: '2|#VN#1#ZI#1#', verkehrmittel: { name: 'ICE 371', kurzText: 'ICE', produktGattung: 'ICE' } },
+  { bahnhofsId: '8098160', zeit: '2026-09-12T08:36:00', gleis: '4', journeyId: '2|#VN#1#ZI#2#', verkehrmittel: { name: 'ICE 1005', kurzText: 'ICE' } },
+  { bahnhofsId: '8098160', zeit: '2026-09-12T08:34:00', journeyId: '2|#VN#1#ZI#3#', verkehrmittel: { mittelText: 'RJ  870' } },
+  { bahnhofsId: '8098160', zeit: '2026-09-12T08:40:00', verkehrmittel: { name: 'ICE 9999' } },
+  { bahnhofsId: '8098160', zeit: '2026-09-12T08:41:00', journeyId: '2|#VN#1#ZI#5#' },
+] };
+const board = parseBahnDeBoard(boardFixture.entries);
+assert('board: entries without journeyId or name are dropped', board.length, 3);
+assert('board: name taken from verkehrmittel.name', board[1].name, 'ICE 1005');
+assert('board: falls back to mittelText and collapses whitespace', board[2].name, 'RJ 870');
+assert('board: keeps zeit and journeyId', [board[1].zeit, board[1].journeyId], ['2026-09-12T08:36:00', '2|#VN#1#ZI#2#']);
+assert('board: non-array -> []', parseBahnDeBoard(null), []);
 
-// Test error case
-let superjsonError = false;
-try { parseSuperjsonStops(JSON.stringify([{}, 'not-an-array'])); } catch (e) { superjsonError = true; }
-assert('throws on non-array stopIndices', superjsonError, true);
+group('pickBoardEntry()');
+const twoRuns = [
+  { name: 'ICE 1005', zeit: '2026-09-12T07:36:00', journeyId: 'early' },
+  { name: 'ICE 1005', zeit: '2026-09-12T08:36:00', journeyId: 'exact' },
+];
+assert('prefers the entry at the exact minute', pickBoardEntry(twoRuns, 'ICE 1005', '2026-09-12T08:36'), 'exact');
+assert('falls back to first name match when minute differs', pickBoardEntry(twoRuns, 'ICE 1005', '2026-09-12T08:37'), 'early');
+assert('returns null when the train is not on the board', pickBoardEntry(twoRuns, 'ICE 1006', '2026-09-12T08:36'), null);
+assert('same number, other long-distance type (IC vs ICE) is accepted as fallback', pickBoardEntry([{ name: 'IC 1005', zeit: '2026-09-12T08:36:00', journeyId: 'ic' }], 'ICE 1005', '2026-09-12T08:36'), 'ic');
+assert('exact name beats same-number-other-type even at the wanted minute', pickBoardEntry([{ name: 'IC 1005', zeit: '2026-09-12T08:36:00', journeyId: 'ic' }, { name: 'ICE 1005', zeit: '2026-09-12T09:36:00', journeyId: 'ice' }], 'ICE 1005', '2026-09-12T08:36'), 'ice');
+assert('RJX 251 matches RJ 251', boardEntryMatches('RJX 251', 'RJ 251'), true);
+assert('a bus/S-Bahn with the same number never matches', [boardEntryMatches('S 1005', 'ICE 1005'), boardEntryMatches('Bus 1005', 'ICE 1005'), boardEntryMatches('RE 1005', 'ICE 1005')], [false, false, false]);
+assert('different number never matches', boardEntryMatches('ICE 1006', 'ICE 1005'), false);
 
-// bahn.expert delivers result.data sometimes as a JSON string, sometimes
-// already parsed — parseSuperjsonStops must accept both.
-assert('accepts an already-parsed flat array (not just a JSON string)',
-  parseSuperjsonStops(JSON.parse(fixture)).length, stops.length);
+// --- bahn.de Zuglauf (reiseloesung/fahrt) ---
+group('parseBahnDeHalte()');
+const fahrtFixture = { zugName: 'ICE 1005', halte: [
+  { name: 'Berlin Gesundbrunnen', extId: '8011102', abfahrt: { sollzeit: '2026-09-12T08:26:00' } },
+  { name: 'Berlin Hbf', extId: '8098160', ankunft: { sollzeit: '2026-09-12T08:32:00' }, abfahrt: { sollzeit: '2026-09-12T08:36:00' } },
+  { name: '  Halle(Saale)Hbf ', extId: '8010159', ankunft: { sollzeit: '2026-09-12T09:43:00' }, abfahrt: { sollzeit: '2026-09-12T09:45:00' } },
+  { extId: '0000000' },
+  { name: 'München Hbf', extId: '8000261', ankunft: { sollzeit: '2026-09-12T12:46:00' } },
+] };
+const halte = parseBahnDeHalte(fahrtFixture.halte);
+assert('halte: nameless stops dropped', halte.length, 4);
+assert('halte: first stop dep only', [halte[0].name, halte[0].dep, halte[0].arr], ['Berlin Gesundbrunnen', '2026-09-12T08:26:00', null]);
+assert('halte: middle stop arr + dep', [halte[1].arr, halte[1].dep], ['2026-09-12T08:32:00', '2026-09-12T08:36:00']);
+assert('halte: names trimmed', halte[2].name, 'Halle(Saale)Hbf');
+assert('halte: last stop arr only', [halte[3].arr, halte[3].dep], ['2026-09-12T12:46:00', null]);
+assert('halte: non-array -> []', parseBahnDeHalte(undefined), []);
+// Die Zeiten von bahn.de sind lokale Zeit ohne Zone — computeSegmentDuration muss
+// daraus dieselbe Dauer bilden wie frueher aus den UTC-Zeiten von bahn.expert.
+assert('durations from bahn.de local times', computeSegmentDuration('Berlin Hbf', 'München Hbf', halte), { hours: 4, minutes: 10 });
 
-// --- oRPC batch parsing (bahn.expert API seit Sept. 2026) ---
-group('parseOrpcBatchFrames() / parseOrpcStops()');
-function buildOrpcBatch(frames) {
-  const enc = new TextEncoder();
-  const parts = frames.map(f => (typeof f === 'string' ? enc.encode(f) : enc.encode(JSON.stringify(f))));
-  const total = parts.reduce((n, p) => n + 4 + p.length, 0);
-  const buf = new ArrayBuffer(total);
-  const view = new DataView(buf);
-  const bytes = new Uint8Array(buf);
-  let off = 0;
-  for (const p of parts) {
-    view.setUint32(off, p.length); off += 4;
-    bytes.set(p, off); off += p.length;
-  }
-  return buf;
-}
-const orpcFrames = parseOrpcBatchFrames(buildOrpcBatch([
-  { id: '0', json: { body: { json: { unrelated: true } } } },
-  { id: '1', json: { body: { json: { stops: [
-    { stopPlace: { name: 'Berlin Gesundbrunnen' }, departure: { scheduledTime: '2026-09-10T11:09:00.000Z' } },
-    { stopPlace: { name: 'München Hbf' }, arrival: { scheduledTime: '2026-09-10T15:02:00.000Z' } },
-    { departure: { scheduledTime: '2026-09-10T12:00:00.000Z' } }
-  ] } } } },
-]));
-assert('parses all frames', orpcFrames.length, 2);
-const orpcDetails = orpcFrames.map(f => f?.json?.body?.json).find(d => Array.isArray(d?.stops));
-assert('finds the frame with stops', Boolean(orpcDetails), true);
-const orpcStops = parseOrpcStops(orpcDetails.stops);
-assert('maps stops with stopPlace.name (drops nameless)', orpcStops.length, 2);
-assert('first stop name', orpcStops[0].name, 'Berlin Gesundbrunnen');
-assert('first stop dep', orpcStops[0].dep, '2026-09-10T11:09:00.000Z');
-assert('first stop arr is null', orpcStops[0].arr, null);
-assert('last stop arr', orpcStops[1].arr, '2026-09-10T15:02:00.000Z');
-assert('non-JSON frame is skipped', parseOrpcBatchFrames(buildOrpcBatch(['not json', { id: '9' }])).length, 1);
-assert('empty buffer -> no frames', parseOrpcBatchFrames(new ArrayBuffer(0)).length, 0);
+group('shiftTime()');
+assert('minus 2 min', shiftTime('08:36', -2), '08:34:00');
+assert('minus 45 min across the hour', shiftTime('08:36', -45), '07:51:00');
+assert('clamps at midnight', shiftTime('00:10', -45), '00:00:00');
+assert('clamps at end of day', shiftTime('23:50', 30), '23:59:00');
 
-// --- stationOrderMatchesEntry (bahn.expert wrong-train guard) ---
-// bahn.expert resolves journeys by train NUMBER and can return a different train
-// sharing the number (e.g. "ICE 20" Wien–München vs. a number-20 Milano–Zürich
-// train). We must reject a station list that has no overlap with the fernbahn.de
-// route/segments, so the pipeline falls back to fernbahn.de's own order.
+// --- stationOrderMatchesEntry (wrong-train guard) ---
+// Historisch lieferte bahn.expert bei der Suche nach NUMMER manchmal einen anderen
+// Zug gleicher Nummer ("ICE 20" Wien–München vs. Milano–Zürich). bahn.de matcht
+// den exakten Namen, der Schutz bleibt trotzdem: eine Liste ohne Ueberlappung mit
+// Route/Segmenten von fernbahn.de wird verworfen (Fallback auf fernbahn.de).
 group('stationOrderMatchesEntry()');
 const ice20Entry = {
   route: 'Wien Hbf — München Hbf',
@@ -579,7 +526,7 @@ const ice20Entry = {
     { from: 'Regensburg Hbf', to: 'München Hbf' }
   ]
 };
-// The wrong train bahn.expert returned for "ICE 20" (Milano – Zürich):
+// A wrong train sharing the number (Milano – Zürich):
 const wrongTrainStops = ['Milano Centrale', 'Como S. Giovanni', 'Chiasso', 'Lugano',
   'Bellinzona', 'Arth-Goldau', 'Zug (CH)', 'Zürich HB'].map(name => ({ name }));
 assert('rejects a station list from a different train sharing the number',

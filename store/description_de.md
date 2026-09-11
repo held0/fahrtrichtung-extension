@@ -23,6 +23,6 @@ Funktionen:
 
 Datenquellen:
 • Wagenreihung: fernbahn.de
-• Stationsliste und Zeiten: bahn.expert
+• Stationsliste und Zeiten: bahn.de
 
 Open Source: https://github.com/held0/fahrtrichtung-extension

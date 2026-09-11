@@ -4,3 +4,13 @@ node_modules/
 # Intern — NICHT ins oeffentliche Extension-Repo (Marketing-Seite + Strategie-Doku)
 landing/
 docs/
+
+# Interne Arbeitsdateien / lokale Claude-Config
+TODO.md
+.claude/settings.local.json
+
+# Vorher/Nachher-Reports der Referenztests (Referenzdaten selbst bleiben versioniert)
+reference/compare-*.json
+
+# Lokale Secrets (Proxy-Zugang fuer Testharnesse)
+.env*

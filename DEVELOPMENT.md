@@ -68,6 +68,20 @@ npm run test:headless
 
 Fuehrt `tests.html` in Puppeteer (Headless Chromium) aus. Exit Code 0 bei Erfolg, 1 bei Fehlern.
 
+## Referenztests bei Aenderungen an den Datenquellen
+
+Vor einem Wechsel oder groesseren Umbau der Stationslisten-Quelle:
+
+```bash
+npm run test:record        # ALLE Zuege mit dem aktuellen Code aufzeichnen -> reference/<quelle>-<datum>.json
+# ... Code umbauen ...
+npm run test:compare       # neuen Code gegen die Referenz fahren (Hint-Pfad, alle Zuege)
+npm run test:compare:scan  # hintloser Pfad, jeder 10. Zug
+```
+
+Beide Laeufe muessen am selben Tag stattfinden. Hinweis: bahn.de blockt Node-`fetch`
+(Akamai, TLS-Fingerprint) — alle Node-Harnesse nutzen deshalb `test-lib/curl-fetch.mjs`.
+
 ## Neue Version veroeffentlichen
 
 ### Voraussetzungen (einmalig)

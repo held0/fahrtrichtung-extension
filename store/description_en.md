@@ -23,6 +23,6 @@ Features:
 
 Data sources:
 • Wagon order: fernbahn.de
-• Station list and times: bahn.expert
+• Station list and times: bahn.de
 
 Open Source: https://github.com/held0/fahrtrichtung-extension

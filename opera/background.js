@@ -1,11 +1,11 @@
 // Service Worker for Fahrtrichtung Extension
 // Fetches and parses fernbahn.de wagon order data
-// Uses bahn.expert for definitive station lists
+// Uses bahn.de's own timetable API for definitive station lists (with times)
 // NOTE: DOMParser is NOT available in service workers, so we use regex parsing
 
 importScripts('utils.js');
 
-const BG_VERSION = 3;
+const BG_VERSION = 4;
 
 // Nach der Erst-Installation einmalig die Onboarding-Tour öffnen.
 // Bewusst NUR bei reason === 'install' — Updates und Browser-Starts
@@ -25,7 +25,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStation, travelDate }) {
+// journeyHint (optional): exakte Zugkennung aus dem bahn.de-Sitzplatzdialog
+//   { trainNumber, departureEva, departureTime: 'YYYY-MM-DDTHH:MM:SS',
+//     arrivalEva, arrivalTime, zugfahrtKey }
+// Damit findet bahn.de den Zug ohne jede Namens-/Nummernheuristik.
+async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStation, travelDate, journeyHint }) {
   const year = travelDate ? new Date(travelDate).getFullYear() : new Date().getFullYear();
   const url = `https://www.fernbahn.de/datenbank/suche/?fahrplan_jahr=${year}&zug_nummer=${trainNumber}&filterview[]=1&filterview[]=2&fv_suche_reihungsverzeichnis=1`;
 
@@ -61,33 +65,37 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
     '| entries:', entries.length,
     '| exactMatch:', !!exactMatch,
     '| latestValidityTo:', latestValidityTo,
-    '| validity:', validEntry.validity);
+    '| validity:', validEntry.validity,
+    '| hint:', journeyHint ? `${journeyHint.departureEva}@${journeyHint.departureTime}` : 'none');
 
-  // Fetch definitive station list from bahn.expert
+  // Fetch definitive station list (with scheduled times) from bahn.de
   let stationOrder = [];
+  let stationSource = 'none';
   try {
-    stationOrder = await fetchBahnExpertStations(trainType, trainNumber, dateStr);
+    stationOrder = await fetchBahnDeStations(trainType, trainNumber, dateStr, { journeyHint, route: validEntry.route });
+    stationSource = 'bahn.de';
   } catch (e) {
-    console.warn('[Fahrtrichtung] bahn.expert fetch failed, trying fernbahn fallback:', e.message);
+    console.warn('[Fahrtrichtung] bahn.de fetch failed, trying fernbahn fallback:', e.message);
   }
 
-  // bahn.expert resolves journeys by train NUMBER and can return a *different*
-  // train that happens to share the number (e.g. "ICE 20" Wien–München vs. a
-  // number-20 train Milano–Zürich). Such a list has zero overlap with the route
-  // we parsed from fernbahn.de and would produce wrong/empty directions, so reject
-  // it and fall back to fernbahn.de's own station order.
+  // Safety net: the station list must belong to the route we parsed from
+  // fernbahn.de (zero overlap = different train). With bahn.de we match the
+  // exact train name, so this should never trigger — but a wrong list would
+  // produce wrong/empty directions, so keep the guard.
   if (stationOrder.length && !stationOrderMatchesEntry(stationOrder, validEntry)) {
-    console.warn('[Fahrtrichtung] bahn.expert station list does not match fernbahn.de route',
+    console.warn('[Fahrtrichtung] bahn.de station list does not match fernbahn.de route',
       '| route:', validEntry.route,
-      '| bahn.expert:', stationNames(stationOrder).join(' > '),
+      '| bahn.de:', stationNames(stationOrder).join(' > '),
       '— falling back to fernbahn.de');
     stationOrder = [];
+    stationSource = 'none';
   }
 
   // Fallback: use fernbahn.de's own station order (guaranteed consistent with the
-  // segments we parsed) whenever bahn.expert failed or returned the wrong train.
+  // segments we parsed) whenever bahn.de failed or returned the wrong train.
   if (!stationOrder.length) {
     stationOrder = await fetchFernbahnStationOrder(validEntry);
+    if (stationOrder.length) stationSource = 'fernbahn';
   }
 
   const fromSegmentIdx = findSegmentForStation(validEntry.segments, fromStation, stationOrder);
@@ -103,107 +111,216 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
     segments: validEntry.segments,
     wagonNumbers: validEntry.wagonNumbers,
     stationOrder,
+    stationSource,
     fromSegmentIdx,
     toSegmentIdx
   };
 }
 
-// Fetch complete station list from bahn.expert API
-async function fetchBahnExpertStations(trainType, trainNumber, travelDate) {
-  // Step 1: Get journeyId from redirect (pass travel date for correct schedule)
-  const datePart = travelDate || '0';
-  const detailUrl = `https://bahn.expert/details/${trainType}%20${trainNumber}/${datePart}`;
-  const resp = await fetch(detailUrl);
-  const journeyIdMatch = resp.url.match(/\/j\/([^\/\?]+)/);
-  if (!journeyIdMatch) {
-    throw new Error('Could not get journeyId from bahn.expert');
-  }
-  const journeyId = decodeURIComponent(journeyIdMatch[1]);
+// ============================================================================
+// bahn.de timetable API ("reiseloesung")
+//
+// Same API the bahn.de website itself uses. Flow:
+//   1. departures board at a station for a 1-hour window
+//      GET /web/api/reiseloesung/abfahrten?datum=YYYY-MM-DD&zeit=HH:MM:SS&ortExtId=<eva>
+//      -> entries[] with verkehrmittel.name ("ICE 691"), zeit, journeyId
+//   2. full train run for that journeyId
+//      GET /web/api/reiseloesung/fahrt?journeyId=...&poly=false
+//      -> halte[] with name, extId, ankunft.sollzeit / abfahrt.sollzeit
+//
+// With a journeyHint (from the seat dialog) step 1 is ONE request at the exact
+// departure station/time. Without a hint (website search, tests) we look up the
+// route's origin station and scan the day hour by hour.
+// ============================================================================
 
-  // Step 2: bahn.expert hat sein Backend im Sept. 2026 von tRPC auf oRPC
-  // umgestellt (die tRPC-Pfade liefern nur noch "Only HTML requests are
-  // supported here"). oRPC zuerst, tRPC als Fallback falls sie zurueckwechseln.
-  try {
-    return await fetchOrpcStops(journeyId);
-  } catch (e) {
-    console.warn('[Fahrtrichtung] bahn.expert oRPC failed, trying tRPC:', e.message);
-  }
-  return fetchTrpcStops(journeyId);
+const BAHN_DE_HOSTS = ['https://www.bahn.de', 'https://int.bahn.de'];
+const BAHN_DE_PRODUCTS = ['ICE', 'EC_IC', 'IR'];
+// Fernverkehrsgattungen, zwischen denen dieselbe Zugnummer denselben Zug meint:
+// fernbahn.de fuehrt z.B. "IC 1979", bahn.de zeigt "ICE 1979"; "RJ 251" vs "RJX 251".
+const LONG_DISTANCE_TYPES = new Set(['ICE', 'IC', 'EC', 'ECE', 'RJ', 'RJX', 'NJ', 'EN', 'TGV', 'EST', 'IR', 'D']);
+
+// Passt ein Tafel-Eintrag zum gesuchten Zug? Exakter Name zuerst; sonst gleiche
+// Nummer, wenn beide Gattungen Fernverkehr sind (der Wrong-Train-Guard in
+// handleFetchFernbahn faengt danach noch Zuege mit fremder Route ab).
+function boardEntryMatches(entryName, trainName) {
+  if (entryName === trainName) return true;
+  const a = entryName.match(/^([A-Z]+)\s+(\d+)$/);
+  const b = trainName.match(/^([A-Z]+)\s+(\d+)$/);
+  if (!a || !b || a[2] !== b[2]) return false;
+  return LONG_DISTANCE_TYPES.has(a[1]) && LONG_DISTANCE_TYPES.has(b[1]);
 }
 
-// Aktuelles bahn.expert-API: oRPC-Batch. Antwort ist ein Stream aus
-// length-prefixed JSON-Frames (4 Byte Laenge Big-Endian, dann JSON).
-async function fetchOrpcStops(journeyId) {
-  const batchBody = JSON.stringify([
-    { id: '1', kind: 'request', json: { url: '/api/orpc/journey/detailsByJourneyId', body: { json: journeyId } } },
-  ]);
-  const resp = await fetch('https://bahn.expert/api/orpc/journey/detailsByJourneyId/__batch__', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'orpc-batch': 'streaming', 'Accept': 'application/json' },
-    body: batchBody,
-  });
-  if (!resp.ok) throw new Error(`oRPC HTTP ${resp.status}`);
+async function fetchBahnDeStations(trainType, trainNumber, travelDate, opts = {}) {
+  const trainName = `${trainType} ${trainNumber}`;
+  const hint = opts.journeyHint;
 
-  const details = parseOrpcBatchFrames(await resp.arrayBuffer())
-    .map(f => f?.json?.body?.json)
-    .find(d => Array.isArray(d?.stops));
-  if (!details) throw new Error('No stops in oRPC batch response');
+  let journeyId = null;
+  if (hint && hint.departureEva && hint.departureTime) {
+    journeyId = await findJourneyByHint(trainName, hint);
+    if (!journeyId) console.warn('[Fahrtrichtung] bahn.de: train not found at hinted departure, scanning the day');
+  }
+  if (!journeyId) {
+    journeyId = await findJourneyByScan(trainName, travelDate, opts.route, hint);
+  }
+  if (!journeyId) throw new Error(`bahn.de: ${trainName} not found on ${travelDate}`);
 
-  return parseOrpcStops(details.stops);
+  const run = await bahnDeGetJson('/web/api/reiseloesung/fahrt', { journeyId, poly: 'false' });
+  const stops = parseBahnDeHalte(run?.halte);
+  if (!stops.length) throw new Error('bahn.de: empty train run');
+  return stops;
 }
 
-// Altes bahn.expert-API: tRPC mit superjson-Antwort. Nur noch Fallback.
-async function fetchTrpcStops(journeyId) {
-  const input = JSON.stringify({ '0': JSON.stringify([journeyId]) });
-  const query = `journey.detailsByJourneyId?batch=1&input=${encodeURIComponent(input)}`;
-  let apiResp = await fetch(`https://bahn.expert/api/trpc/${query}`);
-  if (!apiResp.ok) {
-    apiResp = await fetch(`https://bahn.expert/rpc/${query}`);
+// Departure board at the hinted station around the hinted time -> journeyId.
+// Tries the exact minute first, then a wider window (in case the dialog time
+// and the board time differ slightly, e.g. after a schedule change).
+async function findJourneyByHint(trainName, hint) {
+  const date = hint.departureTime.slice(0, 10);
+  const wanted = hint.departureTime.slice(0, 16);           // YYYY-MM-DDTHH:MM
+  for (const offsetMin of [2, 45]) {
+    const zeit = shiftTime(hint.departureTime.slice(11, 16), -offsetMin);
+    const entries = await fetchDepartures(hint.departureEva, date, zeit);
+    // Rangfolge: exakter Name + Minute > exakter Name > gleiche Nummer + Minute > gleiche Nummer
+    const pick = entries.find(e => e.name === trainName && e.zeit.slice(0, 16) === wanted)
+      || entries.find(e => e.name === trainName)
+      || entries.find(e => boardEntryMatches(e.name, trainName) && e.zeit.slice(0, 16) === wanted)
+      || entries.find(e => boardEntryMatches(e.name, trainName));
+    if (pick) return pick.journeyId;
   }
-  if (!apiResp.ok) {
-    throw new Error(`bahn.expert API returned ${apiResp.status}`);
-  }
-
-  const data = await apiResp.json();
-  const raw = data[0]?.result?.data;
-  if (!raw) throw new Error('Empty response from bahn.expert');
-
-  return parseSuperjsonStops(raw);
+  return null;
 }
 
-// Zerlegt einen oRPC-Batch-Body in seine JSON-Frames.
-// Kein Buffer im Service Worker — DataView + TextDecoder.
-function parseOrpcBatchFrames(arrayBuffer) {
-  const view = new DataView(arrayBuffer);
-  const decoder = new TextDecoder();
-  const frames = [];
-  let offset = 0;
-  while (offset + 4 <= view.byteLength) {
-    const len = view.getUint32(offset);
-    offset += 4;
-    if (len === 0 || offset + len > view.byteLength) break;
-    try {
-      frames.push(JSON.parse(decoder.decode(new Uint8Array(arrayBuffer, offset, len))));
-    } catch (e) { /* Frame kein JSON — ueberspringen */ }
-    offset += len;
+// No hint: resolve the origin station of the fernbahn route ("Berlin-Gesundbrunnen — München Hbf")
+// and scan its departures over the day. If the train doesn't show up there (rerouted),
+// try the terminus' arrivals as well.
+async function findJourneyByScan(trainName, travelDate, route, hint) {
+  const [originName, terminusName] = (route || '').split(/\s+[–—-]+\s+/).map(s => s.trim());
+  const candidates = [];
+  if (hint?.departureEva) candidates.push({ eva: hint.departureEva, board: 'abfahrten' });
+  if (originName) {
+    const eva = await resolveStationEva(originName);
+    if (eva) candidates.push({ eva, board: 'abfahrten' });
   }
-  return frames;
+  if (terminusName) {
+    const eva = await resolveStationEva(terminusName);
+    if (eva) candidates.push({ eva, board: 'ankuenfte' });
+  }
+
+  // Long-distance trains run roughly 04:00–24:00; start there, wrap around after.
+  const hours = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3];
+  for (const c of candidates) {
+    for (const h of hours) {
+      const entries = await fetchDepartures(c.eva, travelDate, `${String(h).padStart(2, '0')}:00:00`, c.board);
+      const hit = entries.find(e => e.name === trainName) || entries.find(e => boardEntryMatches(e.name, trainName));
+      if (hit) return hit.journeyId;
+    }
+  }
+  return null;
 }
 
-// Mappt oRPC-stops auf das interne Stationsformat ({name, dep, arr}).
-function parseOrpcStops(stops) {
-  return stops
-    .filter(s => s?.stopPlace?.name)
-    .map(s => ({
-      name: s.stopPlace.name,
-      dep: s.departure?.scheduledTime || null,
-      arr: s.arrival?.scheduledTime || null,
+async function fetchDepartures(eva, date, zeit, board = 'abfahrten') {
+  const params = { datum: date, zeit, ortExtId: String(eva), mitVias: 'false' };
+  const data = await bahnDeGetJson(`/web/api/reiseloesung/${board}`, params, BAHN_DE_PRODUCTS.map(p => ['verkehrsmittel[]', p]));
+  return parseBahnDeBoard(data?.entries);
+}
+
+async function resolveStationEva(name) {
+  const data = await bahnDeGetJson('/web/api/reiseloesung/orte', { suchbegriff: name, typ: 'ALL', limit: '5' });
+  if (!Array.isArray(data)) return null;
+  const wantedNorm = normalizeStation(name);
+  const stations = data.filter(o => o?.type === 'ST' && o.extId);
+  // Prefer an exact (normalized) name match, else the first station result
+  const exact = stations.find(o => normalizeStation(o.name) === wantedNorm);
+  return (exact || stations[0])?.extId || null;
+}
+
+// GET helper: tries www.bahn.de, then int.bahn.de. Backs off and retries on
+// 429/5xx. bahn.de's limiter allows a burst of ~30 requests, then only a slow
+// trickle for a while (measured 2026-09-11) — one popup needs 2 requests, a
+// full day scan up to ~25, so keep a gap between calls and wait properly on 429.
+const BAHN_DE_MIN_GAP_MS = 250;
+let bahnDeNextSlot = 0;
+async function bahnDeGetJson(path, params, extraPairs = []) {
+  const qs = new URLSearchParams(params);
+  for (const [k, v] of extraPairs) qs.append(k, v);
+  let lastErr = null;
+  for (const host of BAHN_DE_HOSTS) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const now = Date.now();
+      const slot = Math.max(now, bahnDeNextSlot);
+      bahnDeNextSlot = slot + BAHN_DE_MIN_GAP_MS;
+      if (slot > now) await sleep(slot - now);
+      try {
+        const resp = await fetch(`${host}${path}?${qs.toString()}`, {
+          headers: { 'Accept': 'application/json' },
+        });
+        if (resp.status === 429 || resp.status >= 500) {
+          lastErr = new Error(`bahn.de ${path} HTTP ${resp.status}`);
+          const retryAfter = Number(resp.headers?.get?.('retry-after')) || 0;
+          await sleep(retryAfter ? Math.min(retryAfter, 20) * 1000 : (resp.status === 429 ? 3000 : 700) * (attempt + 1));
+          continue;
+        }
+        if (!resp.ok) {
+          // 4xx (403 Akamai, 400 Parameter, 404): Wiederholen bringt nichts —
+          // direkt den naechsten Host probieren.
+          lastErr = new Error(`bahn.de ${path} HTTP ${resp.status}`);
+          break;
+        }
+        return await resp.json();
+      } catch (e) {
+        lastErr = e;
+        await sleep(300 * (attempt + 1));   // Netzwerk-/Parsefehler: kurz warten, nochmal
+      }
+    }
+  }
+  throw lastErr || new Error('bahn.de unreachable');
+}
+
+function sleep(ms) {
+  if (typeof setTimeout !== 'function') return Promise.resolve();   // reduzierte Sandboxes
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Board entries -> { name: "ICE 691", zeit: "2026-09-11T17:17:00", journeyId }
+function parseBahnDeBoard(entries) {
+  if (!Array.isArray(entries)) return [];
+  const out = [];
+  for (const e of entries) {
+    const name = (e?.verkehrmittel?.name || e?.verkehrmittel?.mittelText || '').replace(/\s+/g, ' ').trim();
+    if (!name || !e.journeyId) continue;
+    out.push({ name, zeit: e.zeit || '', journeyId: e.journeyId });
+  }
+  return out;
+}
+
+// Train run stops -> internal station format ({ name, dep, arr }), times as
+// ISO strings in local (Europe/Berlin) time exactly as bahn.de delivers them.
+function parseBahnDeHalte(halte) {
+  if (!Array.isArray(halte)) return [];
+  return halte
+    .filter(h => h?.name)
+    .map(h => ({
+      name: h.name.replace(/\s+/g, ' ').trim(),
+      dep: h.abfahrt?.sollzeit || null,
+      arr: h.ankunft?.sollzeit || null,
     }));
 }
 
+// "08:36" - 45 min -> "07:51:00" (same day; clamps at 00:00:00)
+function shiftTime(hhmm, deltaMin) {
+  const [h, m] = hhmm.split(':').map(Number);
+  let total = h * 60 + m + deltaMin;
+  if (total < 0) total = 0;
+  if (total > 23 * 60 + 59) total = 23 * 60 + 59;
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}:00`;
+}
+
+// ============================================================================
+// fernbahn.de
+// ============================================================================
+
 // Fetch the station order from fernbahn.de's own detail page (via zug_id).
 // This list always belongs to the exact entry we parsed, so it's the reliable
-// fallback when bahn.expert is unreachable or returns the wrong train.
+// fallback when bahn.de is unreachable or returns the wrong train.
 async function fetchFernbahnStationOrder(validEntry) {
   if (!validEntry.zugId) return [];
   try {
@@ -217,7 +334,7 @@ async function fetchFernbahnStationOrder(validEntry) {
   }
 }
 
-// Verify a bahn.expert station list actually belongs to the train we parsed from
+// Verify a station list actually belongs to the train we parsed from
 // fernbahn.de. We anchor on stations we KNOW are on the route — the route
 // endpoints ("Wien Hbf — München Hbf") and every segment boundary. If not a
 // single anchor appears in the list, it's a different train sharing the number.
@@ -239,50 +356,6 @@ function stationOrderMatchesEntry(stationOrder, validEntry) {
   if (!anchors.length) return true; // nothing to check against — don't reject
 
   return anchors.some(a => findSegBoundary(a, names) >= 0);
-}
-
-// Parse the superjson flat-array response from bahn.expert into station objects
-function parseSuperjsonStops(raw) {
-  // raw is the superjson flat array — sometimes delivered as a JSON string,
-  // sometimes already parsed, depending on the bahn.expert version.
-  const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-  // superjson format: parsed[0] = template, parsed[1] = array of stop indices
-  // Each stop: parsed[stopIdx] = { stopPlace: idx }, parsed[idx] = { name: nameIdx }
-  const stopIndices = parsed[1];
-  if (!Array.isArray(stopIndices)) throw new Error('Unexpected bahn.expert response format');
-
-  const stations = [];
-  for (const stopIdx of stopIndices) {
-    const stop = parsed[stopIdx];
-    if (!stop?.stopPlace) continue;
-    const stopPlace = parsed[stop.stopPlace];
-    if (!stopPlace?.name) continue;
-
-    // Extract departure and arrival times
-    let depTime = null, arrTime = null;
-    if (stop.departure) {
-      const depObj = parsed[stop.departure];
-      if (depObj?.scheduledTime) {
-        const st = parsed[depObj.scheduledTime];
-        if (Array.isArray(st) && st[0] === 'Date') depTime = st[1];
-      }
-    }
-    if (stop.arrival) {
-      const arrObj = parsed[stop.arrival];
-      if (arrObj?.scheduledTime) {
-        const st = parsed[arrObj.scheduledTime];
-        if (Array.isArray(st) && st[0] === 'Date') arrTime = st[1];
-      }
-    }
-
-    stations.push({
-      name: parsed[stopPlace.name],
-      dep: depTime,
-      arr: arrTime
-    });
-  }
-
-  return stations;
 }
 
 // Extract just the station names from stationOrder (which may be objects or strings)

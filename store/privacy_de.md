@@ -11,7 +11,7 @@ Die Extension erhebt **keine personenbezogenen Daten**. Es werden keine Konten e
 Um die Fahrtrichtung zu ermitteln, sendet die Extension folgende Anfragen:
 
 1. **fernbahn.de** – Zugtyp und Zugnummer werden übermittelt, um die Wagenreihung abzurufen.
-2. **bahn.expert** – Zugtyp, Zugnummer und Reisedatum werden übermittelt, um die Stationsliste und Zeiten abzurufen.
+2. **bahn.de** – Zugtyp, Zugnummer, Reisedatum sowie Abfahrtsbahnhof und -zeit des gewählten Zuges werden an die Fahrplan-Schnittstelle der Bahn-Website übermittelt, um die Stationsliste und Zeiten abzurufen.
 
 Diese Anfragen enthalten keine personenbezogenen Daten (keine Namen, E-Mail-Adressen oder Standortdaten).
 

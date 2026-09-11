@@ -1,7 +1,7 @@
 // Live end-to-end / watchdog test for the Fahrtrichtung extension.
 //
 // Runs the REAL chrome/background.js + chrome/utils.js logic against the LIVE
-// data sources (fernbahn.de wagon order + bahn.expert station list) for real
+// data sources (fernbahn.de wagon order + bahn.de station list/times) for real
 // long-distance trains travelling *today*. It catches the failure class that
 // unit tests can't: external data-format drift AND parsing regressions in the
 // full pipeline (e.g. station names containing a hyphen splitting a segment).
@@ -19,6 +19,7 @@ import fs from 'fs';
 import vm from 'vm';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { throttledCurlFetch } from './test-lib/curl-fetch.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CHROME = path.join(__dirname, 'chrome');
@@ -29,18 +30,10 @@ let bg = fs.readFileSync(path.join(CHROME, 'background.js'), 'utf8')
   .replace(/chrome\.runtime\.onMessage[\s\S]*?\}\);\n/, '');
 const utils = fs.readFileSync(path.join(CHROME, 'utils.js'), 'utf8');
 
-// A real browser sends Accept + User-Agent; without them bahn.expert answers
-// 206/empty. Mirror the browser so the test exercises the same success path.
-const browserFetch = (url, opts = {}) => fetch(url, {
-  ...opts,
-  headers: {
-    'Accept': '*/*',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-    'Referer': 'https://bahn.expert/',
-    'Accept-Encoding': 'gzip, deflate, br',
-    ...(opts.headers || {}),
-  },
-});
+// bahn.de (Akamai) blockt Node/undici am TLS-Fingerprint mit 403 — im Browser
+// (wo die Extension laeuft) kein Thema, unter Node gehen wir ueber curl.
+// Siehe test-lib/curl-fetch.mjs.
+const browserFetch = throttledCurlFetch(1000);
 
 // Silence the extension's internal debug logging ([Fahrtrichtung] …) so the
 // watchdog output stays clean; keep warnings/errors visible.
@@ -55,7 +48,7 @@ const chromeStub = {
   },
   tabs: { create: () => {} },
 };
-const ctx = { fetch: browserFetch, console: quietConsole, chrome: chromeStub, URLSearchParams, TextDecoder, Date, JSON, Math, String, Array, Object, parseInt, isNaN };
+const ctx = { fetch: browserFetch, console: quietConsole, chrome: chromeStub, URLSearchParams, TextDecoder, DataView, Uint8Array, AbortSignal, setTimeout, clearTimeout, Date, JSON, Math, String, Array, Object, Number, parseInt, isNaN, encodeURIComponent, decodeURIComponent };
 vm.createContext(ctx);
 vm.runInContext(utils, ctx);
 vm.runInContext(bg, ctx);
@@ -75,8 +68,8 @@ const DEFAULT_TRAINS = [
   { trainType: 'ICE', trainNumber: '549' },   // Rhein/Ruhr -> Berlin
   { trainType: 'ICE', trainNumber: '77' },    // Hamburg -> Basel
   { trainType: 'ICE', trainNumber: '11' },    // Berlin -> München
-  { trainType: 'ICE', trainNumber: '20' },    // Wien -> München; bahn.expert returns a
-                                              // number-20 Milano–Zürich train (wrong-train guard)
+  { trainType: 'ICE', trainNumber: '20' },    // Wien -> München; historically a number-20
+                                              // Milano–Zürich train was returned (wrong-train guard)
 ];
 
 const MIN_TRAINS_WITH_DATA = 3;      // below this we can't conclude -> exit 2
@@ -88,7 +81,11 @@ async function checkTrain(t, date) {
   // that are guaranteed on the route (so a mapping miss is a real bug).
   const probe = await ctx.handleFetchFernbahn({ ...t, fromStation: '', toStation: '', travelDate: date });
   const stops = (probe.stationOrder || []).map(s => s.name);
-  if (!stops.length) return { skip: true, reason: 'no station list from bahn.expert' };
+  if (!stops.length) return { skip: true, reason: 'no station list' };
+  // bahn.de kennt nicht jeden fernbahn-Zug (z.B. "ICE 20" Wien–München faehrt
+  // dort unter anderer Nummer) — dann ist der fernbahn-Fallback korrekt. Wir
+  // zaehlen das separat und verlangen unten, dass die MEHRHEIT von bahn.de kommt.
+  const fallback = probe.stationSource !== 'bahn.de';
 
   const from = stops.length > 2 ? stops[1] : stops[0];
   const to = stops.length > 2 ? stops[stops.length - 2] : stops[stops.length - 1];
@@ -111,7 +108,7 @@ async function checkTrain(t, date) {
     if (SEP.test(s.to))   problems.push(`segment "to" still contains a separator: "${s.to}" (bad split)`);
   }
 
-  return { skip: false, from, to, route: r.route,
+  return { skip: false, from, to, route: r.route, fallback, source: probe.stationSource,
     segments: r.segments.map(s => `${s.from}→${s.to}[${s.direction}]`), problems };
 }
 
@@ -126,14 +123,15 @@ if (argv.length >= 2) {
 
 console.log(`Fahrtrichtung live E2E — date ${date}\n`);
 
-let withData = 0, failed = 0, infra = 0;
+let withData = 0, failed = 0, infra = 0, fromBahnDe = 0;
 for (const t of trains) {
   const label = `${t.trainType} ${t.trainNumber}`;
   try {
     const res = await checkTrain(t, date);
     if (res.skip) { console.log(`⏭️  ${label}: SKIP (${res.reason})`); continue; }
     withData++;
-    console.log(`   ${label}: ${res.route}`);
+    if (!res.fallback) fromBahnDe++;
+    console.log(`   ${label}: ${res.route}${res.fallback ? '   ⚠️  Stationsliste via fernbahn-Fallback (bahn.de kennt den Zug heute nicht)' : ''}`);
     console.log(`      segments: ${res.segments.join('  ')}`);
     if (res.problems.length) {
       failed++;
@@ -159,9 +157,13 @@ if (failed > 0) {
   console.log(`E2E-RESULT: FAIL — ${failed} train(s) violated a pipeline invariant. The extension is broken.`);
   process.exit(1);
 }
+if (fromBahnDe === 0 && withData > 0) {
+  console.log(`E2E-RESULT: FAIL — keiner von ${withData} Zuegen bekam seine Stationsliste von bahn.de (alle Fallback). Die bahn.de-Anbindung ist kaputt.`);
+  process.exit(1);
+}
 if (withData < MIN_TRAINS_WITH_DATA) {
   console.log(`E2E-RESULT: INCONCLUSIVE — only ${withData}/${MIN_TRAINS_WITH_DATA} trains returned data (${infra} data-source errors). Likely an infrastructure problem, not an extension bug.`);
   process.exit(2);
 }
-console.log(`E2E-RESULT: PASS — ${withData} train(s) produced usable direction data, all invariants held.`);
+console.log(`E2E-RESULT: PASS — ${withData} train(s) produced usable direction data (${fromBahnDe} via bahn.de, ${withData - fromBahnDe} via fernbahn fallback), all invariants held.`);
 process.exit(0);

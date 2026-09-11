@@ -11,7 +11,7 @@ Fahrtrichtung erhebt, speichert und übermittelt **keine personenbezogenen Daten
 Um die Fahrtrichtung anzuzeigen, sendet die Extension Anfragen an:
 
 - **fernbahn.de** – Abruf der Wagenreihung (übermittelt: Zugtyp und Zugnummer)
-- **bahn.expert** – Abruf der Stationsliste und Zeiten (übermittelt: Zugtyp, Zugnummer, Reisedatum)
+- **bahn.de** – Abruf der Stationsliste und Zeiten über die Fahrplan-Schnittstelle der Bahn-Website (übermittelt: Zugtyp, Zugnummer, Reisedatum, Abfahrtsbahnhof und -zeit des gewählten Zuges)
 
 Diese Anfragen enthalten keine personenbezogenen Daten. Wie bei jeder HTTP-Anfrage wird Ihre IP-Adresse im Rahmen des Internetprotokolls an diese Dienste übertragen.
 
@@ -36,7 +36,7 @@ Fahrtrichtung does **not collect, store, or transmit any personal data**.
 To display travel direction information, the extension makes requests to:
 
 - **fernbahn.de** – retrieves wagon order data (sends: train type and number)
-- **bahn.expert** – retrieves station list and times (sends: train type, number, and travel date)
+- **bahn.de** – retrieves the station list and times via the timetable API of the bahn.de website itself (sends: train type, number, travel date, departure station and time of the selected train)
 
 These requests do not contain any personal data. As with any HTTP request, your IP address is transmitted to these services as part of standard internet protocol.
 

@@ -234,6 +234,116 @@ group('Robustheit: 429/5xx-Backoff, Host-Fallback, kaputte Antworten');
   assert('fernbahn 504 -> Fehler "fernbahn.de returned 504"', msg, 'fernbahn.de returned 504');
 }
 
+group('Fehlende Segmentgrenze (bahn.de ohne Betriebshalt) wird geometrisch eingefuegt');
+{
+  // Nachtzug: fernbahn kennt Wechsel in Frankfurt, bahn.de listet Frankfurt nicht (kein Fahrgastwechsel)
+  const NJ_HTML = `<div class="reihungsverzeichnis-eintrag"><div class="zugnr">NJ 403</div>
+<div class="vonbis">Amsterdam Centraal &ndash; Zürich HB</div>
+<div class="richtungswechsel"><img src="pfeilrechts.svg"> Amsterdam Centraal &ndash; Frankfurt(M)Hbf<br><img src="pfeillinks.svg"> Frankfurt(M)Hbf &ndash; Zürich HB<br></div>
+<div class="wagenreihung"><span class="wagen-nummer">1</span><span class="wagen-nummer">9</span></div>
+<div class="zugname">Reihung gültig tgl</div><a href="?zug_id=403">x</a><!-- reihungsverzeichnis-eintrag -->`;
+  const NJ_DETAIL = `<span id="zls-daten-bahnhof-start">Amsterdam Centraal</span><span id="zls-daten-bahnhof-via1">Köln - Bonn - Koblenz - Frankfurt(Main) - Mannheim - Offenburg</span><span id="zls-daten-bahnhof-ziel">Zürich HB</span>`;
+  const id = (n, lon, lat) => `A=1@O=${n}@X=${Math.round(lon * 1e6)}@Y=${Math.round(lat * 1e6)}@U=80@L=1@`;
+  const NJ_RUN = { zugName: 'NJ 403', halte: [
+    { name: 'Amsterdam Centraal', id: id('Amsterdam Centraal', 4.9003, 52.3791), abfahrt: { sollzeit: '2026-09-18T21:01:00' } },
+    { name: 'Köln Hbf', id: id('Köln Hbf', 6.9588, 50.9430), ankunft: { sollzeit: '2026-09-19T00:00:00' }, abfahrt: { sollzeit: '2026-09-19T00:05:00' } },
+    { name: 'Bonn Hbf', id: id('Bonn Hbf', 7.0970, 50.7320), ankunft: { sollzeit: '2026-09-19T00:41:00' }, abfahrt: { sollzeit: '2026-09-19T00:43:00' } },
+    { name: 'Offenburg', id: id('Offenburg', 7.9469, 48.4764), ankunft: { sollzeit: '2026-09-19T05:13:00' }, abfahrt: { sollzeit: '2026-09-19T05:15:00' } },
+    { name: 'Zürich HB', id: id('Zürich HB', 8.5402, 47.3779), ankunft: { sollzeit: '2026-09-19T08:05:00' } },
+  ] };
+  const njHint = { departureEva: '8400058', departureTime: '2026-09-18T21:01:00' };
+  const ctx = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: () => ({ text: NJ_HTML }) },
+    { match: /fernbahn\.de\/datenbank\/suche\/\?zug_id/, reply: () => ({ text: NJ_DETAIL }) },
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('NJ 403', '2026-09-18T21:01:00', 'nj')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: NJ_RUN }) },
+    { match: /orte/, reply: url => ({ json: [{ type: 'ST', extId: '8000105', name: 'Frankfurt (Main) Hbf', lat: 50.1070, lon: 8.6632 }] }) },
+  ]);
+  const r = await ctx.handleFetchFernbahn({ trainType: 'NJ', trainNumber: '403', fromStation: 'Amsterdam Centraal', toStation: 'Zürich HB', travelDate: '2026-09-18', journeyHint: njHint });
+  assert('Quelle bleibt bahn.de', r.stationSource, 'bahn.de');
+  assert('Frankfurt geometrisch zwischen Bonn und Offenburg eingefuegt', r.stationOrder.map(s => s.name), ['Amsterdam Centraal', 'Köln Hbf', 'Bonn Hbf', 'Frankfurt(M)Hbf', 'Offenburg', 'Zürich HB']);
+  assert('eingefuegter Halt ohne Zeiten, markiert', [r.stationOrder[3].dep, r.stationOrder[3].arr, r.stationOrder[3].inferred], [null, null, true]);
+  assert('Richtungswechsel bleibt sichtbar: Start in Segment 0, Ziel in Segment 1', [r.fromSegmentIdx, r.toSegmentIdx], [0, 1]);
+  assert('Offenburg liegt hinter dem Wechsel (Segment 1)', ctx.findSegmentForStation(r.segments, 'Offenburg', r.stationOrder), 1);
+  assert('Köln liegt vor dem Wechsel (Segment 0)', ctx.findSegmentForStation(r.segments, 'Köln Hbf', r.stationOrder), 0);
+  assert('kein fernbahn-Detailabruf noetig (Koordinaten statt Reihenfolge)', ctx.calls.filter(c => /zug_id/.test(c.url)).length, 0);
+  assert('genau eine Ortssuche fuer die fehlende Grenze', ctx.calls.filter(c => /orte/.test(c.url)).length, 1);
+
+  // Sind alle Grenzen vorhanden, wird die Detailseite NICHT geholt
+  const ctx2 = makeCtx([...fernbahnRoutes,
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('ICE 1005', '2026-09-12T08:36:00', 'x')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: RUN }) },
+  ]);
+  await ctx2.handleFetchFernbahn({ ...baseReq, journeyHint: HINT });
+  assert('ohne fehlende Grenze keine Ortssuche', ctx2.calls.filter(c => /orte/.test(c.url)).length, 0);
+
+  // Halte ohne Koordinaten (id fehlt): keine Einfuegung, kein Absturz, Liste unveraendert
+  const NJ_RUN_NOGEO = { zugName: 'NJ 403', halte: NJ_RUN.halte.map(h => ({ ...h, id: undefined })) };
+  const ctx3 = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: () => ({ text: NJ_HTML }) },
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('NJ 403', '2026-09-18T21:01:00', 'nj')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: NJ_RUN_NOGEO }) },
+    { match: /orte/, reply: () => ({ json: [{ type: 'ST', extId: '8000105', name: 'Frankfurt (Main) Hbf', lat: 50.1070, lon: 8.6632 }] }) },
+  ]);
+  const r3 = await ctx3.handleFetchFernbahn({ trainType: 'NJ', trainNumber: '403', fromStation: '', toStation: '', travelDate: '2026-09-18', journeyHint: njHint });
+  assert('ohne Koordinaten bleibt die Liste unveraendert', r3.stationOrder.map(s => s.name), ['Amsterdam Centraal', 'Köln Hbf', 'Bonn Hbf', 'Offenburg', 'Zürich HB']);
+  // Ortssuche scheitert (bahn.de 500): Liste unveraendert, kein Absturz
+  const ctx4 = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: () => ({ text: NJ_HTML }) },
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('NJ 403', '2026-09-18T21:01:00', 'nj')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: NJ_RUN }) },
+    { match: /orte/, reply: () => ({ status: 500, text: '' }) },
+  ]);
+  const r4 = await ctx4.handleFetchFernbahn({ trainType: 'NJ', trainNumber: '403', fromStation: '', toStation: '', travelDate: '2026-09-18', journeyHint: njHint });
+  assert('Ortssuche kaputt -> Liste unveraendert, Quelle bahn.de', [r4.stationSource, r4.stationOrder.length], ['bahn.de', 5]);
+
+  // Tageszug (ICE) mit fehlender Kopfbahnhof-Grenze = Umleitung, kein Richtungswechsel:
+  // KEINE Einfuegung, alte Kanten-Logik (eine Richtung) bleibt
+  const ICE_HTML = NJ_HTML.replace(/NJ 403/g, 'ICE 403');
+  const ctx4b = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: () => ({ text: ICE_HTML }) },
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('ICE 403', '2026-09-18T21:01:00', 'ice')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: { ...NJ_RUN, zugName: 'ICE 403' } }) },
+    { match: /orte/, reply: () => ({ json: [{ type: 'ST', extId: '8000105', name: 'Frankfurt (Main) Hbf', lat: 50.1070, lon: 8.6632 }] }) },
+  ]);
+  const r4b = await ctx4b.handleFetchFernbahn({ trainType: 'ICE', trainNumber: '403', fromStation: 'Amsterdam Centraal', toStation: 'Zürich HB', travelDate: '2026-09-18', journeyHint: njHint });
+  assert('ICE: fehlende Grenze wird NICHT eingefuegt', r4b.stationOrder.map(s => s.name), ['Amsterdam Centraal', 'Köln Hbf', 'Bonn Hbf', 'Offenburg', 'Zürich HB']);
+  assert('ICE: keine Ortssuche', ctx4b.calls.filter(c => /orte/.test(c.url)).length, 0);
+  assert('ICE: Kanten-Logik -> eine Richtung fuer die ganze Fahrt', [r4b.fromSegmentIdx, r4b.toSegmentIdx], [0, 0]);
+
+  // Grenzstation liegt gar nicht auf der Tagesroute (Zug endet frueher / Umleitung):
+  // grosser Umweg -> NICHT einfuegen
+  const NJ_HTML_WIEN = NJ_HTML.replace(/Frankfurt\(M\)Hbf/g, 'Wien Hbf');
+  const ctx5 = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: () => ({ text: NJ_HTML_WIEN }) },
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('NJ 403', '2026-09-18T21:01:00', 'nj')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: NJ_RUN }) },
+    { match: /orte/, reply: () => ({ json: [{ type: 'ST', extId: '8103000', name: 'Wien Hbf', lat: 48.1850, lon: 16.3760 }] }) },
+  ]);
+  const r5 = await ctx5.handleFetchFernbahn({ trainType: 'NJ', trainNumber: '403', fromStation: '', toStation: '', travelDate: '2026-09-18', journeyHint: njHint });
+  assert('Grenze abseits der Route (Wien) wird nicht eingefuegt', r5.stationOrder.map(s => s.name), ['Amsterdam Centraal', 'Köln Hbf', 'Bonn Hbf', 'Offenburg', 'Zürich HB']);
+  // Kleiner Umweg (Frankfurt zwischen Bonn und Offenburg: ~58 km auf ~260 km) wird akzeptiert
+  const bonn = { lat: 50.7320, lon: 7.0970 }, off = { lat: 48.4764, lon: 7.9469 }, ffm = { lat: 50.1070, lon: 8.6632 };
+  const detour = ctx5.geoDistance(bonn, ffm) + ctx5.geoDistance(ffm, off) - ctx5.geoDistance(bonn, off);
+  assert('Umweg Frankfurt innerhalb der Schranke', detour < 0.3 * ctx5.geoDistance(bonn, off), true);
+  // Endpunkt-Grenze (Route endet laut fernbahn in Zürich, heute schon in Offenburg): nie einfuegen
+  const NJ_RUN_SHORT = { zugName: 'NJ 403', halte: NJ_RUN.halte.slice(0, 4) };   // bis Offenburg
+  const ctx6 = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: () => ({ text: NJ_HTML }) },
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('NJ 403', '2026-09-18T21:01:00', 'nj')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: NJ_RUN_SHORT }) },
+    { match: /orte/, reply: url => ({ json: [/Frankfurt/.test(qs(url).suchbegriff) ? { type: 'ST', extId: '8000105', name: 'Frankfurt (Main) Hbf', lat: 50.1070, lon: 8.6632 } : { type: 'ST', extId: '8503000', name: 'Zürich HB', lat: 47.3779, lon: 8.5402 }] }) },
+  ]);
+  const r6 = await ctx6.handleFetchFernbahn({ trainType: 'NJ', trainNumber: '403', fromStation: '', toStation: '', travelDate: '2026-09-18', journeyHint: njHint });
+  assert('innere Grenze Frankfurt eingefuegt, Endpunkt Zürich nicht', r6.stationOrder.map(s => s.name), ['Amsterdam Centraal', 'Köln Hbf', 'Bonn Hbf', 'Frankfurt(M)Hbf', 'Offenburg']);
+  // Projektion: Punkt JENSEITS des zweiten Halts (Dammtor liegt noerdlich von Hamburg Hbf,
+  // in Verlaengerung Harburg->Hbf) wird nicht in die Luecke Harburg–Hbf gesetzt
+  const harburg = { lat: 53.4560, lon: 9.9916 }, hbf = { lat: 53.5527, lon: 10.0065 }, dammtor = { lat: 53.5606, lon: 9.9897 };
+  assert('Projektion Dammtor liegt hinter Hbf (t > 1)', ctx6.projectionParam(harburg, hbf, dammtor) > 1, true);
+  assert('kein Einfuegen jenseits des zweiten Halts', ctx6.bestInsertIndex([{ ...harburg }, { ...hbf }], dammtor), -1);
+  assert('Frankfurt projiziert zwischen Bonn und Offenburg', (t => t > 0 && t < 1)(ctx6.projectionParam(bonn, off, ffm)), true);
+}
+
 group('Wrong-Train-Guard: Liste ohne Bezug zur fernbahn-Route wird verworfen');
 {
   const ctx = makeCtx([...fernbahnRoutes,

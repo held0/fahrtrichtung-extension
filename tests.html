@@ -158,11 +158,16 @@ function parseBahnDeHalte(halte) {
   if (!Array.isArray(halte)) return [];
   return halte
     .filter(h => h?.name)
-    .map(h => ({
-      name: h.name.replace(/\s+/g, ' ').trim(),
-      dep: h.abfahrt?.sollzeit || null,
-      arr: h.ankunft?.sollzeit || null,
-    }));
+    .map(h => {
+      const stop = {
+        name: h.name.replace(/\s+/g, ' ').trim(),
+        dep: h.abfahrt?.sollzeit || null,
+        arr: h.ankunft?.sollzeit || null,
+      };
+      const xy = typeof h.id === 'string' ? h.id.match(/@X=(-?\d+)@Y=(-?\d+)/) : null;
+      if (xy) { stop.lon = Number(xy[1]) / 1e6; stop.lat = Number(xy[2]) / 1e6; }
+      return stop;
+    });
 }
 
 function shiftTime(hhmm, deltaMin) {
@@ -503,6 +508,9 @@ assert('halte: middle stop arr + dep', [halte[1].arr, halte[1].dep], ['2026-09-1
 assert('halte: names trimmed', halte[2].name, 'Halle(Saale)Hbf');
 assert('halte: last stop arr only', [halte[3].arr, halte[3].dep], ['2026-09-12T12:46:00', null]);
 assert('halte: non-array -> []', parseBahnDeHalte(undefined), []);
+const geoHalte = parseBahnDeHalte([{ name: 'Berlin Hbf', id: 'A=1@O=Berlin Hbf@X=13369549@Y=52525589@U=80@L=8098160@', abfahrt: { sollzeit: '2026-09-12T08:36:00' } }, { name: 'X' }]);
+assert('halte: coordinates parsed from the HAFAS id', [geoHalte[0].lon, geoHalte[0].lat], [13.369549, 52.525589]);
+assert('halte: no id -> no coordinates', [geoHalte[1].lon, geoHalte[1].lat], [undefined, undefined]);
 // Die Zeiten von bahn.de sind lokale Zeit ohne Zone — computeSegmentDuration muss
 // daraus dieselbe Dauer bilden wie frueher aus den UTC-Zeiten von bahn.expert.
 assert('durations from bahn.de local times', computeSegmentDuration('Berlin Hbf', 'München Hbf', halte), { hours: 4, minutes: 10 });

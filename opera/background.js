@@ -96,6 +96,13 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   if (!stationOrder.length) {
     stationOrder = await fetchFernbahnStationOrder(validEntry);
     if (stationOrder.length) stationSource = 'fernbahn';
+  } else if (stationSource === 'bahn.de') {
+    // bahn.de lists only stops with passenger exchange. Night trains pass e.g.
+    // Frankfurt(M)Hbf without letting anyone on or off, so the station is
+    // missing — and with it the fernbahn segment boundary where the train
+    // reverses. Insert such missing boundaries from fernbahn's own station
+    // sequence (one extra request, only when a boundary is actually missing).
+    stationOrder = await insertMissingBoundaries(stationOrder, validEntry, trainType);
   }
 
   const fromSegmentIdx = findSegmentForStation(validEntry.segments, fromStation, stationOrder);
@@ -223,14 +230,20 @@ async function fetchDepartures(eva, date, zeit, board = 'abfahrten') {
   return parseBahnDeBoard(data?.entries);
 }
 
-async function resolveStationEva(name) {
+async function resolveStation(name) {
   const data = await bahnDeGetJson('/web/api/reiseloesung/orte', { suchbegriff: name, typ: 'ALL', limit: '5' });
   if (!Array.isArray(data)) return null;
   const wantedNorm = normalizeStation(name);
   const stations = data.filter(o => o?.type === 'ST' && o.extId);
   // Prefer an exact (normalized) name match, else the first station result
-  const exact = stations.find(o => normalizeStation(o.name) === wantedNorm);
-  return (exact || stations[0])?.extId || null;
+  const st = stations.find(o => normalizeStation(o.name) === wantedNorm) || stations[0];
+  if (!st) return null;
+  return { extId: String(st.extId), name: st.name, lat: typeof st.lat === 'number' ? st.lat : null, lon: typeof st.lon === 'number' ? st.lon : null };
+}
+
+async function resolveStationEva(name) {
+  const st = await resolveStation(name);
+  return st ? st.extId : null;
 }
 
 // GET helper: tries www.bahn.de, then int.bahn.de. Backs off and retries on
@@ -298,11 +311,16 @@ function parseBahnDeHalte(halte) {
   if (!Array.isArray(halte)) return [];
   return halte
     .filter(h => h?.name)
-    .map(h => ({
-      name: h.name.replace(/\s+/g, ' ').trim(),
-      dep: h.abfahrt?.sollzeit || null,
-      arr: h.ankunft?.sollzeit || null,
-    }));
+    .map(h => {
+      const stop = {
+        name: h.name.replace(/\s+/g, ' ').trim(),
+        dep: h.abfahrt?.sollzeit || null,
+        arr: h.ankunft?.sollzeit || null,
+      };
+      const xy = typeof h.id === 'string' ? h.id.match(/@X=(-?\d+)@Y=(-?\d+)/) : null;
+      if (xy) { stop.lon = Number(xy[1]) / 1e6; stop.lat = Number(xy[2]) / 1e6; }
+      return stop;
+    });
 }
 
 // "08:36" - 45 min -> "07:51:00" (same day; clamps at 00:00:00)
@@ -332,6 +350,87 @@ async function fetchFernbahnStationOrder(validEntry) {
     console.warn('[Fahrtrichtung] Fernbahn station-order fallback failed:', e.message);
     return [];
   }
+}
+
+// Insert segment-boundary stations that bahn.de omitted. Night trains (NJ/EN)
+// pass e.g. Frankfurt(M)Hbf at 3 am without passenger exchange — bahn.de lists
+// neither the stop nor shows it on any board, but the train DOES reverse there.
+// Position is found GEOMETRICALLY: the run's stops carry coordinates, the
+// boundary's come from the station search; it goes into the gap between two
+// consecutive stops where the detour is smallest (and small in absolute terms).
+//
+// Deliberately NOT done for daytime trains: if an ICE/IC/RJ misses a Kopfbahnhof
+// boundary today, it is being rerouted around it (construction) and does NOT
+// reverse — the plain edge-clamp in findSegmentForStation (one direction for the
+// whole run) is the right answer there. Only interior boundaries (where the
+// direction actually changes) are considered; route endpoints never.
+const NIGHT_TRAIN_TYPES = new Set(['NJ', 'EN', 'D']);
+async function insertMissingBoundaries(stationOrder, validEntry, trainType) {
+  if (!NIGHT_TRAIN_TYPES.has(String(trainType || '').toUpperCase())) return stationOrder;
+  const segments = validEntry.segments || [];
+  if (segments.length < 2) return stationOrder;
+  const names = stationNames(stationOrder).map(normalizeStation);
+  const boundaries = [];
+  for (let i = 0; i < segments.length - 1; i++) {
+    const bnd = segments[i].to || segments[i + 1].from;
+    if (bnd && !boundaries.includes(bnd)) boundaries.push(bnd);
+  }
+  const missing = boundaries.filter(bnd => findSegBoundary(bnd, names) < 0);
+  if (!missing.length) return stationOrder;
+
+  const result = stationOrder.slice();
+  for (const bnd of missing) {
+    let geo = null;
+    try { geo = await resolveStation(bnd); } catch (e) { /* bahn.de down — leave list as is */ }
+    if (!geo || geo.lat == null || geo.lon == null) continue;
+    const at = bestInsertIndex(result, geo);
+    if (at < 0) continue;
+    result.splice(at, 0, { name: bnd, dep: null, arr: null, lat: geo.lat, lon: geo.lon, inferred: true });
+    console.log('[Fahrtrichtung] boundary station missing on bahn.de, inserted by geometry:', bnd, '@', at);
+  }
+  return result;
+}
+
+// Index at which `point` fits best between consecutive stops with coordinates
+// (minimal detour). Only interior gaps qualify, and the detour must be small —
+// a boundary the train does not pass at all today (e.g. "Basel SBB" for a run
+// that ends in Singen, or a rerouted train) must NOT be forced in. Returns -1
+// if no gap qualifies.
+const MAX_DETOUR_KM = 25;
+const MAX_DETOUR_RATIO = 0.3;
+function bestInsertIndex(stops, point) {
+  let best = -1, bestDetour = Infinity;
+  let prev = -1;
+  for (let i = 0; i < stops.length; i++) {
+    if (stops[i].lat == null || stops[i].lon == null) continue;
+    if (prev >= 0) {
+      const direct = geoDistance(stops[prev], stops[i]);
+      const detour = geoDistance(stops[prev], point) + geoDistance(point, stops[i]) - direct;
+      // The point must also lie BETWEEN the two stops (projection onto the
+      // connecting line inside the gap), not beyond one of them.
+      const t = projectionParam(stops[prev], stops[i], point);
+      if (t > 0 && t < 1 && detour < bestDetour && detour <= Math.max(MAX_DETOUR_KM, MAX_DETOUR_RATIO * direct)) { bestDetour = detour; best = i; }
+    }
+    prev = i;
+  }
+  return best;
+}
+
+// Where does `p` project onto the line a->b? 0 = at a, 1 = at b, outside = beyond.
+function projectionParam(a, b, p) {
+  const k = Math.cos((a.lat + b.lat) / 2 * Math.PI / 180);
+  const abx = (b.lon - a.lon) * k, aby = b.lat - a.lat;
+  const apx = (p.lon - a.lon) * k, apy = p.lat - a.lat;
+  const len2 = abx * abx + aby * aby;
+  return len2 ? (apx * abx + apy * aby) / len2 : 0;
+}
+
+// Equirectangular approximation in km — precise enough to order stops.
+function geoDistance(a, b) {
+  const toRad = d => d * Math.PI / 180;
+  const x = (toRad(b.lon) - toRad(a.lon)) * Math.cos((toRad(a.lat) + toRad(b.lat)) / 2);
+  const y = toRad(b.lat) - toRad(a.lat);
+  return Math.sqrt(x * x + y * y) * 6371;
 }
 
 // Verify a station list actually belongs to the train we parsed from

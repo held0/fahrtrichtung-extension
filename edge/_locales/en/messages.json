@@ -47,41 +47,11 @@
   "obTitle": {
     "message": "Train Direction"
   },
-  "obSkip": {
-    "message": "Skip"
+  "obHeading": {
+    "message": "One click is all it takes"
   },
-  "obWelcomeHeading": {
-    "message": "Welcome to Train Direction!"
-  },
-  "obWelcomeSub": {
-    "message": "Never ride backwards again: this extension shows you the direction of travel of your ICE, IC or EC during seat selection on bahn.de."
-  },
-  "obHowHeading": {
-    "message": "How it works"
-  },
-  "obStep1": {
-    "message": "Search for a connection with ICE, IC or EC on bahn.de as usual."
-  },
-  "obStep2": {
-    "message": "Open “Select seat” for your connection — the coach layout appears there."
-  },
-  "obStep3": {
-    "message": "Click the Train Direction icon in the toolbar."
-  },
-  "obResultHeading": {
-    "message": "This is what you’ll see"
-  },
-  "obMockInfo": {
-    "message": "The arrow shows the direction of travel in the coach layout"
-  },
-  "obReadyHeading": {
-    "message": "Have a good trip! 🚄"
-  },
-  "obReadySub": {
-    "message": "You’re all set for your next ticket purchase — the extension stays quiet on its own and collects no data."
-  },
-  "obCta": {
-    "message": "Search a connection now"
+  "obSub": {
+    "message": "As soon as you select a seat on bahn.de, simply click the ICE icon at the top of your browser — and the direction of travel is shown immediately."
   },
   "obPinTip": {
     "message": "Tip: click the puzzle icon 🧩 next to the address bar and pin Train Direction so the icon is always visible."

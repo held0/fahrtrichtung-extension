@@ -36,3 +36,11 @@ for dir in chrome firefox edge opera; do
   echo "  $zipfile ($(du -h "$zipfile" | cut -f1))"
 done
 echo "Fertig."
+
+# Landing-Page (fahrtrichtung.info): der manuelle Zug-Check auf der Startseite
+# nutzt serverseitig EXAKT dieselbe Logik wie die Extension. Kopie nachziehen,
+# damit Website und Extension nie auseinanderlaufen (landing/ ist ein eigenes Repo).
+if [ -d landing/api ]; then
+  cp chrome/background.js chrome/utils.js landing/api/
+  echo "landing/api/ (Website-Zugsuche) mit chrome/background.js + utils.js synchronisiert."
+fi

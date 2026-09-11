@@ -47,41 +47,11 @@
   "obTitle": {
     "message": "Fahrtrichtung"
   },
-  "obSkip": {
-    "message": "Überspringen"
+  "obHeading": {
+    "message": "Ein Klick genügt"
   },
-  "obWelcomeHeading": {
-    "message": "Willkommen bei Fahrtrichtung!"
-  },
-  "obWelcomeSub": {
-    "message": "Nie wieder rückwärts fahren: Diese Erweiterung zeigt dir bei der Sitzplatzwahl auf bahn.de, in welche Richtung dein ICE, IC oder EC fährt."
-  },
-  "obHowHeading": {
-    "message": "So funktioniert's"
-  },
-  "obStep1": {
-    "message": "Suche auf bahn.de wie gewohnt eine Verbindung mit ICE, IC oder EC."
-  },
-  "obStep2": {
-    "message": "Öffne bei deiner Verbindung „Sitzplatz auswählen“ — dort erscheint der Wagenplan."
-  },
-  "obStep3": {
-    "message": "Klicke auf das Fahrtrichtung-Icon in der Symbolleiste."
-  },
-  "obResultHeading": {
-    "message": "Das siehst du dann"
-  },
-  "obMockInfo": {
-    "message": "Der Pfeil zeigt die Fahrtrichtung im Wagenplan"
-  },
-  "obReadyHeading": {
-    "message": "Gute Fahrt! 🚄"
-  },
-  "obReadySub": {
-    "message": "Beim nächsten Ticketkauf bist du startklar — die Erweiterung meldet sich nicht von selbst und sammelt keine Daten."
-  },
-  "obCta": {
-    "message": "Jetzt Verbindung suchen"
+  "obSub": {
+    "message": "Sobald du auf bahn.de einen Sitzplatz auswählst, klickst du oben im Browser einfach auf das ICE-Symbol — und die Fahrtrichtung wird dir sofort angezeigt."
   },
   "obPinTip": {
     "message": "Tipp: Klicke auf das Puzzle-Symbol 🧩 neben der Adressleiste und pinne Fahrtrichtung an, damit das Icon immer sichtbar ist."

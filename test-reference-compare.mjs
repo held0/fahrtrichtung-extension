@@ -160,10 +160,35 @@ async function compareTrain(rec) {
     neuStations = await ctx.fetchBahnDeStations(rec.trainType, rec.trainNumber, DATE, { journeyHint: req.journeyHint, route: old.route });
   } catch (e) {
     const firstOld = old.stationOrder?.[0]?.name;
+    const oldHadTimes = (old.stationOrder || []).some(s => s.dep || s.arr);
+    if (!oldHadTimes) {
+      // Auch die alte Quelle hatte fuer diesen Zug/Tag nichts (fernbahn-Fallback
+      // ohne Zeiten) — beide Quellen kennen den Zug an diesem Tag nicht.
+      out.categories.push('BOTH_NO_DATA');
+      out.notes.push('neu: ' + e.message + ' — alte Quelle hatte ebenfalls keine Daten');
+      return out;
+    }
     const plausible = firstOld ? await oldFirstStopIsLongDistance(firstOld) : null;
     out.categories.push(plausible === false ? 'OLD_WRONG_TRAIN' : 'NEW_FAIL');
     out.notes.push('neu: ' + e.message + (plausible === false ? ` — alte Liste begann an "${firstOld}" (kein Fernverkehrshalt), alte Quelle hatte den falschen Zug` : ''));
     return out;
+  }
+  // Fehlt eine Segmentgrenze in der bahn.de-Liste (Betriebshalt ohne Fahrgast-
+  // wechsel), fuegt die Pipeline sie aus der fernbahn-Reihenfolge ein. Das
+  // braucht die zug_id von der fernbahn-Suchseite -> in diesem seltenen Fall den
+  // vollen Pipeline-Pfad fahren (ein fernbahn-Request).
+  const neuNorm = neuStations.map(s => ctx.normalizeStation(s.name));
+  const isNight = ['NJ', 'EN', 'D'].includes(rec.trainType);
+  const interior = (old.segments || []).slice(0, -1).map(seg => seg.to).filter(Boolean);
+  const boundaryMissing = isNight && interior.some(b => ctx.findSegBoundary(b, neuNorm) < 0);
+  if (boundaryMissing) {
+    try {
+      const full = await ctx.handleFetchFernbahn(req);
+      if (full.stationSource === 'bahn.de') {
+        neuStations = full.stationOrder;
+        out.notes.push('Grenzstation fehlte auf bahn.de -> geometrisch eingefuegt: ' + full.stationOrder.filter(s => s.inferred).map(s => s.name).join(', '));
+      }
+    } catch (e) { out.notes.push('voller Pipeline-Pfad fehlgeschlagen: ' + e.message); }
   }
   // Guard wie in handleFetchFernbahn: Liste muss zur fernbahn-Route passen
   const guardOk = ctx.stationOrderMatchesEntry(neuStations, entry);
@@ -201,7 +226,11 @@ async function compareTrain(rec) {
     out.notes.push('Segment-Zuordnung anders fuer: ' + segDiffs.map(k => `${k}(${dOld.segIdx[k]}->${dNew.segIdx[k]})`).join(', '));
   }
   if (out.oldHadTimes && JSON.stringify(dOld.durations) !== JSON.stringify(dNew.durations)) {
-    out.categories.push('DURATION_DIFF');
+    // Eine Dauer, die neu NICHT mehr angezeigt wird (null), ist gewollt: an
+    // geometrisch eingefuegten Grenzstationen gibt es keine Zeiten. Nur eine
+    // ANDERE Dauer ist eine echte Abweichung.
+    const realDiff = dOld.durations.some((d, i) => d != null && dNew.durations[i] != null && d !== dNew.durations[i]);
+    out.categories.push(realDiff ? 'DURATION_DIFF' : 'DURATION_MISSING');
     out.notes.push(`dauer alt: ${dOld.durations.join(',')} neu: ${dNew.durations.join(',')}`);
   }
   return out;

@@ -11,7 +11,7 @@ This extension does **not collect any personal data**. No accounts are created, 
 To determine the travel direction, the extension makes the following requests:
 
 1. **fernbahn.de** – Train type and train number are sent to retrieve the wagon order.
-2. **bahn.expert** – Train type, train number, and travel date are sent to retrieve the station list and times.
+2. **bahn.de** – Train type, train number, travel date, and the departure station/time of the selected train are sent to the timetable API of the bahn.de website to retrieve the station list and times.
 
 These requests do not contain any personal data (no names, email addresses, or location data).
 

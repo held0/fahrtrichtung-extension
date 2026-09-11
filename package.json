@@ -4,7 +4,12 @@
   "description": "CI/CD tooling for Fahrtrichtung browser extension",
   "scripts": {
     "test:headless": "node run-tests-headless.mjs",
-    "test:e2e": "node test-e2e-live.mjs"
+    "test:e2e": "node test-e2e-live.mjs",
+    "test:record": "node test-reference-record.mjs",
+    "test:compare": "node test-reference-compare.mjs --mode hint",
+    "test:compare:scan": "node test-reference-compare.mjs --mode scan --sample 10",
+    "test:unit:bahnde": "node test-bahnde-unit.mjs",
+    "test": "npm run test:headless && npm run test:unit:bahnde"
   },
   "devDependencies": {
     "puppeteer": "^24.0.0",

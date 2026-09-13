@@ -58,5 +58,76 @@
   },
   "obPrivacy": {
     "message": "Free · Open source · No tracking"
+  },
+  "fbQuestion": {
+    "message": "$1 on $2: Was the direction shown correct?",
+    "placeholders": {
+      "train": {
+        "content": "$1"
+      },
+      "date": {
+        "content": "$2"
+      }
+    }
+  },
+  "fbYes": {
+    "message": "Yes, it was right"
+  },
+  "fbNo": {
+    "message": "No, it was wrong"
+  },
+  "fbNotTravelled": {
+    "message": "Didn't travel"
+  },
+  "fbMore": {
+    "message": "$1 more trip(s) waiting for your answer.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "fbThanks": {
+    "message": "Thanks! Your answer stays right here on your device."
+  },
+  "statsLine": {
+    "message": "$1 booking(s) with direction shown · $2× confirmed · $3× wrong",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "right": {
+        "content": "$2"
+      },
+      "wrong": {
+        "content": "$3"
+      }
+    }
+  },
+  "privacyLocal": {
+    "message": "These numbers live only locally on your $1, inside this extension. There is no server – nothing is sent to us or anyone else.",
+    "placeholders": {
+      "device": {
+        "content": "$1"
+      }
+    }
+  },
+  "statsReset": {
+    "message": "Clear counter"
+  },
+  "deviceMac": {
+    "message": "Mac"
+  },
+  "deviceWindows": {
+    "message": "Windows PC"
+  },
+  "deviceLinux": {
+    "message": "Linux machine"
+  },
+  "deviceChromebook": {
+    "message": "Chromebook"
+  },
+  "deviceGeneric": {
+    "message": "device"
   }
 }

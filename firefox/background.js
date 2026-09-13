@@ -23,7 +23,111 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(err => sendResponse({ error: err.message }));
     return true;
   }
+  if (request.type === 'bookingDetected') {
+    recordBooking(request)
+      .then(sendResponse)
+      .catch(err => sendResponse({ error: err.message }));
+    return true;
+  }
+  if (request.type === 'updateBadge') {
+    updateFeedbackBadge().then(() => sendResponse({ ok: true })).catch(() => sendResponse({ ok: false }));
+    return true;
+  }
 });
+
+// ============================================================================
+// Lokaler Erfolgszaehler: Buchungen, die mit der Extension gemacht wurden, und
+// die nachtraegliche Rueckfrage "Hat die Fahrtrichtung gestimmt?".
+// ALLES bleibt in chrome.storage.local auf dem Geraet — es gibt keinen Server.
+//   recentLookups: Zuege, die das Popup zuletzt angezeigt hat (24 h)
+//   trips:         erkannte Buchungen mit Feedback (null | 'right' | 'wrong')
+// ============================================================================
+
+const LOOKUP_MATCH_WINDOW_MS = 6 * 60 * 60 * 1000;   // Buchung folgt der Anzeige binnen 6 h
+const FEEDBACK_ALARM = 'fahrtrichtung-feedback';
+
+// Reine Abgleich-Logik (testbar): welche neuen Trips entstehen aus einer
+// erkannten Buchung? Ein Trip pro passendem Lookup; Duplikate (gleiche
+// Auftragsnummer oder gleicher Zug am gleichen Tag) werden nicht doppelt angelegt.
+function matchBookingToLookups(booking, lookups, trips, now) {
+  const fresh = (lookups || []).filter(l => now - (l.ts || 0) <= LOOKUP_MATCH_WINDOW_MS);
+  if (!fresh.length) return [];
+  const trains = (booking.trains || []).map(t => t.replace(/\s+/g, ' ').trim().toUpperCase());
+  let candidates = trains.length ? fresh.filter(l => trains.includes(String(l.trainFull).toUpperCase())) : [];
+  // Kein Zugname auf der Bestaetigungsseite erkennbar: den juengsten Lookup nehmen,
+  // wenn er hoechstens 2 h alt ist.
+  if (!candidates.length && !trains.length) {
+    const latest = fresh.slice().sort((a, b) => b.ts - a.ts)[0];
+    if (latest && now - latest.ts <= 2 * 60 * 60 * 1000) candidates = [latest];
+  }
+  const dates = booking.travelDates || [];
+  const created = [];
+  const seenKey = new Set();
+  for (const l of candidates) {
+    // Reisedatum: das des Lookups; wenn die Seite Daten nennt und das Lookup-Datum
+    // nicht darunter ist, ist es wahrscheinlich eine andere Reise -> ueberspringen.
+    if (dates.length && l.travelDate && !dates.includes(l.travelDate)) continue;
+    const key = `${l.trainFull}|${l.travelDate}`;
+    if (seenKey.has(key)) continue;
+    seenKey.add(key);
+    const dup = (trips || []).some(t => (booking.orderNumber && t.orderNumber === booking.orderNumber && t.trainFull === l.trainFull)
+      || (t.trainFull === l.trainFull && t.travelDate === l.travelDate));
+    if (dup) continue;
+    created.push({
+      id: `${now}-${Math.random().toString(36).slice(2, 8)}`,
+      trainFull: l.trainFull,
+      from: l.from || '',
+      to: l.to || '',
+      travelDate: l.travelDate || '',
+      direction: l.direction || '',
+      orderNumber: booking.orderNumber || null,
+      bookedAt: now,
+      feedback: null,
+      answeredAt: null,
+    });
+  }
+  return created;
+}
+
+async function recordBooking(booking) {
+  const { recentLookups = [], trips = [] } = await chrome.storage.local.get({ recentLookups: [], trips: [] });
+  const created = matchBookingToLookups(booking, recentLookups, trips, Date.now());
+  if (created.length) {
+    await chrome.storage.local.set({ trips: trips.concat(created).slice(-200) });
+    console.log('[Fahrtrichtung] Buchung erkannt, lokal gemerkt:', created.map(t => `${t.trainFull} ${t.travelDate}`).join(', '));
+  }
+  await updateFeedbackBadge();
+  return { recorded: created.length };
+}
+
+// Trips, deren Reisetag vorbei ist und die noch kein Feedback haben
+function dueTrips(trips, todayIso) {
+  return (trips || []).filter(t => t.feedback === null && t.travelDate && t.travelDate < todayIso);
+}
+
+function localTodayIso(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+async function updateFeedbackBadge() {
+  if (!chrome.action?.setBadgeText) return;
+  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
+  const due = dueTrips(trips, localTodayIso());
+  try {
+    await chrome.action.setBadgeText({ text: due.length ? String(due.length) : '' });
+    if (due.length) await chrome.action.setBadgeBackgroundColor({ color: '#ec0016' });
+  } catch (e) { /* ignore */ }
+}
+
+// Taeglicher Check (Reisetag vorbei -> Badge), ohne Nutzerinteraktion
+if (chrome.alarms) {
+  const ensureAlarm = () => chrome.alarms.create(FEEDBACK_ALARM, { periodInMinutes: 12 * 60 });
+  chrome.runtime.onInstalled.addListener(ensureAlarm);
+  chrome.runtime.onStartup?.addListener(ensureAlarm);
+  chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === FEEDBACK_ALARM) updateFeedbackBadge();
+  });
+}
 
 // journeyHint (optional): exakte Zugkennung aus dem bahn.de-Sitzplatzdialog
 //   { trainNumber, departureEva, departureTime: 'YYYY-MM-DDTHH:MM:SS',

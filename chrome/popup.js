@@ -8,6 +8,9 @@ document.getElementById('donate-button-text').textContent = msg('donateButton');
 
 async function init() {
   try {
+    // Rueckfrage zu vergangenen Fahrten + lokaler Erfolgszaehler (immer, auch abseits von bahn.de)
+    renderFeedbackAndStats().catch(() => {});
+
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (!tab?.url?.includes('bahn.de')) {
@@ -241,6 +244,7 @@ async function fetchAndDisplay(train, fromStation, toStation, travelDate, journe
       return;
     }
 
+    result.travelDate = travelDate || new Date().toISOString().slice(0, 10);   // fuer den lokalen Erfolgszaehler
     renderResult(result, fromStation, toStation);
   } catch (err) {
     contentEl.innerHTML = `<div class="status error">Fehler: ${escHtml(err.message)}</div>`;
@@ -379,8 +383,117 @@ function renderResult(data, userFrom, userTo) {
   const disc = document.getElementById('disclaimer');
   if (disc) disc.style.display = '';
 
+  // Diese Anzeige lokal merken — wird eine Buchung erkannt, entsteht daraus ein
+  // Eintrag im Erfolgszaehler (nur auf diesem Geraet, siehe rememberLookup)
+  rememberLookup(data, userFrom, userTo, displaySegments).catch(() => {});
+
   // Track usage and show donate banner at milestones
   showDonateIfMilestone();
+}
+
+// ============================================================================
+// Lokaler Erfolgszaehler + Rueckfrage. Alles in chrome.storage.local — kein
+// Server, nichts verlaesst dieses Geraet.
+// ============================================================================
+
+async function rememberLookup(data, userFrom, userTo, displaySegments) {
+  const { recentLookups = [] } = await chrome.storage.local.get({ recentLookups: [] });
+  const now = Date.now();
+  const direction = (displaySegments || []).map(({ seg }) => getDisplayDirection(seg, data.wagonNumbers) === 'left' ? '\u2190' : '\u2192').join('');
+  const entry = { trainFull: data.trainFull, from: userFrom || '', to: userTo || '', travelDate: data.travelDate || '', direction, ts: now };
+  const kept = recentLookups.filter(l => now - (l.ts || 0) < 24 * 60 * 60 * 1000 && !(l.trainFull === entry.trainFull && l.travelDate === entry.travelDate));
+  kept.push(entry);
+  await chrome.storage.local.set({ recentLookups: kept.slice(-20) });
+}
+
+function deviceName() {
+  const plat = (navigator.userAgentData?.platform || navigator.platform || '').toLowerCase();
+  if (/mac/.test(plat)) return msg('deviceMac');
+  if (/win/.test(plat)) return msg('deviceWindows');
+  if (/cros|chrome os/.test(plat)) return msg('deviceChromebook');
+  if (/linux/.test(plat)) return msg('deviceLinux');
+  return msg('deviceGeneric');
+}
+
+function todayIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function formatDateShort(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  return m ? `${m[3]}.${m[2]}.${m[1]}` : iso;
+}
+
+async function renderFeedbackAndStats() {
+  const box = document.getElementById('feedback');
+  const stats = document.getElementById('stats');
+  if (!box || !stats) return;
+  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
+
+  // 1) Rueckfrage: aelteste vergangene Fahrt ohne Antwort
+  const today = todayIso();
+  const due = trips.filter(t => t.feedback === null && t.travelDate && t.travelDate < today).sort((a, b) => a.travelDate.localeCompare(b.travelDate));
+  const trip = due[0];
+  if (trip) {
+    const route = trip.from && trip.to ? ` (${trip.from} \u2013 ${trip.to})` : '';
+    box.innerHTML = `
+      <div class="fb-question">${escHtml(msg('fbQuestion', [trip.trainFull + route, formatDateShort(trip.travelDate)]))}</div>
+      <div class="fb-buttons">
+        <button class="fb-btn fb-yes" data-answer="right">${escHtml(msg('fbYes'))}</button>
+        <button class="fb-btn fb-no" data-answer="wrong">${escHtml(msg('fbNo'))}</button>
+        <button class="fb-btn fb-skip" data-answer="skip">${escHtml(msg('fbNotTravelled'))}</button>
+      </div>
+      ${due.length > 1 ? `<div class="fb-more">${escHtml(msg('fbMore', String(due.length - 1)))}</div>` : ''}
+    `;
+    box.style.display = '';
+    for (const btn of box.querySelectorAll('.fb-btn')) {
+      btn.addEventListener('click', () => answerFeedback(trip.id, btn.dataset.answer));
+    }
+  } else {
+    box.style.display = 'none';
+    box.innerHTML = '';
+  }
+
+  // 2) Zaehler + Datenschutzhinweis
+  const total = trips.length;
+  const right = trips.filter(t => t.feedback === 'right').length;
+  const wrong = trips.filter(t => t.feedback === 'wrong').length;
+  if (total) {
+    stats.innerHTML = `
+      <div class="stats-line">${escHtml(msg('statsLine', [String(total), String(right), String(wrong)]))}</div>
+      <div class="stats-privacy">${escHtml(msg('privacyLocal', deviceName()))}</div>
+      <button class="stats-reset" id="stats-reset">${escHtml(msg('statsReset'))}</button>
+    `;
+    stats.style.display = '';
+    document.getElementById('stats-reset')?.addEventListener('click', async () => {
+      await chrome.storage.local.set({ trips: [], recentLookups: [] });
+      chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError);
+      renderFeedbackAndStats();
+    });
+  } else {
+    stats.style.display = 'none';
+    stats.innerHTML = '';
+  }
+}
+
+async function answerFeedback(tripId, answer) {
+  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
+  let next;
+  if (answer === 'skip') {
+    next = trips.filter(t => t.id !== tripId);                       // nicht gefahren -> zaehlt nicht
+  } else {
+    next = trips.map(t => t.id === tripId ? { ...t, feedback: answer, answeredAt: Date.now() } : t);
+  }
+  await chrome.storage.local.set({ trips: next });
+  chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError);
+  const box = document.getElementById('feedback');
+  if (box && answer !== 'skip') {
+    box.innerHTML = `<div class="fb-thanks">${escHtml(msg('fbThanks'))}</div>`;
+    setTimeout(renderFeedbackAndStats, 1200);
+  } else {
+    renderFeedbackAndStats();
+  }
 }
 
 function showError(msg) {

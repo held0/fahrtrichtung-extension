@@ -36,6 +36,25 @@ applyDevIcon();
 chrome.runtime.onInstalled.addListener(applyDevIcon);
 chrome.runtime.onStartup?.addListener(applyDevIcon);
 
+// Dev-Version: beim (Neu-)Laden Demo-Fahrten anlegen, wenn noch keine da sind,
+// damit Rueckfrage und Zaehler sofort sichtbar sind. Store-Builds: nie.
+function demoTrips(now) {
+  const d = n => { const x = new Date(now); x.setDate(x.getDate() - n); return localTodayIso(x); };
+  return [
+    { id: 'demo-1', trainFull: 'ICE 1005', from: 'Berlin Hbf', to: 'München Hbf', travelDate: d(1), direction: '\u2192', orderNumber: 'DEMO0001', bookedAt: now - 3 * 86400000, feedback: null, answeredAt: null, demo: true },
+    { id: 'demo-2', trainFull: 'ICE 77', from: 'Hamburg Hbf', to: 'Freiburg (Breisgau) Hbf', travelDate: d(8), direction: '\u2192\u2190', orderNumber: 'DEMO0002', bookedAt: now - 10 * 86400000, feedback: 'right', answeredAt: now - 7 * 86400000, demo: true },
+    { id: 'demo-3', trainFull: 'ICE 691', from: 'Berlin Hbf', to: 'Stuttgart Hbf', travelDate: d(20), direction: '\u2190\u2192\u2190', orderNumber: 'DEMO0003', bookedAt: now - 22 * 86400000, feedback: 'wrong', answeredAt: now - 19 * 86400000, demo: true },
+    { id: 'demo-4', trainFull: 'IC 2375', from: 'Westerland (Sylt)', to: 'Hamburg Hbf', travelDate: d(-5), direction: '\u2190', orderNumber: 'DEMO0004', bookedAt: now - 86400000, feedback: null, answeredAt: null, demo: true },
+  ];
+}
+chrome.runtime.onInstalled.addListener(async () => {
+  if (!isDevInstall() || !chrome.storage?.local) return;
+  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
+  if (trips.length) return;
+  await chrome.storage.local.set({ trips: demoTrips(Date.now()) });
+  await updateFeedbackBadge();
+});
+
 // Nach der Erst-Installation einmalig die Onboarding-Tour öffnen.
 // Bewusst NUR bei reason === 'install' — Updates und Browser-Starts
 // dürfen kein Tab aufreißen.
@@ -56,6 +75,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     recordBooking(request)
       .then(sendResponse)
       .catch(err => sendResponse({ error: err.message }));
+    return true;
+  }
+  if (request.type === 'devSeed' && isDevInstall()) {
+    chrome.storage.local.set({ trips: demoTrips(Date.now()) }).then(updateFeedbackBadge).then(() => sendResponse({ ok: true }));
     return true;
   }
   if (request.type === 'updateBadge') {

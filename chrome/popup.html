@@ -235,6 +235,32 @@
       text-decoration: underline;
     }
 
+    .devpanel {
+      margin: 12px 16px 0;
+      padding: 10px 12px;
+      border: 1px dashed #c9a800;
+      border-radius: 10px;
+      background: #fffbe6;
+      font-size: 11px;
+      color: #333;
+    }
+
+    .devpanel h4 { font-size: 11px; margin: 0 0 6px; color: #7a6400; letter-spacing: .06em; }
+    .devpanel table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    .devpanel td { padding: 2px 4px 2px 0; vertical-align: top; border-bottom: 1px solid #f0e6b0; }
+    .devpanel td.st { white-space: nowrap; font-weight: 600; }
+    .devpanel .st-open { color: #b45309; }
+    .devpanel .st-right { color: #2e7d32; }
+    .devpanel .st-wrong { color: #ec0016; }
+    .devpanel .row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .devpanel input, .devpanel select { font: inherit; font-size: 11px; padding: 3px 5px; border: 1px solid #ccc; border-radius: 5px; }
+    .devpanel input.w-train { width: 70px; }
+    .devpanel input.w-st { width: 92px; }
+    .devpanel input.w-date { width: 108px; }
+    .devpanel button { font: inherit; font-size: 11px; padding: 3px 8px; border-radius: 12px; border: 1px solid #999; background: #fff; cursor: pointer; }
+    .devpanel button:hover { background: #f3f3f3; }
+    .devpanel .tiny { color: #888; margin-top: 4px; }
+
     .disclaimer {
       font-size: 10.5px;
       color: #999;
@@ -327,6 +353,7 @@
 
   <div class="disclaimer" id="disclaimer" style="display:none"></div>
   <div class="stats" id="stats" style="display:none"></div>
+  <div class="devpanel" id="devpanel" style="display:none"></div>
   <div class="ice-sketch" id="ice-sketch" style="display:none">
     <img src="ice-drawing.png" alt="ICE">
   </div>

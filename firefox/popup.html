@@ -173,10 +173,23 @@
     .feedback {
       margin: 12px 16px 0;
       padding: 12px 14px;
-      background: #fff8e6;
-      border: 1px solid #f0d58a;
+      background: #fff;
+      border: 1.5px solid #333;
       border-radius: 10px;
     }
+
+    .fb-seal {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .fb-seal svg { width: 26px; height: 26px; flex: 0 0 auto; }
+    .fb-seal-text { font-size: 11px; line-height: 1.3; color: #444; }
+    .fb-seal-text b { display: block; font-size: 11.5px; color: #1a1a1a; letter-spacing: .02em; }
 
     .fb-question {
       font-size: 12.5px;
@@ -211,8 +224,24 @@
     .fb-more { font-size: 11px; color: #888; margin-top: 8px; }
     .fb-thanks { font-size: 12.5px; font-weight: 600; color: #2e7d32; }
 
+    .history-toggle {
+      display: block;
+      margin: 14px 16px 0;
+      font: inherit;
+      font-size: 11px;
+      color: #666;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .history-toggle:hover { color: #1a1a1a; }
+
     .stats {
-      margin: 12px 16px 0;
+      margin: 8px 16px 0;
       padding: 10px 14px;
       background: #fafafa;
       border: 1px solid #e0e0e0;
@@ -223,6 +252,14 @@
 
     .stats-line { font-weight: 600; color: #333; margin-bottom: 4px; }
     .stats-privacy { color: #666; line-height: 1.4; }
+    .stats-list { margin: 8px 0 0; padding: 0; list-style: none; }
+    .stats-list li { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; border-top: 1px solid #eee; }
+    .stats-list .h-train { font-weight: 600; color: #333; }
+    .stats-list .h-sub { color: #777; font-size: 10.5px; }
+    .stats-list .h-st { white-space: nowrap; font-weight: 600; }
+    .h-right { color: #2e7d32; }
+    .h-wrong { color: #ec0016; }
+    .h-open { color: #b45309; }
 
     .stats-reset {
       font: inherit;
@@ -230,7 +267,7 @@
       color: #999;
       background: none;
       border: none;
-      padding: 4px 0 0;
+      padding: 6px 0 0;
       cursor: pointer;
       text-decoration: underline;
     }
@@ -352,6 +389,7 @@
   </div>
 
   <div class="disclaimer" id="disclaimer" style="display:none"></div>
+  <button class="history-toggle" id="history-toggle" style="display:none"></button>
   <div class="stats" id="stats" style="display:none"></div>
   <div class="devpanel" id="devpanel" style="display:none"></div>
   <div class="ice-sketch" id="ice-sketch" style="display:none">

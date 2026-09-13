@@ -129,5 +129,36 @@
   },
   "deviceGeneric": {
     "message": "Gerät"
+  },
+  "sealTitle": {
+    "message": "Bleibt lokal · kein Server"
+  },
+  "sealText": {
+    "message": "Buchungen und Antworten liegen nur auf deinem $1 in dieser Erweiterung. Nichts wird gesendet.",
+    "placeholders": {
+      "device": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyShow": {
+    "message": "Verlauf anzeigen ($1 Fahrten)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyHide": {
+    "message": "Verlauf ausblenden"
+  },
+  "histRight": {
+    "message": "bestätigt"
+  },
+  "histWrong": {
+    "message": "falsch"
+  },
+  "histOpen": {
+    "message": "offen"
   }
 }

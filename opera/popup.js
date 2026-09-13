@@ -58,7 +58,7 @@ async function renderDevPanel() {
     </div>
     <div class="tiny">Zuletzt angezeigt (recentLookups): ${recentLookups.length ? recentLookups.map(l => `${escHtml(l.trainFull)} ${escHtml(l.travelDate)}`).join(', ') : '–'}</div>
   `;
-  panel.style.display = '';
+  panel.style.display = historyOpen ? '' : 'none';
 
   const refresh = async () => { chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError); await renderFeedbackAndStats(); await renderDevPanel(); };
   panel.querySelector('#dv-add').addEventListener('click', async () => {
@@ -105,7 +105,7 @@ async function init() {
   try {
     // Rueckfrage zu vergangenen Fahrten + lokaler Erfolgszaehler (immer, auch abseits von bahn.de)
     renderFeedbackAndStats().catch(() => {});
-    if (isDevInstall()) renderDevPanel().catch(() => {});
+    if (isDevInstall()) renderDevPanel().catch(() => {});   // Panel selbst blendet sich nur bei offenem Verlauf ein
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -521,10 +521,15 @@ function formatDateShort(iso) {
   return m ? `${m[3]}.${m[2]}.${m[1]}` : iso;
 }
 
+const SEAL_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5.25 3.4 10.15 8 11 4.6-.85 8-5.75 8-11V5l-8-3z" fill="#1a1a1a"/><path d="M8.5 12.2l2.3 2.3 4.7-4.9" fill="none" stroke="#ffd400" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+let historyOpen = false;
+
 async function renderFeedbackAndStats() {
   const box = document.getElementById('feedback');
   const stats = document.getElementById('stats');
-  if (!box || !stats) return;
+  const toggle = document.getElementById('history-toggle');
+  if (!box || !stats || !toggle) return;
   const { trips = [] } = await chrome.storage.local.get({ trips: [] });
 
   // 1) Rueckfrage: aelteste vergangene Fahrt ohne Antwort
@@ -534,6 +539,7 @@ async function renderFeedbackAndStats() {
   if (trip) {
     const route = trip.from && trip.to ? ` (${trip.from} \u2013 ${trip.to})` : '';
     box.innerHTML = `
+      <div class="fb-seal">${SEAL_SVG}<div class="fb-seal-text"><b>${escHtml(msg('sealTitle'))}</b>${escHtml(msg('sealText', deviceName()))}</div></div>
       <div class="fb-question">${escHtml(msg('fbQuestion', [trip.trainFull + route, formatDateShort(trip.travelDate)]))}</div>
       <div class="fb-buttons">
         <button class="fb-btn fb-yes" data-answer="right">${escHtml(msg('fbYes'))}</button>
@@ -551,26 +557,42 @@ async function renderFeedbackAndStats() {
     box.innerHTML = '';
   }
 
-  // 2) Zaehler + Datenschutzhinweis
+  // 2) Verlauf + Zaehler hinter einem Link
   const total = trips.length;
-  const right = trips.filter(t => t.feedback === 'right').length;
-  const wrong = trips.filter(t => t.feedback === 'wrong').length;
-  if (total) {
-    stats.innerHTML = `
-      <div class="stats-line">${escHtml(msg('statsLine', [String(total), String(right), String(wrong)]))}</div>
-      <div class="stats-privacy">${escHtml(msg('privacyLocal', deviceName()))}</div>
-      <button class="stats-reset" id="stats-reset">${escHtml(msg('statsReset'))}</button>
-    `;
-    stats.style.display = '';
-    document.getElementById('stats-reset')?.addEventListener('click', async () => {
-      await chrome.storage.local.set({ trips: [], recentLookups: [] });
-      chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError);
-      renderFeedbackAndStats();
-    });
-  } else {
+  if (!total) {
+    toggle.style.display = 'none';
     stats.style.display = 'none';
     stats.innerHTML = '';
+    return;
   }
+  const right = trips.filter(t => t.feedback === 'right').length;
+  const wrong = trips.filter(t => t.feedback === 'wrong').length;
+  toggle.textContent = historyOpen ? msg('historyHide') : msg('historyShow', String(total));
+  toggle.style.display = '';
+  toggle.onclick = () => { historyOpen = !historyOpen; renderFeedbackAndStats(); if (isDevInstall()) renderDevPanel().catch(() => {}); };
+  if (!historyOpen) {
+    stats.style.display = 'none';
+    stats.innerHTML = '';
+    return;
+  }
+  const items = trips.slice().sort((a, b) => (b.travelDate || '').localeCompare(a.travelDate || '')).map(t => {
+    const st = t.feedback === 'right' ? `<span class="h-st h-right">${escHtml(msg('histRight'))}</span>`
+      : t.feedback === 'wrong' ? `<span class="h-st h-wrong">${escHtml(msg('histWrong'))}</span>`
+      : `<span class="h-st h-open">${escHtml(msg('histOpen'))}</span>`;
+    return `<li><span><span class="h-train">${escHtml(t.trainFull)}</span> <span class="h-sub">${escHtml(formatDateShort(t.travelDate))}${t.from && t.to ? ` \u00b7 ${escHtml(t.from)} \u2013 ${escHtml(t.to)}` : ''}</span></span>${st}</li>`;
+  }).join('');
+  stats.innerHTML = `
+    <div class="stats-line">${escHtml(msg('statsLine', [String(total), String(right), String(wrong)]))}</div>
+    <div class="stats-privacy">${escHtml(msg('privacyLocal', deviceName()))}</div>
+    <ul class="stats-list">${items}</ul>
+    <button class="stats-reset" id="stats-reset">${escHtml(msg('statsReset'))}</button>
+  `;
+  stats.style.display = '';
+  document.getElementById('stats-reset')?.addEventListener('click', async () => {
+    await chrome.storage.local.set({ trips: [], recentLookups: [] });
+    chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError);
+    renderFeedbackAndStats();
+  });
 }
 
 async function answerFeedback(tripId, answer) {

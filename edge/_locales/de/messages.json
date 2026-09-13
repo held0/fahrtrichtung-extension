@@ -60,7 +60,7 @@
     "message": "Kostenlos · Open Source · Kein Tracking"
   },
   "fbQuestion": {
-    "message": "$1 am $2: Hat die angezeigte Fahrtrichtung gestimmt?",
+    "message": "$1 am $2: Saßt du auf dem längsten Streckenabschnitt in der gewünschten Richtung?",
     "placeholders": {
       "train": {
         "content": "$1"
@@ -160,5 +160,43 @@
   },
   "histOpen": {
     "message": "offen"
+  },
+  "shareTitle": {
+    "message": "Erfolgsrate teilen?"
+  },
+  "shareText": {
+    "message": "Wenn du willst, teilst du nur deine Erfolgsrate mit uns – zum Beispiel „5 von 6 richtig“. Kein Zug, kein Datum, kein Name, keine Kennung. So erfahren wir, wie zuverlässig die Wagenreihungsdaten sind."
+  },
+  "shareOnce": {
+    "message": "Einmal teilen"
+  },
+  "shareAlways": {
+    "message": "Immer automatisch teilen"
+  },
+  "shareNever": {
+    "message": "Nein danke"
+  },
+  "shareDone": {
+    "message": "Danke! Gesendet: $1 von $2 richtig.",
+    "placeholders": {
+      "right": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "shareFailed": {
+    "message": "Senden hat nicht geklappt – die Zahlen bleiben lokal."
+  },
+  "shareStatusAuto": {
+    "message": "Erfolgsrate wird automatisch geteilt."
+  },
+  "shareStatusNever": {
+    "message": "Erfolgsrate wird nicht geteilt."
+  },
+  "shareChange": {
+    "message": "ändern"
   }
 }

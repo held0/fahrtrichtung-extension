@@ -60,7 +60,7 @@
     "message": "Free · Open source · No tracking"
   },
   "fbQuestion": {
-    "message": "$1 on $2: Was the direction shown correct?",
+    "message": "$1 on $2: On the longest section, were you seated facing the direction you wanted?",
     "placeholders": {
       "train": {
         "content": "$1"
@@ -160,5 +160,43 @@
   },
   "histOpen": {
     "message": "open"
+  },
+  "shareTitle": {
+    "message": "Share your success rate?"
+  },
+  "shareText": {
+    "message": "If you like, share only your success rate with us – for example \"5 of 6 right\". No train, no date, no name, no identifier. It tells us how reliable the wagon-order data is."
+  },
+  "shareOnce": {
+    "message": "Share once"
+  },
+  "shareAlways": {
+    "message": "Always share automatically"
+  },
+  "shareNever": {
+    "message": "No thanks"
+  },
+  "shareDone": {
+    "message": "Thanks! Sent: $1 of $2 right.",
+    "placeholders": {
+      "right": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "shareFailed": {
+    "message": "Sending failed – your numbers stay local."
+  },
+  "shareStatusAuto": {
+    "message": "Success rate is shared automatically."
+  },
+  "shareStatusNever": {
+    "message": "Success rate is not shared."
+  },
+  "shareChange": {
+    "message": "change"
   }
 }

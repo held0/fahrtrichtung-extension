@@ -129,5 +129,36 @@
   },
   "deviceGeneric": {
     "message": "device"
+  },
+  "sealTitle": {
+    "message": "Stays local · no server"
+  },
+  "sealText": {
+    "message": "Bookings and answers live only on your $1 inside this extension. Nothing is sent.",
+    "placeholders": {
+      "device": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyShow": {
+    "message": "Show history ($1 trips)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyHide": {
+    "message": "Hide history"
+  },
+  "histRight": {
+    "message": "confirmed"
+  },
+  "histWrong": {
+    "message": "wrong"
+  },
+  "histOpen": {
+    "message": "open"
   }
 }

@@ -26,3 +26,5 @@ The extension reads information from the open bahn.de page (train name, stations
 ## Contact
 
 Questions about this privacy policy: https://github.com/held0/fahrtrichtung-extension/issues
+
+Optional (only after explicit consent inside the extension): transmission of the anonymous success rate (number right/wrong, extension version) to fahrtrichtung.info – no train, date, name, identifier or cookie. All other success-counter data stays local on the device.

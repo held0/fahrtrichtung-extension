@@ -15,7 +15,7 @@ Um die Fahrtrichtung anzuzeigen, sendet die Extension Anfragen an:
 
 Diese Anfragen enthalten keine personenbezogenen Daten.
 
-Der optionale Erfolgszähler (erkannte Buchungen und Ihre Antwort, ob die Fahrtrichtung gestimmt hat) wird ausschließlich lokal im Speicher der Erweiterung auf Ihrem Gerät abgelegt und kann jederzeit über „Zähler löschen" entfernt werden. Er wird nicht übertragen. Wie bei jeder HTTP-Anfrage wird Ihre IP-Adresse im Rahmen des Internetprotokolls an diese Dienste übertragen.
+Der optionale Erfolgszähler (erkannte Buchungen und Ihre Antwort, ob die Fahrtrichtung gestimmt hat) wird ausschließlich lokal im Speicher der Erweiterung auf Ihrem Gerät abgelegt und kann jederzeit über „Zähler löschen" entfernt werden. Er wird nicht automatisch übertragen. Nur wenn Sie in der Erweiterung ausdrücklich „Einmal teilen“ oder „Immer automatisch teilen“ wählen, wird Ihre Erfolgsrate (Anzahl richtig, Anzahl falsch, Extension-Version) anonym an fahrtrichtung.info gesendet – ohne Zug, Datum, Name, Kennung oder Cookie; die IP-Adresse wird dort nicht gespeichert. Das lässt sich jederzeit im Verlauf wieder abschalten. Wie bei jeder HTTP-Anfrage wird Ihre IP-Adresse im Rahmen des Internetprotokolls an diese Dienste übertragen.
 
 ### Lokale Speicherung
 

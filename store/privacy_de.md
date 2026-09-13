@@ -26,3 +26,5 @@ Die Extension liest Informationen aus der geöffneten bahn.de-Seite (Zugbezeichn
 ## Kontakt
 
 Bei Fragen zur Datenschutzerklärung: https://github.com/held0/fahrtrichtung-extension/issues
+
+Optional (nur nach ausdrücklicher Zustimmung in der Erweiterung): Übermittlung der anonymen Erfolgsrate (Anzahl richtig/falsch, Extension-Version) an fahrtrichtung.info – ohne Zug, Datum, Name, Kennung oder Cookie. Alle anderen Daten des Erfolgszählers bleiben lokal auf dem Gerät.

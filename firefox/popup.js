@@ -581,13 +581,20 @@ async function renderFeedbackAndStats() {
       : `<span class="h-st h-open">${escHtml(msg('histOpen'))}</span>`;
     return `<li><span><span class="h-train">${escHtml(t.trainFull)}</span> <span class="h-sub">${escHtml(formatDateShort(t.travelDate))}${t.from && t.to ? ` \u00b7 ${escHtml(t.from)} \u2013 ${escHtml(t.to)}` : ''}</span></span>${st}</li>`;
   }).join('');
+  const { shareMode = null } = await chrome.storage.local.get({ shareMode: null });
+  const shareStatus = shareMode === 'auto' ? msg('shareStatusAuto') : shareMode === 'never' ? msg('shareStatusNever') : '';
   stats.innerHTML = `
     <div class="stats-line">${escHtml(msg('statsLine', [String(total), String(right), String(wrong)]))}</div>
     <div class="stats-privacy">${escHtml(msg('privacyLocal', deviceName()))}</div>
     <ul class="stats-list">${items}</ul>
+    ${shareStatus ? `<div class="stats-privacy">${escHtml(shareStatus)} <button class="stats-reset" id="share-change" style="padding:0">${escHtml(msg('shareChange'))}</button></div>` : ''}
     <button class="stats-reset" id="stats-reset">${escHtml(msg('statsReset'))}</button>
   `;
   stats.style.display = '';
+  document.getElementById('share-change')?.addEventListener('click', async () => {
+    await chrome.storage.local.set({ shareMode: null });
+    renderFeedbackAndStats();
+  });
   document.getElementById('stats-reset')?.addEventListener('click', async () => {
     await chrome.storage.local.set({ trips: [], recentLookups: [] });
     chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError);
@@ -608,9 +615,69 @@ async function answerFeedback(tripId, answer) {
   const box = document.getElementById('feedback');
   if (box && answer !== 'skip') {
     box.innerHTML = `<div class="fb-thanks">${escHtml(msg('fbThanks'))}</div>`;
-    setTimeout(renderFeedbackAndStats, 1200);
+    setTimeout(() => offerShare(box), 900);
   } else {
     renderFeedbackAndStats();
+  }
+}
+
+// ============================================================================
+// Freiwilliges Teilen der Erfolgsrate: NUR die Zahlen richtig/falsch/gesamt und
+// die Extension-Version. Kein Zug, kein Datum, keine Kennung, kein Cookie.
+// shareMode: null = jedes Mal fragen, 'auto' = automatisch senden, 'never' = nie.
+// ============================================================================
+const SHARE_ENDPOINT = 'https://fahrtrichtung.info/api/feedback';
+
+function successRate(trips) {
+  const right = trips.filter(t => t.feedback === 'right').length;
+  const wrong = trips.filter(t => t.feedback === 'wrong').length;
+  return { right, wrong, total: right + wrong };
+}
+
+async function sendSuccessRate() {
+  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
+  const rate = successRate(trips);
+  if (!rate.total) return { ok: false, rate };
+  try {
+    const resp = await fetch(SHARE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ right: rate.right, wrong: rate.wrong, total: rate.total, version: chrome.runtime.getManifest().version }),
+    });
+    if (resp.ok) await chrome.storage.local.set({ lastSharedAt: Date.now(), lastSharedRate: rate });
+    return { ok: resp.ok, rate };
+  } catch (e) {
+    return { ok: false, rate };
+  }
+}
+
+async function offerShare(box) {
+  const { shareMode = null, trips = [] } = await chrome.storage.local.get({ shareMode: null, trips: [] });
+  const rate = successRate(trips);
+  if (shareMode === 'never' || !rate.total) return renderFeedbackAndStats();
+  if (shareMode === 'auto') {
+    const r = await sendSuccessRate();
+    box.innerHTML = `<div class="fb-thanks">${escHtml(r.ok ? msg('shareDone', [String(r.rate.right), String(r.rate.total)]) : msg('shareFailed'))}</div>`;
+    setTimeout(renderFeedbackAndStats, 1500);
+    return;
+  }
+  box.innerHTML = `
+    <div class="fb-seal">${SEAL_SVG}<div class="fb-seal-text"><b>${escHtml(msg('shareTitle'))}</b>${escHtml(msg('shareText'))}</div></div>
+    <div class="fb-buttons">
+      <button class="fb-btn fb-yes" data-share="once">${escHtml(msg('shareOnce'))}</button>
+      <button class="fb-btn" data-share="auto">${escHtml(msg('shareAlways'))}</button>
+      <button class="fb-btn fb-skip" data-share="never">${escHtml(msg('shareNever'))}</button>
+    </div>`;
+  box.style.display = '';
+  for (const btn of box.querySelectorAll('[data-share]')) {
+    btn.addEventListener('click', async () => {
+      const mode = btn.dataset.share;
+      if (mode === 'never') { await chrome.storage.local.set({ shareMode: 'never' }); return renderFeedbackAndStats(); }
+      if (mode === 'auto') await chrome.storage.local.set({ shareMode: 'auto' });
+      const r = await sendSuccessRate();
+      box.innerHTML = `<div class="fb-thanks">${escHtml(r.ok ? msg('shareDone', [String(r.rate.right), String(r.rate.total)]) : msg('shareFailed'))}</div>`;
+      setTimeout(renderFeedbackAndStats, 1500);
+    });
   }
 }
 

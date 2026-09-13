@@ -9,7 +9,8 @@
     "test:compare": "node test-reference-compare.mjs --mode hint",
     "test:compare:scan": "node test-reference-compare.mjs --mode scan --sample 10",
     "test:unit:bahnde": "node test-bahnde-unit.mjs",
-    "test": "npm run test:headless && npm run test:unit:bahnde"
+    "test": "npm run test:headless && npm run test:unit:bahnde && npm run test:unit:booking",
+    "test:unit:booking": "node test-booking-unit.mjs"
   },
   "devDependencies": {
     "puppeteer": "^24.0.0",

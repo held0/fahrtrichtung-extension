@@ -58,5 +58,76 @@
   },
   "obPrivacy": {
     "message": "Kostenlos · Open Source · Kein Tracking"
+  },
+  "fbQuestion": {
+    "message": "$1 am $2: Hat die angezeigte Fahrtrichtung gestimmt?",
+    "placeholders": {
+      "train": {
+        "content": "$1"
+      },
+      "date": {
+        "content": "$2"
+      }
+    }
+  },
+  "fbYes": {
+    "message": "Ja, hat gestimmt"
+  },
+  "fbNo": {
+    "message": "Nein, war falsch"
+  },
+  "fbNotTravelled": {
+    "message": "Bin nicht gefahren"
+  },
+  "fbMore": {
+    "message": "Noch $1 weitere Fahrt(en) offen.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "fbThanks": {
+    "message": "Danke! Deine Antwort bleibt nur hier auf deinem Gerät."
+  },
+  "statsLine": {
+    "message": "$1 Buchung(en) mit Fahrtrichtung · $2× Richtung bestätigt · $3× falsch",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "right": {
+        "content": "$2"
+      },
+      "wrong": {
+        "content": "$3"
+      }
+    }
+  },
+  "privacyLocal": {
+    "message": "Diese Zahlen liegen nur lokal auf deinem $1, in dieser Erweiterung. Es gibt keinen Server – nichts wird an uns oder Dritte gesendet.",
+    "placeholders": {
+      "device": {
+        "content": "$1"
+      }
+    }
+  },
+  "statsReset": {
+    "message": "Zähler löschen"
+  },
+  "deviceMac": {
+    "message": "Mac"
+  },
+  "deviceWindows": {
+    "message": "Windows-PC"
+  },
+  "deviceLinux": {
+    "message": "Linux-Rechner"
+  },
+  "deviceChromebook": {
+    "message": "Chromebook"
+  },
+  "deviceGeneric": {
+    "message": "Gerät"
   }
 }

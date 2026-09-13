@@ -7,6 +7,35 @@
 
 const BG_VERSION = 4;
 
+// ---------------------------------------------------------------------------
+// Dev-Kennung: Eine entpackt geladene Entwicklungsversion bekommt ein anderes
+// Icon (gelbes DEV-Band), damit sie sich in der Symbolleiste von der Store-
+// Version unterscheidet. Erkennung ohne Zusatzberechtigung: Store-Installationen
+// haben eine injizierte update_url im Manifest bzw. eine der bekannten Store-IDs.
+// ---------------------------------------------------------------------------
+const STORE_IDS = new Set([
+  'oeonipcihoehcheadnelfokabaihcggh',   // Chrome Web Store
+  'pldcdckanhipjkgcbnjpacmihapgebci',   // Edge Add-ons
+  'fahrtrichtung@extension',            // Firefox AMO (gecko id)
+]);
+
+function isDevInstall() {
+  try {
+    const manifest = chrome.runtime.getManifest ? chrome.runtime.getManifest() : null;
+    if (manifest && manifest.update_url) return false;
+    return !STORE_IDS.has(chrome.runtime.id);
+  } catch (e) { return false; }
+}
+
+function applyDevIcon() {
+  if (!isDevInstall() || !chrome.action?.setIcon) return;
+  chrome.action.setIcon({ path: { 16: 'icon-dev16.png', 48: 'icon-dev48.png', 128: 'icon-dev128.png' } }).catch?.(() => {});
+  chrome.action.setTitle?.({ title: 'Fahrtrichtung (DEV, entpackt geladen)' });
+}
+applyDevIcon();
+chrome.runtime.onInstalled.addListener(applyDevIcon);
+chrome.runtime.onStartup?.addListener(applyDevIcon);
+
 // Nach der Erst-Installation einmalig die Onboarding-Tour öffnen.
 // Bewusst NUR bei reason === 'install' — Updates und Browser-Starts
 // dürfen kein Tab aufreißen.

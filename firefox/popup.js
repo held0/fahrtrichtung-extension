@@ -4,109 +4,28 @@ const msg = chrome.i18n.getMessage;
 // Set static i18n texts
 document.getElementById('disclaimer').textContent = msg('disclaimer');
 
-// Entwicklungsversion (entpackt geladen)? Gleiche Erkennung wie applyDevIcon()
-// im Service Worker: keine Store-update_url und keine bekannte Store-ID.
-function isDevInstall() {
+// Entwicklungsversion (entpackt geladen) im Kopf kennzeichnen — gleiche
+// Erkennung wie applyDevIcon() im Service Worker
+(() => {
   try {
     const manifest = chrome.runtime.getManifest();
     const storeIds = ['oeonipcihoehcheadnelfokabaihcggh', 'pldcdckanhipjkgcbnjpacmihapgebci', 'fahrtrichtung@extension'];
-    return !manifest.update_url && !storeIds.includes(chrome.runtime.id);
-  } catch (e) { return false; }
-}
-if (isDevInstall()) {
-  const header = document.querySelector('.header');
-  if (header) {
-    const tag = document.createElement('span');
-    tag.className = 'dev-tag';
-    tag.textContent = `DEV ${chrome.runtime.getManifest().version}`;
-    header.appendChild(tag);
-  }
-}
-
-// ============================================================================
-// Dev-Panel (nur entpackte Version): Fahrten einsehen, Demo-Fahrten anlegen,
-// Buchungserkennung simulieren, Feedback zuruecksetzen, Badge pruefen.
-// ============================================================================
-async function renderDevPanel() {
-  const panel = document.getElementById('devpanel');
-  if (!panel) return;
-  const { trips = [], recentLookups = [] } = await chrome.storage.local.get({ trips: [], recentLookups: [] });
-  const today = todayIso();
-  const status = t => t.feedback === 'right' ? '<td class="st st-right">bestätigt</td>'
-    : t.feedback === 'wrong' ? '<td class="st st-wrong">falsch</td>'
-    : (t.travelDate && t.travelDate < today ? '<td class="st st-open">offen (fällig)</td>' : '<td class="st">offen</td>');
-  const rows = trips.slice().sort((a, b) => (b.travelDate || '').localeCompare(a.travelDate || '')).map(t =>
-    `<tr><td>${escHtml(formatDateShort(t.travelDate))}</td><td>${escHtml(t.trainFull)}${t.demo ? ' <span class="tiny">(demo)</span>' : ''}<br><span class="tiny">${escHtml(t.from)} – ${escHtml(t.to)} ${escHtml(t.direction || '')}</span></td>${status(t)}<td><button data-del="${escHtml(t.id)}" title="löschen">×</button></td></tr>`
-  ).join('');
-  const yesterday = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
-  const lastLookup = recentLookups.slice().sort((a, b) => b.ts - a.ts)[0];
-  panel.innerHTML = `
-    <h4>DEV · Erfolgszähler-Test</h4>
-    <table>${rows || '<tr><td class="tiny">keine Fahrten gespeichert</td></tr>'}</table>
-    <div class="row">
-      <input class="w-train" id="dv-train" placeholder="ICE 1005" value="ICE 1005">
-      <input class="w-st" id="dv-from" placeholder="von" value="Berlin Hbf">
-      <input class="w-st" id="dv-to" placeholder="nach" value="München Hbf">
-      <input class="w-date" id="dv-date" type="date" value="${yesterday}">
-      <button id="dv-add">Demo-Fahrt anlegen</button>
-    </div>
-    <div class="row">
-      <button id="dv-simulate" ${lastLookup ? '' : 'disabled'} title="sendet bookingDetected wie das Content-Script">Buchung simulieren${lastLookup ? ` (${escHtml(lastLookup.trainFull)})` : ''}</button>
-      <button id="dv-reset-fb">Feedback zurücksetzen</button>
-      <button id="dv-seed">Demo-Daten neu</button>
-      <button id="dv-badge">Badge prüfen</button>
-    </div>
-    <div class="tiny">Zuletzt angezeigt (recentLookups): ${recentLookups.length ? recentLookups.map(l => `${escHtml(l.trainFull)} ${escHtml(l.travelDate)}`).join(', ') : '–'}</div>
-  `;
-  panel.style.display = historyOpen ? '' : 'none';
-
-  const refresh = async () => { chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError); await renderFeedbackAndStats(); await renderDevPanel(); };
-  panel.querySelector('#dv-add').addEventListener('click', async () => {
-    const trainFull = panel.querySelector('#dv-train').value.trim().toUpperCase().replace(/\s+/g, ' ');
-    const travelDate = panel.querySelector('#dv-date').value;
-    if (!trainFull || !travelDate) return;
-    const { trips = [] } = await chrome.storage.local.get({ trips: [] });
-    trips.push({ id: `dev-${Date.now()}`, trainFull, from: panel.querySelector('#dv-from').value.trim(), to: panel.querySelector('#dv-to').value.trim(),
-      travelDate, direction: '\u2192', orderNumber: null, bookedAt: Date.now(), feedback: null, answeredAt: null, demo: true });
-    await chrome.storage.local.set({ trips });
-    await refresh();
-  });
-  panel.querySelector('#dv-simulate').addEventListener('click', () => {
-    if (!lastLookup) return;
-    chrome.runtime.sendMessage({ type: 'bookingDetected', orderNumber: `SIM${Date.now().toString(36).toUpperCase().slice(-5)}`, trains: [lastLookup.trainFull],
-      travelDates: [lastLookup.travelDate], url: 'dev://simulated', detectedAt: Date.now() }, async (res) => {
-      void chrome.runtime.lastError;
-      panel.querySelector('#dv-simulate').textContent = res?.recorded ? `Buchung gemerkt (${res.recorded})` : 'nichts angelegt (Duplikat?)';
-      await refresh();
-    });
-  });
-  panel.querySelector('#dv-reset-fb').addEventListener('click', async () => {
-    const { trips = [] } = await chrome.storage.local.get({ trips: [] });
-    await chrome.storage.local.set({ trips: trips.map(t => ({ ...t, feedback: null, answeredAt: null })) });
-    await refresh();
-  });
-  panel.querySelector('#dv-seed').addEventListener('click', async () => {
-    await chrome.storage.local.set({ trips: [] });
-    chrome.runtime.sendMessage({ type: 'devSeed' }, async () => { void chrome.runtime.lastError; await refresh(); });
-  });
-  panel.querySelector('#dv-badge').addEventListener('click', refresh);
-  for (const btn of panel.querySelectorAll('button[data-del]')) {
-    btn.addEventListener('click', async () => {
-      const { trips = [] } = await chrome.storage.local.get({ trips: [] });
-      await chrome.storage.local.set({ trips: trips.filter(t => t.id !== btn.dataset.del) });
-      await refresh();
-    });
-  }
-}
+    if (!manifest.update_url && !storeIds.includes(chrome.runtime.id)) {
+      const header = document.querySelector('.header');
+      if (header) {
+        const tag = document.createElement('span');
+        tag.className = 'dev-tag';
+        tag.textContent = `DEV ${manifest.version}`;
+        header.appendChild(tag);
+      }
+    }
+  } catch (e) { /* ignore */ }
+})();
 document.getElementById('donate-appeal').textContent = msg('donateAppeal');
 document.getElementById('donate-button-text').textContent = msg('donateButton');
 
 async function init() {
   try {
-    // Rueckfrage zu vergangenen Fahrten + lokaler Erfolgszaehler (immer, auch abseits von bahn.de)
-    renderFeedbackAndStats().catch(() => {});
-    if (isDevInstall()) renderDevPanel().catch(() => {});   // Panel selbst blendet sich nur bei offenem Verlauf ein
-
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (!tab?.url?.includes('bahn.de')) {
@@ -340,7 +259,6 @@ async function fetchAndDisplay(train, fromStation, toStation, travelDate, journe
       return;
     }
 
-    result.travelDate = travelDate || new Date().toISOString().slice(0, 10);   // fuer den lokalen Erfolgszaehler
     renderResult(result, fromStation, toStation);
   } catch (err) {
     contentEl.innerHTML = `<div class="status error">Fehler: ${escHtml(err.message)}</div>`;
@@ -479,206 +397,8 @@ function renderResult(data, userFrom, userTo) {
   const disc = document.getElementById('disclaimer');
   if (disc) disc.style.display = '';
 
-  // Diese Anzeige lokal merken — wird eine Buchung erkannt, entsteht daraus ein
-  // Eintrag im Erfolgszaehler (nur auf diesem Geraet, siehe rememberLookup)
-  rememberLookup(data, userFrom, userTo, displaySegments).catch(() => {});
-
   // Track usage and show donate banner at milestones
   showDonateIfMilestone();
-}
-
-// ============================================================================
-// Lokaler Erfolgszaehler + Rueckfrage. Alles in chrome.storage.local — kein
-// Server, nichts verlaesst dieses Geraet.
-// ============================================================================
-
-async function rememberLookup(data, userFrom, userTo, displaySegments) {
-  const { recentLookups = [] } = await chrome.storage.local.get({ recentLookups: [] });
-  const now = Date.now();
-  const direction = (displaySegments || []).map(({ seg }) => getDisplayDirection(seg, data.wagonNumbers) === 'left' ? '\u2190' : '\u2192').join('');
-  const entry = { trainFull: data.trainFull, from: userFrom || '', to: userTo || '', travelDate: data.travelDate || '', direction, ts: now };
-  const kept = recentLookups.filter(l => now - (l.ts || 0) < 24 * 60 * 60 * 1000 && !(l.trainFull === entry.trainFull && l.travelDate === entry.travelDate));
-  kept.push(entry);
-  await chrome.storage.local.set({ recentLookups: kept.slice(-20) });
-}
-
-function deviceName() {
-  const plat = (navigator.userAgentData?.platform || navigator.platform || '').toLowerCase();
-  if (/mac/.test(plat)) return msg('deviceMac');
-  if (/win/.test(plat)) return msg('deviceWindows');
-  if (/cros|chrome os/.test(plat)) return msg('deviceChromebook');
-  if (/linux/.test(plat)) return msg('deviceLinux');
-  return msg('deviceGeneric');
-}
-
-function todayIso() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function formatDateShort(iso) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
-  return m ? `${m[3]}.${m[2]}.${m[1]}` : iso;
-}
-
-const SEAL_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5.25 3.4 10.15 8 11 4.6-.85 8-5.75 8-11V5l-8-3z" fill="#1a1a1a"/><path d="M8.5 12.2l2.3 2.3 4.7-4.9" fill="none" stroke="#ffd400" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
-let historyOpen = false;
-
-async function renderFeedbackAndStats() {
-  const box = document.getElementById('feedback');
-  const stats = document.getElementById('stats');
-  const toggle = document.getElementById('history-toggle');
-  if (!box || !stats || !toggle) return;
-  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
-
-  // 1) Rueckfrage: aelteste vergangene Fahrt ohne Antwort
-  const today = todayIso();
-  const due = trips.filter(t => t.feedback === null && t.travelDate && t.travelDate < today).sort((a, b) => a.travelDate.localeCompare(b.travelDate));
-  const trip = due[0];
-  if (trip) {
-    const route = trip.from && trip.to ? ` (${trip.from} \u2013 ${trip.to})` : '';
-    box.innerHTML = `
-      <div class="fb-seal">${SEAL_SVG}<div class="fb-seal-text"><b>${escHtml(msg('sealTitle'))}</b>${escHtml(msg('sealText', deviceName()))}</div></div>
-      <div class="fb-question">${escHtml(msg('fbQuestion', [trip.trainFull + route, formatDateShort(trip.travelDate)]))}</div>
-      <div class="fb-buttons">
-        <button class="fb-btn fb-yes" data-answer="right">${escHtml(msg('fbYes'))}</button>
-        <button class="fb-btn fb-no" data-answer="wrong">${escHtml(msg('fbNo'))}</button>
-        <button class="fb-btn fb-skip" data-answer="skip">${escHtml(msg('fbNotTravelled'))}</button>
-      </div>
-      ${due.length > 1 ? `<div class="fb-more">${escHtml(msg('fbMore', String(due.length - 1)))}</div>` : ''}
-    `;
-    box.style.display = '';
-    for (const btn of box.querySelectorAll('.fb-btn')) {
-      btn.addEventListener('click', () => answerFeedback(trip.id, btn.dataset.answer));
-    }
-  } else {
-    box.style.display = 'none';
-    box.innerHTML = '';
-  }
-
-  // 2) Verlauf + Zaehler hinter einem Link
-  const total = trips.length;
-  if (!total) {
-    toggle.style.display = 'none';
-    stats.style.display = 'none';
-    stats.innerHTML = '';
-    return;
-  }
-  const right = trips.filter(t => t.feedback === 'right').length;
-  const wrong = trips.filter(t => t.feedback === 'wrong').length;
-  toggle.textContent = historyOpen ? msg('historyHide') : msg('historyShow', String(total));
-  toggle.style.display = '';
-  toggle.onclick = () => { historyOpen = !historyOpen; renderFeedbackAndStats(); if (isDevInstall()) renderDevPanel().catch(() => {}); };
-  if (!historyOpen) {
-    stats.style.display = 'none';
-    stats.innerHTML = '';
-    return;
-  }
-  const items = trips.slice().sort((a, b) => (b.travelDate || '').localeCompare(a.travelDate || '')).map(t => {
-    const st = t.feedback === 'right' ? `<span class="h-st h-right">${escHtml(msg('histRight'))}</span>`
-      : t.feedback === 'wrong' ? `<span class="h-st h-wrong">${escHtml(msg('histWrong'))}</span>`
-      : `<span class="h-st h-open">${escHtml(msg('histOpen'))}</span>`;
-    return `<li><span><span class="h-train">${escHtml(t.trainFull)}</span> <span class="h-sub">${escHtml(formatDateShort(t.travelDate))}${t.from && t.to ? ` \u00b7 ${escHtml(t.from)} \u2013 ${escHtml(t.to)}` : ''}</span></span>${st}</li>`;
-  }).join('');
-  const { shareMode = null } = await chrome.storage.local.get({ shareMode: null });
-  const shareStatus = shareMode === 'auto' ? msg('shareStatusAuto') : shareMode === 'never' ? msg('shareStatusNever') : '';
-  stats.innerHTML = `
-    <div class="stats-line">${escHtml(msg('statsLine', [String(total), String(right), String(wrong)]))}</div>
-    <div class="stats-privacy">${escHtml(msg('privacyLocal', deviceName()))}</div>
-    <ul class="stats-list">${items}</ul>
-    ${shareStatus ? `<div class="stats-privacy">${escHtml(shareStatus)} <button class="stats-reset" id="share-change" style="padding:0">${escHtml(msg('shareChange'))}</button></div>` : ''}
-    <button class="stats-reset" id="stats-reset">${escHtml(msg('statsReset'))}</button>
-  `;
-  stats.style.display = '';
-  document.getElementById('share-change')?.addEventListener('click', async () => {
-    await chrome.storage.local.set({ shareMode: null });
-    renderFeedbackAndStats();
-  });
-  document.getElementById('stats-reset')?.addEventListener('click', async () => {
-    await chrome.storage.local.set({ trips: [], recentLookups: [] });
-    chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError);
-    renderFeedbackAndStats();
-  });
-}
-
-async function answerFeedback(tripId, answer) {
-  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
-  let next;
-  if (answer === 'skip') {
-    next = trips.filter(t => t.id !== tripId);                       // nicht gefahren -> zaehlt nicht
-  } else {
-    next = trips.map(t => t.id === tripId ? { ...t, feedback: answer, answeredAt: Date.now() } : t);
-  }
-  await chrome.storage.local.set({ trips: next });
-  chrome.runtime.sendMessage({ type: 'updateBadge' }, () => void chrome.runtime.lastError);
-  const box = document.getElementById('feedback');
-  if (box && answer !== 'skip') {
-    box.innerHTML = `<div class="fb-thanks">${escHtml(msg('fbThanks'))}</div>`;
-    setTimeout(() => offerShare(box), 900);
-  } else {
-    renderFeedbackAndStats();
-  }
-}
-
-// ============================================================================
-// Freiwilliges Teilen der Erfolgsrate: NUR die Zahlen richtig/falsch/gesamt und
-// die Extension-Version. Kein Zug, kein Datum, keine Kennung, kein Cookie.
-// shareMode: null = jedes Mal fragen, 'auto' = automatisch senden, 'never' = nie.
-// ============================================================================
-const SHARE_ENDPOINT = 'https://fahrtrichtung.info/api/feedback';
-
-function successRate(trips) {
-  const right = trips.filter(t => t.feedback === 'right').length;
-  const wrong = trips.filter(t => t.feedback === 'wrong').length;
-  return { right, wrong, total: right + wrong };
-}
-
-async function sendSuccessRate() {
-  const { trips = [] } = await chrome.storage.local.get({ trips: [] });
-  const rate = successRate(trips);
-  if (!rate.total) return { ok: false, rate };
-  try {
-    const resp = await fetch(SHARE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ right: rate.right, wrong: rate.wrong, total: rate.total, version: chrome.runtime.getManifest().version }),
-    });
-    if (resp.ok) await chrome.storage.local.set({ lastSharedAt: Date.now(), lastSharedRate: rate });
-    return { ok: resp.ok, rate };
-  } catch (e) {
-    return { ok: false, rate };
-  }
-}
-
-async function offerShare(box) {
-  const { shareMode = null, trips = [] } = await chrome.storage.local.get({ shareMode: null, trips: [] });
-  const rate = successRate(trips);
-  if (shareMode === 'never' || !rate.total) return renderFeedbackAndStats();
-  if (shareMode === 'auto') {
-    const r = await sendSuccessRate();
-    box.innerHTML = `<div class="fb-thanks">${escHtml(r.ok ? msg('shareDone', [String(r.rate.right), String(r.rate.total)]) : msg('shareFailed'))}</div>`;
-    setTimeout(renderFeedbackAndStats, 1500);
-    return;
-  }
-  box.innerHTML = `
-    <div class="fb-seal">${SEAL_SVG}<div class="fb-seal-text"><b>${escHtml(msg('shareTitle'))}</b>${escHtml(msg('shareText'))}</div></div>
-    <div class="fb-buttons">
-      <button class="fb-btn fb-yes" data-share="once">${escHtml(msg('shareOnce'))}</button>
-      <button class="fb-btn" data-share="auto">${escHtml(msg('shareAlways'))}</button>
-      <button class="fb-btn fb-skip" data-share="never">${escHtml(msg('shareNever'))}</button>
-    </div>`;
-  box.style.display = '';
-  for (const btn of box.querySelectorAll('[data-share]')) {
-    btn.addEventListener('click', async () => {
-      const mode = btn.dataset.share;
-      if (mode === 'never') { await chrome.storage.local.set({ shareMode: 'never' }); return renderFeedbackAndStats(); }
-      if (mode === 'auto') await chrome.storage.local.set({ shareMode: 'auto' });
-      const r = await sendSuccessRate();
-      box.innerHTML = `<div class="fb-thanks">${escHtml(r.ok ? msg('shareDone', [String(r.rate.right), String(r.rate.total)]) : msg('shareFailed'))}</div>`;
-      setTimeout(renderFeedbackAndStats, 1500);
-    });
-  }
 }
 
 function showError(msg) {

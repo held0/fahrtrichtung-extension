@@ -62,7 +62,7 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   const year = travelDate ? new Date(travelDate).getFullYear() : new Date().getFullYear();
   const url = `https://www.fernbahn.de/datenbank/suche/?fahrplan_jahr=${year}&zug_nummer=${trainNumber}&filterview[]=1&filterview[]=2&fv_suche_reihungsverzeichnis=1`;
 
-  const response = await fetch(url);
+  const response = await fernbahnFetch(url);
   if (!response.ok) {
     throw new Error(`fernbahn.de returned ${response.status}`);
   }
@@ -317,6 +317,21 @@ async function bahnDeGetJson(path, params, extraPairs = []) {
   throw lastErr || new Error('bahn.de unreachable');
 }
 
+// fernbahn.de antwortet gelegentlich mit einem einzelnen 429/503 (Watchdog
+// 2026-10-05, eine Minute spaeter wieder 200). Kurz warten und hoechstens
+// zweimal wiederholen — die Seite ist klein, also keine aggressiven Retries.
+async function fernbahnFetch(url) {
+  let resp;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    resp = await fetch(url);
+    if (resp.status !== 429 && resp.status < 500) return resp;
+    if (attempt === 2) break;
+    const retryAfter = Number(resp.headers?.get?.('retry-after')) || 0;
+    await sleep(retryAfter ? Math.min(retryAfter, 5) * 1000 : 1500 * (attempt + 1));
+  }
+  return resp;
+}
+
 function sleep(ms) {
   if (typeof setTimeout !== 'function') return Promise.resolve();   // reduzierte Sandboxes
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -372,7 +387,7 @@ async function fetchFernbahnStationOrder(validEntry) {
   if (!validEntry.zugId) return [];
   try {
     const detailUrl = `https://www.fernbahn.de/datenbank/suche/?zug_id=${validEntry.zugId}`;
-    const detailResp = await fetch(detailUrl);
+    const detailResp = await fernbahnFetch(detailUrl);
     if (!detailResp.ok) return [];
     return parseFernbahnStationOrder(await detailResp.text()).map(name => ({ name, dep: null, arr: null }));
   } catch (e) {

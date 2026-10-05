@@ -232,6 +232,22 @@ group('Robustheit: 429/5xx-Backoff, Host-Fallback, kaputte Antworten');
   let msg = '';
   try { await ctx7.handleFetchFernbahn(baseReq); } catch (e) { msg = e.message; }
   assert('fernbahn 504 -> Fehler "fernbahn.de returned 504"', msg, 'fernbahn.de returned 504');
+  assert('fernbahn 504 -> genau 3 Versuche, nicht mehr', ctx7.calls.length, 3);
+
+  // fernbahn einmal 429 (Watchdog 2026-10-05), dann ok -> Ergebnis wie normal
+  const ctx8 = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: (u, o, n) => n === 1 ? { status: 429, text: '' } : { text: FERNBAHN_HTML } },
+    ...fernbahnRoutes,
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('ICE 1005', '2026-09-12T08:36:00', 'j1005')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: RUN }) },
+  ]);
+  const r8 = await ctx8.handleFetchFernbahn({ ...baseReq, journeyHint: HINT });
+  assert('fernbahn 429 einmal -> zweiter Versuch liefert Richtung', [r8.segments[0].direction, ctx8.calls.filter(c => /fahrplan_jahr/.test(c.url)).length], ['left', 2]);
+
+  // 404 ist kein Retry-Fall
+  const ctx9 = makeCtx([{ match: /fernbahn/, reply: () => ({ status: 404, text: '' }) }]);
+  try { await ctx9.handleFetchFernbahn(baseReq); } catch (e) {}
+  assert('fernbahn 404 -> kein Retry', ctx9.calls.length, 1);
 }
 
 group('Fehlende Segmentgrenze (bahn.de ohne Betriebshalt) wird geometrisch eingefuegt');

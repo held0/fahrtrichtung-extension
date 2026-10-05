@@ -32,6 +32,13 @@ const DATE = arg('--date', today());
 const CONCURRENCY = Number(arg('--concurrency', 3));
 const ONLY = arg('--only', '').split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
 const LIMIT = Number(arg('--limit', 0));
+// fernbahn.de ist eine kleine private Seite: am 2026-09-11 gab es nach ~2400
+// Requests in einer Stunde 504/Timeouts. Ein Lauf kostet dort >1000 Requests —
+// nur mit ausdruecklicher Freigabe von Niklas und Flag starten.
+if (!argv.includes('--fernbahn-ok') && !(LIMIT > 0 && LIMIT <= 20)) {
+  console.error('Abbruch: Dieser Lauf fragt fernbahn.de >1000x ab. Nur nach Freigabe mit --fernbahn-ok starten (oder --limit <=20).');
+  process.exit(2);
+}
 const TRAIN_TYPES = ['ICE', 'ECE', 'IC', 'EC', 'RJX', 'RJ', 'TGV', 'EST', 'NJ', 'EN'];
 
 // ---- Extension-Logik laden (wie test-e2e-live.mjs) --------------------------

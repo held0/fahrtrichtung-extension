@@ -13,6 +13,14 @@
       }
     }
   },
+  "wagonRangeDirection": {
+    "message": "Wagen $1–$2: $3",
+    "placeholders": {
+      "from": { "content": "$1" },
+      "to": { "content": "$2" },
+      "arrow": { "content": "$3" }
+    }
+  },
   "directionChanges": {
     "message": "Die Fahrtrichtung ändert sich während der Fahrt wie folgt:"
   },

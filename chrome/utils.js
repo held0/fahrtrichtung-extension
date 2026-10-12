@@ -138,3 +138,20 @@ function getDisplayDirection(seg, wagonNumbers) {
   if (!units.length) return seg.direction;
   return units.every(u => u.direction === units[0].direction) ? units[0].direction : 'mixed';
 }
+
+// Wagen, der in der bahn.de-Ansicht in Fahrtrichtung ganz aussen liegt.
+// Bei einem Zugteil ist das der physisch vorderste Wagen. Bei mehreren gleich
+// gerichteten Zugteilen nennen wir bewusst den aeussersten Wagen der Ansicht
+// (ICE 225: 39 statt des physisch vorderen 29, der in der Ansicht in der Mitte
+// liegt und sonst verwirrt). Bei gegenlaeufigen Zugteilen: null.
+function getDisplayFrontWagon(seg, wagonNumbers) {
+  const units = getUnitDirections(seg, wagonNumbers);
+  if (!units.length) {
+    if (!wagonNumbers?.length) return null;
+    return seg.firstWagonIsFront ? wagonNumbers[0] : wagonNumbers[wagonNumbers.length - 1];
+  }
+  if (!units.every(u => u.direction === units[0].direction)) return null;
+  return units[0].direction === 'right'
+    ? String(Math.max(...units.map(u => u.to)))
+    : String(Math.min(...units.map(u => u.from)));
+}

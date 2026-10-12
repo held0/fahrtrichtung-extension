@@ -370,6 +370,16 @@ assert('Wagennummer-Luecke 2 bleibt ein Zugteil (21..24,26..28)',
 assert('nicht-numerische Wagen -> Fallback fernbahn-Richtung',
   getDisplayDirection({ firstWagonIsFront: true, direction: 'left' }, ['A','B']), 'left');
 
+// Angezeigter Frontwagen = aeusserster Wagen der bahn.de-Ansicht in Pfeilrichtung
+assert('Frontwagen ICE 225: 39 (nicht der physisch vordere 29 in der Mitte der Ansicht)',
+  getDisplayFrontWagon({ firstWagonIsFront: true }, ICE225), '39');
+assert('Frontwagen ICE 225 Gegenrichtung: 21',
+  getDisplayFrontWagon({ firstWagonIsFront: false }, ICE225), '21');
+assert('Frontwagen einteiliger Zug unveraendert (ICE 549: 37)',
+  getDisplayFrontWagon({ firstWagonIsFront: true }, ['37','36','35','34','33','32','31']), '37');
+assert('Frontwagen bei gegenlaeufigen Zugteilen: keiner',
+  getDisplayFrontWagon({ firstWagonIsFront: true }, ICE911), null);
+
 // --- filterRelevantSegments ---
 group('filterRelevantSegments()');
 const segs4 = [{id:0},{id:1},{id:2},{id:3}];

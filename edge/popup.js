@@ -275,17 +275,6 @@ function filterRelevantSegments(segments, fromSegIdx, toSegIdx) {
   return { segments, startIdx: 0 };
 }
 
-// Compute display direction for bahn.de: bahn.de always shows wagons ascending left->right.
-// If the front wagon has a high number -> arrow RIGHT, low number -> arrow LEFT.
-function getDisplayDirection(seg, wagonNumbers) {
-  if (!wagonNumbers?.length || wagonNumbers.length < 2) return seg.direction;
-  const frontWagon = seg.firstWagonIsFront ? wagonNumbers[0] : wagonNumbers[wagonNumbers.length - 1];
-  const nums = wagonNumbers.map(Number).filter(n => !isNaN(n));
-  if (!nums.length) return seg.direction;
-  const frontNum = Number(frontWagon);
-  return (frontNum > (Math.min(...nums) + Math.max(...nums)) / 2) ? 'right' : 'left';
-}
-
 function formatDuration(duration) {
   if (!duration) return '';
   if (duration.hours > 0) {
@@ -366,8 +355,15 @@ function renderResult(data, userFrom, userTo) {
 
   for (const { seg, segFrom, segTo } of displaySegments) {
     const displayDir = getDisplayDirection(seg, data.wagonNumbers);
-    const dirClass = displayDir === 'left' ? 'direction-left' : displayDir === 'right' ? 'direction-right' : '';
-    const arrow = displayDir === 'left' ? '\u2190' : displayDir === 'right' ? '\u2192' : '?';
+    const dirClass = displayDir === 'left' ? 'direction-left' : displayDir === 'right' ? 'direction-right'
+      : displayDir === 'mixed' ? 'direction-mixed' : '';
+    const arrow = displayDir === 'left' ? '\u2190' : displayDir === 'right' ? '\u2192'
+      : displayDir === 'mixed' ? '\u21C4' : '?';
+    // Gegenlaeufige Zugteile: Richtung je Wagenbereich statt eines Pfeils
+    const unitLines = displayDir === 'mixed'
+      ? getUnitDirections(seg, data.wagonNumbers).map(u =>
+        `<span class="front-wagon">${escHtml(msg('wagonRangeDirection', [String(u.from), String(u.to), u.direction === 'left' ? '\u2190' : '\u2192']))}</span>`).join('<br>')
+      : '';
 
     let frontWagon = '';
     if (data.wagonNumbers?.length) {
@@ -386,6 +382,7 @@ function renderResult(data, userFrom, userTo) {
         </div>
         <div class="segment-info">
           ${frontWagon ? `<span class="front-wagon">${escHtml(msg('wagonFront', frontWagon))}</span>` : ''}
+          ${unitLines ? `<br>${unitLines}` : ''}
         </div>
       </div>
     `);

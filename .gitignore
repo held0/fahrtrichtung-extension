@@ -9,8 +9,12 @@ docs/
 TODO.md
 .claude/settings.local.json
 
-# Vorher/Nachher-Reports der Referenztests (Referenzdaten selbst bleiben versioniert)
+# Referenztests: Reports UND Referenzdaten nur lokal. Die Referenzdaten enthalten
+# das komplette fernbahn.de-Reihungsverzeichnis (Datenbankschutz, § 87b UrhG) —
+# nie ins oeffentliche Repo. Sicherung: ~/Documents/Ventures/fahrtrichtung-private/
 reference/compare-*.json
+reference/bahnexpert-*.json
+reference/*-20*.json
 
 # Lokale Secrets (Proxy-Zugang fuer Testharnesse)
 .env*

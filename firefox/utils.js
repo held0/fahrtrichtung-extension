@@ -104,3 +104,37 @@ function cleanStationName(dirty, stationOrder) {
   }
   return bestMatch || dirty;
 }
+
+// Richtung in der bahn.de-Sitzplatzansicht. bahn.de zeigt die Wagen immer
+// aufsteigend links->rechts, auch bei Mehrfachtraktion (21..29 | 31..39).
+// Deshalb entscheidet jeder Zugteil selbst: Faellt seine Nummerierung von
+// vorne nach hinten (29,28,..,21), liegt seine Spitze in der Ansicht rechts.
+// Der fruehere Vergleich "Frontwagen > Mittelwert aller Nummern" lag bei
+// Doppeltraktion daneben (ICE 225: Front 29, Mittel 30 -> faelschlich links).
+// Zugteile = Bloecke ohne Nummernsprung > 2 zwischen Nachbarwagen.
+function getUnitDirections(seg, wagonNumbers) {
+  const nums = (wagonNumbers || []).map(Number).filter(n => !isNaN(n));
+  if (nums.length < 2) return [];
+  const phys = seg.firstWagonIsFront ? nums : [...nums].reverse();
+  const units = [[phys[0]]];
+  for (let i = 1; i < phys.length; i++) {
+    if (Math.abs(phys[i] - phys[i - 1]) > 2) units.push([]);
+    units[units.length - 1].push(phys[i]);
+  }
+  return units
+    .filter(u => u.length >= 2)
+    .map(u => ({
+      from: Math.min(...u),
+      to: Math.max(...u),
+      direction: u[0] > u[u.length - 1] ? 'right' : 'left',
+    }))
+    .sort((a, b) => a.from - b.from);
+}
+
+// 'left' | 'right' | 'mixed' (Zugteile fahren in der Ansicht gegenlaeufig,
+// z.B. ICE 911: 39..31 | 21..29) — Fallback auf die fernbahn-Pfeilrichtung.
+function getDisplayDirection(seg, wagonNumbers) {
+  const units = getUnitDirections(seg, wagonNumbers);
+  if (!units.length) return seg.direction;
+  return units.every(u => u.direction === units[0].direction) ? units[0].direction : 'mixed';
+}

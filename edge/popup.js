@@ -365,10 +365,7 @@ function renderResult(data, userFrom, userTo) {
         `<span class="front-wagon">${escHtml(msg('wagonRangeDirection', [String(u.from), String(u.to), u.direction === 'left' ? '\u2190' : '\u2192']))}</span>`).join('<br>')
       : '';
 
-    let frontWagon = '';
-    if (data.wagonNumbers?.length) {
-      frontWagon = seg.firstWagonIsFront ? data.wagonNumbers[0] : data.wagonNumbers[data.wagonNumbers.length - 1];
-    }
+    const frontWagon = getDisplayFrontWagon(seg, data.wagonNumbers) || '';
 
     const segText = segTo ? `${segFrom} \u2013 ${segTo}` : segFrom;
     const durationStr = formatDuration(computeSegmentDuration(segFrom, segTo, data.stationOrder));

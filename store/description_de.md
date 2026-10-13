@@ -17,7 +17,7 @@ Funktionen:
 • Fahrtrichtung pro Streckenabschnitt (inkl. Richtungswechsel)
 • Zeigt an, welcher Wagen vorne fährt
 • Fahrtdauer pro Abschnitt
-• Unterstützt ICE, IC, EC, ECE, TGV, RJX, RJ, NJ und EN
+• Funktioniert mit Fernverkehrszügen (ICE, IC/EC) sowie vielen internationalen Zügen und Nachtzügen
 • Automatische Zugerkennung aus dem Sitzplatz-Dialog
 • Deutsch und Englisch
 

@@ -321,6 +321,13 @@ function renderResult(data, userFrom, userTo) {
     relevantStartIdx = result.startIdx;
   }
 
+  // Ein-/Ausstieg nur in die Abschnittsgrenzen einsetzen, wenn der Bahnhof in der
+  // Stationsliste gefunden wurde. Sonst (z.B. fernbahn-Fallback ohne Ulm Hbf) entstuende
+  // ein erfundener Abschnitt wie "Stuttgart Hbf – Ulm Hbf".
+  const single = data.segments.length <= 1;
+  const fromKnown = single || (data.fromSegmentIdx ?? -1) >= 0;
+  const toKnown = single || (data.toSegmentIdx ?? -1) >= 0;
+
   // Build segment display data, applying boundary adjustments and skipping empty segments
   const displaySegments = [];
   for (let si = 0; si < relevantSegments.length; si++) {
@@ -331,11 +338,11 @@ function renderResult(data, userFrom, userTo) {
     let segFrom = seg.from;
     let segTo = seg.to;
 
-    if (isFirst && userFrom && seg.from && !stationMatch(normalizeStation(seg.from), normalizeStation(userFrom))) {
+    if (isFirst && fromKnown && userFrom && seg.from && !stationMatch(normalizeStation(seg.from), normalizeStation(userFrom))) {
       segFrom = userFrom;
     }
 
-    if (isLast && userTo && seg.to && !stationMatch(normalizeStation(seg.to), normalizeStation(userTo))) {
+    if (isLast && toKnown && userTo && seg.to && !stationMatch(normalizeStation(seg.to), normalizeStation(userTo))) {
       segTo = userTo;
     }
 

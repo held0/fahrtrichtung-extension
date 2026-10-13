@@ -21,7 +21,7 @@
     }
   },
   "mixedInfo": {
-    "message": "bahn.de always lists the coaches in ascending order, even when the train sets are coupled quite differently. That is why the seat map makes it look as if the two train sets were travelling in opposite directions. In reality they of course travel together in one direction. The arrows show the direction of travel for each train set as it is drawn on bahn.de."
+    "message": "bahn.de always lists coaches in ascending order, however the train sets are coupled. That is why they look opposed here."
   },
   "directionChanges": {
     "message": "The travel direction changes during the journey as follows:"

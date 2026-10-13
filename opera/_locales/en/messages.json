@@ -24,7 +24,7 @@
     "message": "bahn.de always lists coaches in ascending order, however the train sets are coupled. That is why they look opposed here."
   },
   "mixedReal": {
-    "message": "How the train is actually coupled (direction of travel →):"
+    "message": "How the train is coupled as scheduled (direction of travel →):"
   },
   "directionChanges": {
     "message": "The travel direction changes during the journey as follows:"

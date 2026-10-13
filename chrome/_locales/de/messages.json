@@ -40,6 +40,9 @@
       }
     }
   },
+  "dataSource": {
+    "message": "Daten:"
+  },
   "disclaimer": {
     "message": "*Wagenreihungen können sich am Reisetag in Einzelfällen ändern."
   },

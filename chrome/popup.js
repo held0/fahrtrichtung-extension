@@ -2,7 +2,14 @@ const contentEl = document.getElementById('content');
 const msg = chrome.i18n.getMessage;
 
 // Set static i18n texts
-document.getElementById('disclaimer').textContent = msg('disclaimer');
+{
+  const disc = document.getElementById('disclaimer');
+  const src = document.createElement('a');
+  src.href = 'https://www.fernbahn.de';
+  src.target = '_blank';
+  src.textContent = 'fernbahn.de';
+  disc.append(`${msg('disclaimer')} ${msg('dataSource')} `, src);
+}
 
 // Entwicklungsversion (entpackt geladen) im Kopf kennzeichnen — gleiche
 // Erkennung wie applyDevIcon() im Service Worker

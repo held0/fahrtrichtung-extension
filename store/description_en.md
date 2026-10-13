@@ -17,7 +17,7 @@ Features:
 • Travel direction per route segment (including direction changes)
 • Shows which wagon is at the front
 • Travel time per segment
-• Supports ICE, IC, EC, ECE, TGV, RJX, RJ, NJ and EN trains
+• Works with long-distance trains (ICE, IC/EC) as well as many international and night trains
 • Automatic train detection from the seat selection dialog
 • German and English
 

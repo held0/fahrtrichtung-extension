@@ -20,6 +20,9 @@
       "to": { "content": "$2" }
     }
   },
+  "mixedInfo": {
+    "message": "bahn.de zeigt die Wagen immer aufsteigend nach Nummer an, auch wenn die Zugteile ganz anders gekuppelt sind. Deshalb sieht es in der Sitzplatzansicht so aus, als würden die beiden Zugteile in verschiedene Richtungen fahren. Tatsächlich fahren sie natürlich gemeinsam in eine Richtung. Die Pfeile zeigen für jeden Zugteil die Fahrtrichtung so, wie er auf bahn.de dargestellt ist."
+  },
   "directionChanges": {
     "message": "Die Fahrtrichtung ändert sich während der Fahrt wie folgt:"
   },

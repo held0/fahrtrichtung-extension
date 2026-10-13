@@ -378,9 +378,11 @@ function renderResult(data, userFrom, userTo) {
             <div class="front-wagon">${escHtml(msg('wagonFront', String(right ? u.to : u.from)))}</div>
           </div>`;
       }).join('');
+      const info = escHtml(msg('mixedInfo'));
       html.push(`
       <div class="segment ${dirClass}">${routeHtml}
         <div class="units">${units}</div>
+        <div class="mixed-info" tabindex="0" aria-label="${info}"><span class="info-icon">i</span><div class="info-tip">${info}</div></div>
       </div>
     `);
       continue;

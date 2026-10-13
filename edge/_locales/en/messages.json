@@ -13,12 +13,11 @@
       }
     }
   },
-  "wagonRangeDirection": {
-    "message": "Coaches $1–$2: $3",
+  "wagonRange": {
+    "message": "Coaches $1–$2",
     "placeholders": {
       "from": { "content": "$1" },
-      "to": { "content": "$2" },
-      "arrow": { "content": "$3" }
+      "to": { "content": "$2" }
     }
   },
   "directionChanges": {

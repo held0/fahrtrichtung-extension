@@ -77,7 +77,9 @@ jobs:
             --api-key "$WEB_EXT_API_KEY" \
             --api-secret "$WEB_EXT_API_SECRET"
 
+      # Edge wird manuell im Partner Center hochgeladen (API-Keys laufen staendig ab, Entscheidung Niklas 2026-10-13)
       - name: Upload to Edge Add-ons
+        if: false
         continue-on-error: true
         env:
           EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}

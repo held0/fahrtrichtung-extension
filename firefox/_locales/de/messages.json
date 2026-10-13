@@ -23,6 +23,9 @@
   "mixedInfo": {
     "message": "bahn.de zeigt die Wagen immer aufsteigend an, egal wie die Zugteile gekuppelt sind. Deshalb wirken sie hier gegenläufig."
   },
+  "mixedReal": {
+    "message": "So ist der Zug wirklich gekuppelt (Fahrtrichtung →):"
+  },
   "directionChanges": {
     "message": "Die Fahrtrichtung ändert sich während der Fahrt wie folgt:"
   },

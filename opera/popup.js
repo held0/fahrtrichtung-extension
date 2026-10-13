@@ -379,10 +379,13 @@ function renderResult(data, userFrom, userTo) {
           </div>`;
       }).join('');
       const info = escHtml(msg('mixedInfo'));
+      // Echte Reihung: hinten links, vorne rechts, Fahrtrichtung nach rechts
+      const real = getPhysicalUnits(seg, data.wagonNumbers).reverse()
+        .map(u => `[${[...u].reverse().join(' ')}]`).join(' ');
       html.push(`
       <div class="segment ${dirClass}">${routeHtml}
         <div class="units">${units}</div>
-        <div class="mixed-info" tabindex="0" aria-label="${info}"><span class="info-icon">i</span><div class="info-tip">${info}</div></div>
+        <div class="mixed-info" tabindex="0" aria-label="${info}"><span class="info-icon">i</span><div class="info-tip">${info}<div class="info-real">${escHtml(msg('mixedReal'))}</div><div class="info-consist">${escHtml(real)}</div></div></div>
       </div>
     `);
       continue;

@@ -112,7 +112,8 @@ function cleanStationName(dirty, stationOrder) {
 // Der fruehere Vergleich "Frontwagen > Mittelwert aller Nummern" lag bei
 // Doppeltraktion daneben (ICE 225: Front 29, Mittel 30 -> faelschlich links).
 // Zugteile = Bloecke ohne Nummernsprung > 2 zwischen Nachbarwagen.
-function getUnitDirections(seg, wagonNumbers) {
+// Physische Reihung als Zugteile, vorderster Wagen zuerst (Block ohne Nummernsprung > 2)
+function getPhysicalUnits(seg, wagonNumbers) {
   const nums = (wagonNumbers || []).map(Number).filter(n => !isNaN(n));
   if (nums.length < 2) return [];
   const phys = seg.firstWagonIsFront ? nums : [...nums].reverse();
@@ -121,7 +122,11 @@ function getUnitDirections(seg, wagonNumbers) {
     if (Math.abs(phys[i] - phys[i - 1]) > 2) units.push([]);
     units[units.length - 1].push(phys[i]);
   }
-  return units
+  return units;
+}
+
+function getUnitDirections(seg, wagonNumbers) {
+  return getPhysicalUnits(seg, wagonNumbers)
     .filter(u => u.length >= 2)
     .map(u => ({
       from: Math.min(...u),

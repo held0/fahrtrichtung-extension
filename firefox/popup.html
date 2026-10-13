@@ -107,9 +107,54 @@
     }
 
     .segment.direction-left,
-    .segment.direction-right,
-    .segment.direction-mixed {
+    .segment.direction-right {
       border-color: #333;
+    }
+
+    /* Gegenlaeufige Zugteile: grauer Rahmen ohne Pfeil, Zugteile nebeneinander */
+    .segment.direction-mixed {
+      border-color: #9a9a9a;
+    }
+
+    .units {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .unit {
+      border: 1.5px solid #9a9a9a;
+      border-radius: 6px;
+      padding: 11px 10px 8px;
+      position: relative;
+    }
+
+    .unit .segment-badge {
+      top: -9px;
+      left: 10px;
+      font-size: 13px;
+      line-height: 16px;
+      padding: 0 8px;
+    }
+
+    .unit-right {
+      text-align: right;
+    }
+
+    .unit-right .segment-badge {
+      left: auto;
+      right: 10px;
+    }
+
+    .unit-range {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .unit .front-wagon {
+      margin-top: 1px;
     }
 
     .segment-badge {
@@ -134,7 +179,8 @@
       50% { transform: translateX(4px); opacity: 0.7; }
     }
 
-    .segment.direction-left .segment-badge .arrow-animated {
+    .segment.direction-left .segment-badge .arrow-animated,
+    .unit:not(.unit-right) .segment-badge .arrow-animated {
       animation: arrow-slide-left 1.2s ease-in-out infinite;
     }
 

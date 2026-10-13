@@ -357,29 +357,42 @@ function renderResult(data, userFrom, userTo) {
     const displayDir = getDisplayDirection(seg, data.wagonNumbers);
     const dirClass = displayDir === 'left' ? 'direction-left' : displayDir === 'right' ? 'direction-right'
       : displayDir === 'mixed' ? 'direction-mixed' : '';
-    const arrow = displayDir === 'left' ? '\u2190' : displayDir === 'right' ? '\u2192'
-      : displayDir === 'mixed' ? '\u21C4' : '?';
-    // Gegenlaeufige Zugteile: Richtung je Wagenbereich statt eines Pfeils
-    const unitLines = displayDir === 'mixed'
-      ? getUnitDirections(seg, data.wagonNumbers).map(u =>
-        `<span class="front-wagon">${escHtml(msg('wagonRangeDirection', [String(u.from), String(u.to), u.direction === 'left' ? '\u2190' : '\u2192']))}</span>`).join('<br>')
-      : '';
-
-    const frontWagon = getDisplayFrontWagon(seg, data.wagonNumbers) || '';
-
+    const arrow = displayDir === 'left' ? '\u2190' : displayDir === 'right' ? '\u2192' : '?';
     const segText = segTo ? `${segFrom} \u2013 ${segTo}` : segFrom;
     const durationStr = formatDuration(computeSegmentDuration(segFrom, segTo, data.stationOrder));
-
-    html.push(`
-      <div class="segment ${dirClass}">
-        <div class="segment-badge"><span class="arrow-animated">${arrow}</span></div>
+    const routeHtml = `
         <div class="segment-route">
           ${escHtml(segText)}
           ${durationStr ? `<span class="segment-duration">${escHtml(durationStr)}</span>` : ''}
-        </div>
+        </div>`;
+
+    // Gegenlaeufige Zugteile: kein Pfeil am aeusseren Kasten, stattdessen je
+    // Zugteil ein eigener Kasten (in bahn.de-Reihenfolge) mit Pfeil und Frontwagen
+    if (displayDir === 'mixed') {
+      const units = getUnitDirections(seg, data.wagonNumbers).map(u => {
+        const right = u.direction === 'right';
+        return `
+          <div class="unit${right ? ' unit-right' : ''}">
+            <div class="segment-badge"><span class="arrow-animated">${right ? '\u2192' : '\u2190'}</span></div>
+            <div class="unit-range">${escHtml(msg('wagonRange', [String(u.from), String(u.to)]))}</div>
+            <div class="front-wagon">${escHtml(msg('wagonFront', String(right ? u.to : u.from)))}</div>
+          </div>`;
+      }).join('');
+      html.push(`
+      <div class="segment ${dirClass}">${routeHtml}
+        <div class="units">${units}</div>
+      </div>
+    `);
+      continue;
+    }
+
+    const frontWagon = getDisplayFrontWagon(seg, data.wagonNumbers) || '';
+
+    html.push(`
+      <div class="segment ${dirClass}">
+        <div class="segment-badge"><span class="arrow-animated">${arrow}</span></div>${routeHtml}
         <div class="segment-info">
           ${frontWagon ? `<span class="front-wagon">${escHtml(msg('wagonFront', frontWagon))}</span>` : ''}
-          ${unitLines ? `<br>${unitLines}` : ''}
         </div>
       </div>
     `);

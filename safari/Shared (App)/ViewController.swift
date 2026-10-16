@@ -24,21 +24,39 @@ let extensionBundleIdentifier = "info.fahrtrichtung.app.Extension"
 // Dienste erkannt, durch die Klicks verhindert wurden"). Liste ist nicht vollständig —
 // die Begleit-App zeigt zusätzlich immer einen allgemeinen Hinweis.
 let clickBlockingApps: Set<String> = [
-    "com.electron.wispr-flow",            // Wispr Flow
-    "com.superduper.superwhisper",        // Superwhisper
-    "com.goodsnooze.MacWhisper",          // MacWhisper
-    "com.hegenberg.BetterTouchTool",      // BetterTouchTool
+    // Diktieren / Sprache
+    "com.electron.wispr-flow",              // Wispr Flow
+    "com.superduper.superwhisper",          // Superwhisper
+    "com.goodsnooze.MacWhisper",            // MacWhisper
+    "com.prakashjoshipax.VoiceInk",         // VoiceInk
+    "com.aquavoice.mac",                    // Aqua Voice
+    // Automatisierung / Eingabe
+    "com.hegenberg.BetterTouchTool",        // BetterTouchTool
     "com.stairways.keyboardmaestro.engine", // Keyboard Maestro
-    "org.hammerspoon.Hammerspoon",        // Hammerspoon
-    "com.knollsoft.Rectangle",            // Rectangle
-    "com.crowdcafe.windowmagnet",         // Magnet
-    "com.surteesstudios.Bartender",       // Bartender
-    "com.pilotmoon.popclip",              // PopClip
-    "com.superultra.Homerow",             // Homerow
-    "com.grammarly.ProjectLlama",         // Grammarly
-    "com.logi.optionsplus",               // Logi Options+
-    "com.teamviewer.TeamViewer",          // TeamViewer
-    "com.philandro.anydesk",              // AnyDesk
+    "org.hammerspoon.Hammerspoon",          // Hammerspoon
+    "com.superultra.Homerow",               // Homerow
+    "com.sproutcube.Shortcat",              // Shortcat
+    "com.pilotmoon.popclip",                // PopClip
+    "com.logi.optionsplus",                 // Logi Options+
+    "com.logitech.manager.daemon",          // Logitech Options
+    // Fenster / Menüleiste / Overlays
+    "com.knollsoft.Rectangle",              // Rectangle
+    "com.knollsoft.Hookshot",               // Hookshot
+    "com.crowdcafe.windowmagnet",           // Magnet
+    "com.manytricks.Moom",                  // Moom
+    "com.hegenberg.BetterSnapTool",         // BetterSnapTool
+    "com.surteesstudios.Bartender",         // Bartender
+    "com.jordanbaird.Ice",                  // Ice
+    "com.grammarly.ProjectLlama",           // Grammarly
+    "com.loom.desktop",                     // Loom
+    "com.presentify.Presentify",            // Presentify
+    // Fernwartung / Bildschirmfreigabe
+    "com.teamviewer.TeamViewer",            // TeamViewer
+    "com.philandro.anydesk",                // AnyDesk
+    "com.splashtop.Splashtop-Streamer",     // Splashtop
+    "com.carriez.rustdesk",                 // RustDesk
+    "tv.parsec.www",                        // Parsec
+    "com.p5sys.jump.connect",               // Jump Desktop Connect
 ]
 #endif
 

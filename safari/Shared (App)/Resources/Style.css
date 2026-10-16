@@ -98,7 +98,7 @@ body:not(.state-off) .state-off-only { display: none; }
 .blockers[hidden] { display: none; }
 .blockers .names { font-weight: 600; }
 .blockers p { margin: 4px 0 0; font-size: .92em; }
-.hint { margin: 0; font-size: .82em; color: var(--soft); }
+.hint { margin: 0; width: 100%; text-align: left; font-size: .82em; color: var(--soft); }
 
 /* Erweiterung aktiv: keine Einrichtungsschritte mehr, nur kurzer Hinweis; Button dezent */
 .ready { width: 100%; display: flex; flex-direction: column; gap: 10px; align-items: center; }

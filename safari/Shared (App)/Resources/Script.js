@@ -10,6 +10,7 @@ const EN = {
     ios1: 'Open the <b>Settings</b> app: <b>Apps → Safari → Extensions → Fahrtrichtung</b>.',
     ios2: 'Switch on <b>Allow Extension</b> and set bahn.de and fernbahn.de to <b>“Allow”</b>.',
     ios3: 'In Safari, go to <b>“Sitzplatz auswählen”</b> on bahn.de, then tap <b>Fahrtrichtung</b> via the extensions icon in the address bar.',
+    ready: 'All set. On bahn.de, go to <b>“Sitzplatz auswählen”</b> (choose seat) and click the Fahrtrichtung icon in the Safari toolbar. You can close this window.',
     button: 'Open Safari Settings',
     blockTitle: 'Please quit first:',
     blockText: 'While this app is running, Safari won’t let you switch on extensions. You can reopen it afterwards.',

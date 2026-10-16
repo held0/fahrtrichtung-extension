@@ -99,3 +99,9 @@ body:not(.state-off) .state-off-only { display: none; }
 .blockers .names { font-weight: 600; }
 .blockers p { margin: 4px 0 0; font-size: .92em; }
 .hint { margin: 0; font-size: .82em; color: var(--soft); }
+
+/* Erweiterung aktiv: keine Einrichtungsschritte mehr, nur kurzer Hinweis; Button dezent */
+.ready { margin: 0; line-height: 1.45; }
+body:not(.state-on) .ready { display: none; }
+body.state-on .steps { display: none; }
+body.state-on button.open-preferences { background: transparent; color: var(--soft); border: 1px solid rgba(128,128,128,.4); font-weight: 500; font-size: .95em; padding: 8px 14px; }

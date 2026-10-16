@@ -13,9 +13,6 @@ const EN = {
     button: 'Open Safari Settings',
     blockTitle: 'Please quit first:',
     blockText: 'While this app is running, Safari won’t let you switch on extensions. You can reopen it afterwards.',
-    recheck: 'Done – check again',
-    checking: 'Checking…',
-    wait: 'Still running… Quitting can take a few seconds.',
     hint: 'Does Safari say it “detected apps or services that prevented clicks”? Then briefly quit apps that sit on top of other windows or control your Mac (e.g. dictation, window or remote-access apps).',
     demoTitle: 'Extensions',
     demoEdit: 'Edit Websites…',
@@ -36,30 +33,7 @@ function show(platform, enabled, blockers) {
     const names = Array.isArray(blockers) ? blockers : [];
     box.hidden = names.length === 0;
     box.querySelector('.names').textContent = names.join(', ');
-    if (names.length === 0) stopRecheck();
 }
-
-// "Ist beendet – erneut prüfen": bis zu 10 s lang nachsehen (Electron-Apps wie
-// Wispr Flow brauchen ein paar Sekunden, bis sie wirklich beendet sind)
-const DE = { recheck: 'Ist beendet – erneut prüfen', checking: 'Prüfe …' };
-const T = k => (document.documentElement.lang === 'en-GB' ? EN : DE)[k];
-let recheckTimer = null;
-function stopRecheck() {
-    clearInterval(recheckTimer); recheckTimer = null;
-    const btn = document.querySelector('.recheck');
-    btn.disabled = false; btn.textContent = T('recheck');
-}
-document.querySelector('.recheck').addEventListener('click', () => {
-    const btn = document.querySelector('.recheck'), wait = document.querySelector('.wait');
-    btn.disabled = true; btn.textContent = T('checking'); wait.hidden = true;
-    let tries = 0;
-    clearInterval(recheckTimer);
-    recheckTimer = setInterval(() => {
-        webkit.messageHandlers.controller.postMessage('refresh');
-        if (++tries >= 14) { stopRecheck(); wait.hidden = false; }
-    }, 700);
-    webkit.messageHandlers.controller.postMessage('refresh');
-});
 
 document.querySelector('button.open-preferences').addEventListener('click', () => {
     webkit.messageHandlers.controller.postMessage('open-preferences');

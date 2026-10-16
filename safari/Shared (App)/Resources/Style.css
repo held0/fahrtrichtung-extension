@@ -41,3 +41,53 @@ body:not(.platform-mac):not(.platform-ios) .platform-ios,
 body.platform-ios .platform-mac,
 body.platform-mac .platform-ios { display: none; }
 body:not(.state-on) .state-on, body:not(.state-off) .state-off { display: none; }
+
+/* Animation: Haken setzen → „Websites bearbeiten …“ → bahn.de/fernbahn.de erlauben (Schleife, 9 s) */
+body:not(.state-off) .state-off-only { display: none; }
+.demo { width: 100%; display: flex; justify-content: center; }
+.win { position: relative; width: 100%; max-width: 420px; height: 170px; border-radius: 10px; overflow: hidden;
+  background: #ececec; box-shadow: 0 2px 10px rgba(0,0,0,.18); font-size: 12px; text-align: left; color: #1d1d1f; }
+@media (prefers-color-scheme: dark) { .win { background: #2a2a2c; color: #f5f5f7; } }
+.bar { height: 24px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: rgba(0,0,0,.06); font-weight: 600; }
+.bar i { width: 9px; height: 9px; border-radius: 50%; background: #ff5f57; }
+.bar i:nth-child(2) { background: #febc2e; } .bar i:nth-child(3) { background: #28c840; }
+.bar span { margin-left: auto; margin-right: auto; padding-right: 40px; }
+.pane { display: flex; height: calc(100% - 24px); }
+.list { width: 44%; padding: 8px; border-right: 1px solid rgba(128,128,128,.25); }
+.row { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border-radius: 6px; background: rgba(128,128,128,.15); }
+.row.ghost { background: none; opacity: .5; margin-top: 4px; }
+.row img { width: 18px; height: 18px; }
+.ph { width: 70px; height: 8px; border-radius: 4px; background: rgba(128,128,128,.35); }
+.cb { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(128,128,128,.6); display: grid; place-items: center; background: rgba(255,255,255,.6); }
+.cb svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 2; opacity: 0; }
+.row:not(.ghost) .cb { animation: cbOn 9s infinite; }
+.row:not(.ghost) .cb svg { animation: tick 9s infinite; }
+.detail { position: relative; flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.line { height: 6px; width: 90%; border-radius: 3px; background: rgba(128,128,128,.3); }
+.line.short { width: 60%; }
+.btn { align-self: flex-start; margin-top: 4px; padding: 3px 9px; border-radius: 5px; border: 1px solid rgba(128,128,128,.4); opacity: .4; animation: btnOn 9s infinite; }
+.sites { position: absolute; left: 10px; right: 10px; top: 46px; padding: 6px 8px; border-radius: 8px; background: inherit;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25); background-color: #f7f7f7; opacity: 0; transform: translateY(6px); animation: sites 9s infinite; }
+@media (prefers-color-scheme: dark) { .sites { background-color: #3a3a3c; } }
+.sites div { display: flex; justify-content: space-between; padding: 3px 0; }
+.sites em { font-style: normal; font-weight: 600; color: var(--green); }
+.cursor { position: absolute; width: 14px; height: 21px; fill: #000; stroke: #fff; stroke-width: 1.2; left: 75%; top: 80%;
+  animation: cursor 9s infinite; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
+@keyframes cursor {
+  0%   { left: 75%; top: 82%; }
+  15%  { left: 4.5%; top: 25%; }  /* zum Haken */
+  20%  { left: 4.5%; top: 25%; transform: scale(.85); }
+  24%  { left: 4.5%; top: 25%; transform: scale(1); }
+  42%  { left: 60%; top: 55%; }  /* zu „Websites bearbeiten …“ */
+  46%  { left: 60%; top: 55%; transform: scale(.85); }
+  50%  { left: 60%; top: 55%; transform: scale(1); }
+  66%  { left: 88%; top: 64%; }  /* zu „Erlauben“ */
+  70%  { left: 88%; top: 64%; transform: scale(.85); }
+  74%, 100% { left: 88%; top: 64%; transform: scale(1); }
+}
+@keyframes cbOn { 0%, 19% { background: rgba(255,255,255,.6); border-color: rgba(128,128,128,.6); } 21%, 96% { background: #0a84ff; border-color: #0a84ff; } 100% { background: rgba(255,255,255,.6); } }
+@keyframes tick { 0%, 19% { opacity: 0; } 21%, 96% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes btnOn { 0%, 21% { opacity: .4; } 24%, 96% { opacity: 1; } 100% { opacity: .4; } }
+@keyframes sites { 0%, 46% { opacity: 0; transform: translateY(6px); } 50%, 92% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+.sites em { animation: allow 9s infinite; }
+@keyframes allow { 0%, 69% { opacity: .35; } 72%, 100% { opacity: 1; } }

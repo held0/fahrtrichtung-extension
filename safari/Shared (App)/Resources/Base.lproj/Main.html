@@ -9,11 +9,33 @@
 </head>
 <body>
     <main>
-        <img src="../Icon.png" width="96" height="96" alt="">
+        <img src="../Icon.png" width="64" height="64" alt="">
         <h1 data-t="title">Fahrtrichtung für Safari</h1>
         <p class="status state-on" data-t="on">Die Erweiterung ist aktiv.</p>
         <p class="status state-off" data-t="off">Die Erweiterung ist noch ausgeschaltet.</p>
 
+
+        <div class="demo platform-mac state-off-only" aria-hidden="true">
+            <div class="win">
+                <div class="bar"><i></i><i></i><i></i><span data-t="demoTitle">Erweiterungen</span></div>
+                <div class="pane">
+                    <div class="list">
+                        <div class="row"><span class="cb"><svg viewBox="0 0 12 12"><path d="M2.5 6.5l2.3 2.3 4.7-5"/></svg></span><img src="../Icon.png" alt=""><span>Fahrtrichtung</span></div>
+                        <div class="row ghost"><span class="cb"></span><span class="ph"></span></div>
+                    </div>
+                    <div class="detail">
+                        <b>Fahrtrichtung</b>
+                        <span class="line"></span><span class="line short"></span>
+                        <span class="btn" data-t="demoEdit">Websites bearbeiten …</span>
+                        <div class="sites">
+                            <div><span>bahn.de</span><em data-t="demoAllow">Erlauben</em></div>
+                            <div><span>fernbahn.de</span><em data-t="demoAllow">Erlauben</em></div>
+                        </div>
+                    </div>
+                </div>
+                <svg class="cursor" viewBox="0 0 16 24"><path d="M1 1v19l5-5 3.5 7.5 3-1.4L9 13.7h7z"/></svg>
+            </div>
+        </div>
         <ol class="steps platform-mac">
             <li data-t="mac1">Unten auf <b>„Safari-Einstellungen öffnen“</b> klicken und bei <b>Fahrtrichtung</b> den Haken setzen.</li>
             <li data-t="mac2">Danach unter <b>„Websites bearbeiten …“</b> bahn.de und fernbahn.de erlauben – oder beim ersten Klick auf das Symbol.</li>

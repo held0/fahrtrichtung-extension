@@ -95,7 +95,12 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
 #if os(macOS)
-        if (message.body as! String != "open-preferences") {
+        let body = message.body as? String ?? ""
+        if body == "refresh" {
+            refreshState()
+            return
+        }
+        if body != "open-preferences" {
             return
         }
 

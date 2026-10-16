@@ -74,5 +74,20 @@
   },
   "obPrivacy": {
     "message": "Free · Open source · No tracking"
+  },
+  "needDialog": {
+    "message": "The direction of travel can only be shown once you are in the booking process and have opened the “Select seat” dialog („Sitzplatz auswählen“)."
+  },
+  "notOnBahnDe": {
+    "message": "The direction of travel is shown on bahn.de during booking."
+  },
+  "stepConnection": {
+    "message": "Select a connection on bahn.de"
+  },
+  "stepSeatDialog": {
+    "message": "Open “Select seat” during booking"
+  },
+  "stepClickIcon": {
+    "message": "Then click this icon"
   }
 }

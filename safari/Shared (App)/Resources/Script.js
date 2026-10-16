@@ -41,3 +41,11 @@ function show(platform, enabled, blockers) {
 document.querySelector('button.open-preferences').addEventListener('click', () => {
     webkit.messageHandlers.controller.postMessage('open-preferences');
 });
+
+// Inhaltshoehe an die App melden (Fenster passt sich an), auch nach Statuswechseln
+function reportHeight() {
+    const h = document.querySelector('main').getBoundingClientRect().height + 40;
+    try { webkit.messageHandlers.controller.postMessage('height:' + Math.round(h)); } catch (e) {}
+}
+new ResizeObserver(reportHeight).observe(document.querySelector('main'));
+window.addEventListener('load', reportHeight);

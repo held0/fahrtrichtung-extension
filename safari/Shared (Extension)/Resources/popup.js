@@ -91,7 +91,7 @@ async function init() {
 
     if (!trainInfo.dialogTrain) {
       // Schon im Reservierungsschritt (Schaltflaeche "Sitzplatz auswaehlen" sichtbar)? Dann nur der letzte Schritt.
-      if (trainInfo.seatStep) showStatus(msg('almostThere'));
+      if (trainInfo.seatStep) contentEl.innerHTML = `<div class="status howto"><p>${escHtml(msg('almostThere'))}</p></div>`;
       else showHowTo(msg('needDialog'));
       return;
     }

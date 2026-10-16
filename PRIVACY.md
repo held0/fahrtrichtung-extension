@@ -21,7 +21,7 @@ Die Extension speichert ausschließlich einen Nutzungszähler (Anzahl der Aufruf
 
 ### Umfrage beim Deinstallieren
 
-Wenn Sie die Extension entfernen, öffnet Ihr Browser die Seite fahrtrichtung.info/tschuess mit einer freiwilligen Ein-Klick-Umfrage. Die Adresse enthält nur Version, Browsertyp und Sprache, aber keine Kennung und keine Reisedaten. Die Extension selbst sendet dabei nichts. Details: https://fahrtrichtung.info/datenschutz
+Wenn Sie die Extension entfernen, öffnet Ihr Browser die Seite fahrtrichtung.info/tschuess mit einer freiwilligen Ein-Klick-Umfrage. Die Extension selbst sendet dabei keinerlei Daten, es wird nur diese Seite geöffnet. Details: https://fahrtrichtung.info/datenschutz
 
 ### Zugriff auf bahn.de
 
@@ -50,7 +50,7 @@ The extension only stores a usage counter (number of opens) locally in the brows
 
 ### Uninstall survey
 
-When you remove the extension, your browser opens fahrtrichtung.info/tschuess with an optional one-click survey. The address only contains the version, browser type and language, with no identifier and no travel data. The extension itself sends nothing. Details: https://fahrtrichtung.info/datenschutz
+When you remove the extension, your browser opens fahrtrichtung.info/tschuess with an optional one-click survey. The extension itself sends no data at all; it only opens this page. Details: https://fahrtrichtung.info/datenschutz
 
 ### Access to bahn.de
 

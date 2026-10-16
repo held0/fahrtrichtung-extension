@@ -76,7 +76,7 @@
     "message": "Kostenlos · Open Source · Kein Tracking"
   },
   "needDialog": {
-    "message": "Die Fahrtrichtung kann erst angezeigt werden, wenn Sie sich im Buchungsprozess befinden und den Dialog „Sitzplatz auswählen“ geöffnet haben."
+    "message": "Die Fahrtrichtung kann erst angezeigt werden, wenn du dich im Buchungsprozess befindest und den Dialog „Sitzplatz auswählen“ geöffnet hast."
   },
   "notOnBahnDe": {
     "message": "Die Fahrtrichtung wird auf bahn.de im Buchungsprozess angezeigt."

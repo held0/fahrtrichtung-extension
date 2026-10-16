@@ -372,6 +372,12 @@
       height: 18px;
       width: auto;
     }
+  
+    /* iPhone/iPad: volle Breite, etwas groessere Schrift, Abstaende wie in iOS */
+    html.ios, html.ios body { width: 100%; min-width: 0; }
+    html.ios body { font-size: 16px; }
+    html.ios .header { padding: 14px 20px; font-size: 18px; }
+    html.ios #content { padding: 18px 20px; }
   </style>
 </head>
 <body>

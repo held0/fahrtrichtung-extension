@@ -1,4 +1,9 @@
 const contentEl = document.getElementById('content');
+
+// iPhone/iPad (Safari): Popup erscheint als Blatt in voller Breite — keine feste Desktop-Breite
+if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+  document.documentElement.classList.add('ios');
+}
 // Gebunden aufrufen: Safari liefert bei losgeloester Methode undefined
 const msg = (key, subs) => chrome.i18n.getMessage(key, subs) || "";
 

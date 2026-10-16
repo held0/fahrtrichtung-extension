@@ -9,7 +9,7 @@ const EN = {
     mac3: 'On bahn.de, go to <b>“Sitzplatz auswählen”</b> (choose seat) and click the Fahrtrichtung icon in the Safari toolbar.',
     ios1: 'Open the <b>Settings</b> app: <b>Apps → Safari → Extensions → Fahrtrichtung</b>.',
     ios2: 'Switch on <b>Allow Extension</b> and set <b>bahn.de</b> and <b>fernbahn.de</b> to <b>“Allow”</b>.',
-    ios3: 'In Safari, go to <b>“Sitzplatz auswählen”</b> on bahn.de, tap the <b>puzzle piece</b> in the address bar and choose <b>Fahrtrichtung</b>.',
+    ios3: 'In Safari, go to <b>“Sitzplatz auswählen”</b> on bahn.de, tap the <b>page icon</b> on the left of the address bar and choose <b>Fahrtrichtung</b>.',
     readyHead: 'One click is all it takes',
     ready: 'As soon as you choose a seat on bahn.de, click the Fahrtrichtung icon at the top of Safari – and the direction of travel is shown.',
     readyClose: 'You can close this window now.',
@@ -23,7 +23,7 @@ const EN = {
     demoAsk: 'Ask',
     iosBack: 'Safari',
     iosAllow: 'Allow Extension',
-    iosOther: 'ON OTHER WEBSITES',
+    iosPerms: 'Permissions',
 };
 
 if (!/^de/i.test(navigator.language || '')) {

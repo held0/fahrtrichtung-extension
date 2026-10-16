@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fahrtrichtung</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f5f5f7;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 760px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #ec0016;
+      color: #fff;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header .arrow-icon { font-size: 20px; }
+
+    .content {
+      padding: 32px 40px 30px;
+      text-align: center;
+    }
+
+    h1 { font-size: 24px; margin-bottom: 10px; }
+    p.sub {
+      font-size: 14.5px;
+      color: #666;
+      line-height: 1.55;
+      max-width: 520px;
+      margin: 0 auto 26px;
+    }
+
+    /* ---- Demo-Animation (identisch zur Landing Page fahrtrichtung.info) ---- */
+    .demo-flow { max-width: 640px; margin: 0 auto; }
+    .browser {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+      overflow: hidden;
+      text-align: left;
+    }
+    .b-bar {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .6rem .85rem;
+      background: #f4f4f5;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .b-bar .dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+    .b-bar .dot.r { background: #ec6a5e; }
+    .b-bar .dot.y { background: #f4bf4f; }
+    .b-bar .dot.g { background: #61c554; }
+    .b-url {
+      flex: 1;
+      margin: 0 .35rem;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 7px;
+      padding: .32em .8em;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: .78rem;
+      color: #666;
+    }
+    .b-puzzle { width: 17px; height: 17px; color: #666; flex: 0 0 auto; }
+    .b-ext {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      flex: 0 0 auto;
+    }
+    .b-ext img { width: 24px; height: 24px; display: block; }
+    .b-ext::after {
+      content: "";
+      position: absolute;
+      inset: -5px;
+      border: 2px solid #ec0016;
+      border-radius: 12px;
+      opacity: 0;
+      animation: ext-ping 9s ease-out infinite;
+    }
+    .b-body {
+      position: relative;
+      aspect-ratio: 2940 / 1604;
+      background: #fff;
+      overflow: hidden;
+    }
+    .bahn-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 0;
+      display: block;
+    }
+    .fr-popup {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      width: 220px;
+      z-index: 3;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+      overflow: hidden;
+      transform-origin: top right;
+      transform: scale(.55);
+      opacity: 0;
+      animation: popup-in 9s ease-in-out infinite;
+    }
+    .fr-popup img { width: 100%; height: auto; display: block; }
+    .cursor {
+      position: absolute;
+      left: 50%;
+      top: 85%;
+      width: 19px;
+      height: auto;
+      z-index: 6;
+      transform-origin: top left;
+      filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.35));
+      animation: cursor-move 9s cubic-bezier(.5,0,.2,1) infinite;
+    }
+    @keyframes cursor-move {
+      0%,18%  { left: 48%;   top: 50%;  transform: scale(1); }
+      38%     { left: 95.5%; top: 6%;   transform: scale(1); }
+      43%     { left: 95.5%; top: 6.5%; transform: scale(.82); }
+      48%     { left: 95.5%; top: 6%;   transform: scale(1); }
+      62%,90% { left: 48%;   top: 50%;  transform: scale(1); }
+      100%    { left: 48%;   top: 50%;  transform: scale(1); }
+    }
+    @keyframes ext-ping {
+      0%,42% { opacity: 0;  transform: scale(.7); }
+      43%    { opacity: .9; transform: scale(.95); }
+      55%    { opacity: 0;  transform: scale(1.55); }
+      100%   { opacity: 0; }
+    }
+    @keyframes popup-in {
+      0%,43%   { transform: scale(.55); opacity: 0; }
+      51%,90%  { transform: scale(1);   opacity: 1; }
+      100%     { transform: scale(.55); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .b-ext::after { animation: none; }
+      .cursor { display: none; animation: none; }
+      .fr-popup { animation: none; opacity: 1; transform: none; }
+    }
+
+    .pin-tip {
+      margin: 24px auto 0;
+      font-size: 12.5px;
+      color: #888;
+      max-width: 480px;
+      line-height: 1.55;
+    }
+    .privacy-note { margin-top: 10px; font-size: 11.5px; color: #aaa; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <span class="arrow-icon">&harr;</span>
+      <span data-i18n="obTitle">Fahrtrichtung</span>
+    </div>
+
+    <div class="content">
+      <h1 data-i18n="obHeading">Ein Klick gen&uuml;gt</h1>
+      <p class="sub" data-i18n="obSub">Sobald du auf bahn.de einen Sitzplatz auswählst, klickst du oben im Browser einfach auf das ICE-Symbol — und die Fahrtrichtung wird dir sofort angezeigt.</p>
+
+      <div class="demo-flow" aria-label="Animation: auf bahn.de den Sitzplatz-Dialog öffnen und das Extension-Icon anklicken">
+        <div class="browser">
+          <div class="b-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <div class="b-url">bahn.de</div>
+            <svg class="b-puzzle" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/></svg>
+            <div class="b-ext"><img src="icon48.png" alt="" width="24" height="24"></div>
+          </div>
+          <div class="b-body">
+            <img class="bahn-shot" src="bahn-dialog.png" alt="bahn.de Sitzplan-Dialog" width="2940" height="1604">
+            <div class="fr-popup">
+              <img src="app-screenshot.png" alt="Fahrtrichtung-Popup mit der erkannten Fahrtrichtung" width="756" height="698">
+            </div>
+          </div>
+          <svg class="cursor" viewBox="0 0 16 22" aria-hidden="true"><path d="M2 2 L2 17 L6 13.5 L8.5 19 L11 18 L8.5 12.5 L13.5 12.5 Z" fill="#16150f" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <p class="pin-tip" data-i18n="obPinTip">Tipp: Klicke auf das Puzzle-Symbol 🧩 neben der Adressleiste und pinne Fahrtrichtung an, damit das Icon immer sichtbar ist.</p>
+      <p class="privacy-note" data-i18n="obPrivacy">Kostenlos · Open Source · Kein Tracking</p>
+    </div>
+  </div>
+
+  <script src="onboarding.js"></script>
+</body>
+</html>

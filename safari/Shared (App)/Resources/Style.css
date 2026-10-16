@@ -148,3 +148,65 @@ body.state-on button.open-preferences { display: none; }
 @keyframes ob-ping { 0%,42% { opacity: 0; transform: scale(.7); } 43% { opacity: .9; transform: scale(.95); } 55%,100% { opacity: 0; transform: scale(1.55); } }
 @keyframes ob-popup { 0%,43% { transform: scale(.55); opacity: 0; } 51%,90% { transform: scale(1); opacity: 1; } 100% { transform: scale(.55); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .ob-cursor { display: none; } .ob-popup { animation: none; opacity: 1; transform: none; } .ob-ext::after { animation: none; } }
+
+/* iPhone: Einstellungen-Animation (Schalter an, bahn.de/fernbahn.de erlauben) */
+.iph { position: relative; width: 100%; padding: 10px 12px 14px; border-radius: 16px; background: #f2f2f7; color: #000; text-align: left; font-size: 14px; overflow: hidden; }
+@media (prefers-color-scheme: dark) { .iph { background: #1c1c1e; color: #fff; } }
+.iph-nav { position: relative; text-align: center; padding: 4px 0 10px; }
+.iph-nav .back { position: absolute; left: 0; color: #0a84ff; }
+.iph-group { background: #fff; border-radius: 10px; overflow: hidden; }
+@media (prefers-color-scheme: dark) { .iph-group { background: #2c2c2e; } }
+.iph-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; }
+.iph-row + .iph-row { border-top: .5px solid rgba(128,128,128,.3); }
+.iph-cap { font-size: 11px; color: #8e8e93; padding: 12px 12px 5px; }
+.sw { width: 44px; height: 26px; border-radius: 13px; background: #e5e5ea; position: relative; animation: swbg 10s infinite; }
+@media (prefers-color-scheme: dark) { .sw { background: #39393d; } }
+.sw i { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); animation: swknob 10s infinite; }
+@keyframes swbg { 0%, 18% { background: #e5e5ea; } 22%, 96% { background: #34c759; } 100% { background: #e5e5ea; } }
+@keyframes swknob { 0%, 18% { transform: none; } 22%, 96% { transform: translateX(18px); } 100% { transform: none; } }
+.sites-ios em { display: inline-grid; font-style: normal; }
+.sites-ios em span { grid-area: 1 / 1; text-align: right; }
+.sites-ios .ask { color: #8e8e93; animation: iask1 10s infinite; }
+.sites-ios .ok { color: #34c759; font-weight: 600; opacity: 0; animation: iok1 10s infinite; }
+.sites-ios .iph-row + .iph-row .ask { animation-name: iask2; }
+.sites-ios .iph-row + .iph-row .ok { animation-name: iok2; }
+@keyframes iask1 { 0%, 48% { opacity: 1; } 51%, 100% { opacity: 0; } }
+@keyframes iok1  { 0%, 48% { opacity: 0; } 51%, 100% { opacity: 1; } }
+@keyframes iask2 { 0%, 72% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes iok2  { 0%, 72% { opacity: 0; } 75%, 100% { opacity: 1; } }
+/* Finger-Tipp */
+.tap { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: rgba(120,120,128,.35); border: 2px solid rgba(255,255,255,.8);
+  left: 85%; top: 34%; opacity: 0; animation: tapmove 10s infinite; }
+@keyframes tapmove {
+  0%, 8%  { left: 85%; top: 33%; opacity: 0; transform: scale(1); }
+  14%     { left: 85%; top: 33%; opacity: 1; transform: scale(1); }
+  19%     { left: 85%; top: 33%; opacity: 1; transform: scale(.75); }
+  26%     { left: 85%; top: 33%; opacity: 0; transform: scale(1); }
+  40%     { left: 85%; top: 66%; opacity: 0; }
+  44%     { left: 85%; top: 66%; opacity: 1; transform: scale(1); }
+  49%     { left: 85%; top: 66%; opacity: 1; transform: scale(.75); }
+  56%     { left: 85%; top: 66%; opacity: 0; }
+  64%     { left: 85%; top: 85%; opacity: 0; }
+  68%     { left: 85%; top: 85%; opacity: 1; transform: scale(1); }
+  73%     { left: 85%; top: 85%; opacity: 1; transform: scale(.75); }
+  80%, 100% { left: 85%; top: 85%; opacity: 0; transform: scale(1); }
+}
+/* iPhone: echter bahn.de-Ausschnitt, Finger tippt aufs Puzzleteil, Fahrtrichtung-Blatt faehrt hoch (9 s) */
+.phone { width: 100%; max-width: 300px; padding: 10px; border-radius: 38px; background: #1c1c1e; box-shadow: 0 8px 26px rgba(0,0,0,.25); }
+.ph-screen { position: relative; aspect-ratio: 9 / 16; border-radius: 28px; overflow: hidden; background: #fff; }
+.ph-page { position: absolute; top: 0; left: 0; width: 100%; filter: brightness(1.55) contrast(1.05); animation: ph-dim 9s infinite; }
+@keyframes ph-dim { 0%, 38% { filter: brightness(1.55) contrast(1.05); } 46%, 92% { filter: brightness(.95); } 100% { filter: brightness(1.55) contrast(1.05); } }
+.ph-bar { position: absolute; left: 8px; right: 8px; bottom: 10px; height: 34px; border-radius: 17px; background: rgba(245,245,247,.96);
+  box-shadow: 0 2px 10px rgba(0,0,0,.18); display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 12px; color: #1d1d1f; }
+.ph-aa { font-weight: 600; font-size: 11px; }
+.ph-url { flex: 1; text-align: center; }
+.ph-puzzle { width: 16px; height: 16px; fill: #3a3a3c; }
+.ph-sheet { position: absolute; left: 4px; right: 4px; bottom: 4px; border-radius: 22px; overflow: hidden; background: #fff;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.25); transform: translateY(105%); animation: ph-sheet 9s cubic-bezier(.2,.8,.2,1) infinite; }
+.ph-sheet img { width: 100%; display: block; }
+@keyframes ph-sheet { 0%, 38% { transform: translateY(105%); } 48%, 90% { transform: none; } 98%, 100% { transform: translateY(105%); } }
+.ph-tap { position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; background: rgba(120,120,128,.4);
+  border: 2px solid rgba(255,255,255,.9); right: 10px; left: auto; top: calc(100% - 27px); margin-right: 0; opacity: 0; animation: ph-tap 9s infinite; }
+.ph-tap { left: calc(100% - 36px); }
+@keyframes ph-tap { 0%, 20% { opacity: 0; transform: scale(1); } 26% { opacity: 1; transform: scale(1); } 32% { opacity: 1; transform: scale(.7); } 40%, 100% { opacity: 0; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .ph-sheet { animation: none; transform: none; } .ph-tap { display: none; } }

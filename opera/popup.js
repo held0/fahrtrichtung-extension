@@ -36,7 +36,7 @@ async function init() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (!tab?.url?.includes('bahn.de')) {
-      showStatus('Öffne bahn.de um Züge automatisch zu erkennen.');
+      showHowTo(msg('notOnBahnDe'));
       return;
     }
 
@@ -87,7 +87,7 @@ async function init() {
     }
 
     if (!trainInfo.dialogTrain) {
-      showStatus('Bitte öffnen Sie zunächst den \u201eSitzplatz auswählen\u201c Dialog damit der gewünschte Zug automatisch erkannt werden kann.');
+      showHowTo(msg('needDialog'));
       return;
     }
 
@@ -247,6 +247,13 @@ function extractTrainInfoFromPage() {
 
 function showStatus(message) {
   contentEl.innerHTML = `<div class="status">${escHtml(message)}</div>`;
+}
+
+// Hinweis, wenn der Sitzplatzdialog nicht offen ist: kurze Anleitung statt
+// eines einzelnen Satzes (viele Nutzer klicken das Icon zu frueh an)
+function showHowTo(lead) {
+  const steps = ['stepConnection', 'stepSeatDialog', 'stepClickIcon'].map(k => `<li>${escHtml(msg(k))}</li>`).join('');
+  contentEl.innerHTML = `<div class="status howto"><p>${escHtml(lead)}</p><ol>${steps}</ol></div>`;
 }
 
 async function fetchAndDisplay(train, fromStation, toStation, travelDate, journeyHint) {

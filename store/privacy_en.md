@@ -1,6 +1,6 @@
 # Privacy Policy – Fahrtrichtung Extension
 
-Last updated: February 19, 2026
+Last updated: October 16, 2026
 
 ## What data is collected?
 
@@ -18,6 +18,10 @@ These requests do not contain any personal data (no names, email addresses, or l
 ## What data is stored locally?
 
 The extension stores only a usage counter (number of opens) in `chrome.storage.local`. This counter is used to occasionally show a donation prompt. No travel data, train information, or personal data is stored.
+
+## Uninstall survey
+
+When you remove the extension, your browser opens fahrtrichtung.info/tschuess with an optional one-click survey. The address only contains the version, browser type and language, with no identifier and no travel data. The extension itself sends nothing. Details: https://fahrtrichtung.info/datenschutz
 
 ## Website access
 

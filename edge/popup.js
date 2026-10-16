@@ -17,7 +17,8 @@ const msg = chrome.i18n.getMessage;
   try {
     const manifest = chrome.runtime.getManifest();
     const storeIds = ['oeonipcihoehcheadnelfokabaihcggh', 'pldcdckanhipjkgcbnjpacmihapgebci', 'fahrtrichtung@extension'];
-    if (!manifest.update_url && !storeIds.includes(chrome.runtime.id)) {
+    const safari = /Safari\//.test(navigator.userAgent) && !/Chrome|Chromium|Edg\/|OPR\/|Firefox/.test(navigator.userAgent);
+    if (!safari && !manifest.update_url && !storeIds.includes(chrome.runtime.id)) {
       const header = document.querySelector('.header');
       if (header) {
         const tag = document.createElement('span');

@@ -1,5 +1,6 @@
 const contentEl = document.getElementById('content');
-const msg = chrome.i18n.getMessage;
+// Gebunden aufrufen: Safari liefert bei losgeloester Methode undefined
+const msg = (key, subs) => chrome.i18n.getMessage(key, subs) || "";
 
 // Set static i18n texts
 {

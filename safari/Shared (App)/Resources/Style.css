@@ -91,3 +91,11 @@ body:not(.state-off) .state-off-only { display: none; }
 @keyframes sites { 0%, 46% { opacity: 0; transform: translateY(6px); } 50%, 92% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
 .sites em { animation: allow 9s infinite; }
 @keyframes allow { 0%, 69% { opacity: .35; } 72%, 100% { opacity: 1; } }
+
+/* Warnung: App läuft, die Safaris Klick-Schutz auslöst */
+.blockers { width: 100%; text-align: left; padding: 10px 14px; border-radius: 10px;
+  background: rgba(255, 159, 10, .14); border: 1px solid rgba(255, 159, 10, .55); }
+.blockers[hidden] { display: none; }
+.blockers .names { font-weight: 600; }
+.blockers p { margin: 4px 0 0; font-size: .92em; }
+.hint { margin: 0; font-size: .82em; color: var(--soft); }

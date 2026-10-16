@@ -17,6 +17,10 @@
 		F803E9DA30824D3B007A2CAD /* Fahrtrichtung Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F803E9D930824D3B007A2CAD /* Fahrtrichtung Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F803E9DF30824D3B007A2CAD /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A430824D39007A2CAD /* Main.html */; };
 		F803E9E030824D3B007A2CAD /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A430824D39007A2CAD /* Main.html */; };
+		329BE32409DF321357CC35D6 /* ob-bahn.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F8415CC8783614BC128BAAC /* ob-bahn.png */; };
+		44D17BCE3D9E3F596BE58585 /* ob-bahn.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F8415CC8783614BC128BAAC /* ob-bahn.png */; };
+		9915B5B7B6C33ADADE83E3C6 /* ob-popup.png in Resources */ = {isa = PBXBuildFile; fileRef = C401DE2E4301680E501E695E /* ob-popup.png */; };
+		97B09373E8DC9234C91FF98C /* ob-popup.png in Resources */ = {isa = PBXBuildFile; fileRef = C401DE2E4301680E501E695E /* ob-popup.png */; };
 		F803E9E130824D3B007A2CAD /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A630824D39007A2CAD /* Icon.png */; };
 		F803E9E230824D3B007A2CAD /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A630824D39007A2CAD /* Icon.png */; };
 		F803E9E330824D3B007A2CAD /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A730824D39007A2CAD /* Style.css */; };
@@ -105,6 +109,8 @@
 
 /* Begin PBXFileReference section */
 		F803E9A530824D39007A2CAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		1F8415CC8783614BC128BAAC /* ob-bahn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ob-bahn.png"; sourceTree = "<group>"; };
+		C401DE2E4301680E501E695E /* ob-popup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ob-popup.png"; sourceTree = "<group>"; };
 		F803E9A630824D39007A2CAD /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		F803E9A730824D39007A2CAD /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
 		F803E9A830824D39007A2CAD /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
@@ -196,6 +202,8 @@
 			children = (
 				F803E9A430824D39007A2CAD /* Main.html */,
 				F803E9A630824D39007A2CAD /* Icon.png */,
+				C401DE2E4301680E501E695E /* ob-popup.png */,
+				1F8415CC8783614BC128BAAC /* ob-bahn.png */,
 				F803E9A730824D39007A2CAD /* Style.css */,
 				F803E9A830824D39007A2CAD /* Script.js */,
 			);
@@ -407,6 +415,8 @@
 			isa = PBXResourcesBuildPhase;
 			files = (
 				F803E9E130824D3B007A2CAD /* Icon.png in Resources */,
+				9915B5B7B6C33ADADE83E3C6 /* ob-popup.png in Resources */,
+				329BE32409DF321357CC35D6 /* ob-bahn.png in Resources */,
 				F803E9BA30824D3B007A2CAD /* LaunchScreen.storyboard in Resources */,
 				F803E9DF30824D3B007A2CAD /* Main.html in Resources */,
 				F803E9E530824D3B007A2CAD /* Script.js in Resources */,
@@ -419,6 +429,8 @@
 			isa = PBXResourcesBuildPhase;
 			files = (
 				F803E9E230824D3B007A2CAD /* Icon.png in Resources */,
+				97B09373E8DC9234C91FF98C /* ob-popup.png in Resources */,
+				44D17BCE3D9E3F596BE58585 /* ob-bahn.png in Resources */,
 				F803E9E430824D3B007A2CAD /* Style.css in Resources */,
 				F803E9C930824D3B007A2CAD /* Main.storyboard in Resources */,
 				F803E9E630824D3B007A2CAD /* Script.js in Resources */,

@@ -70,7 +70,7 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
         self.webView.navigationDelegate = self
 
 #if os(iOS)
-        self.webView.scrollView.isScrollEnabled = false
+        self.webView.scrollView.isScrollEnabled = true   // Inhalt ist auf kleinen iPhones hoeher als der Bildschirm
 #endif
 
         self.webView.configuration.userContentController.add(self, name: "controller")

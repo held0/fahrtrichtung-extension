@@ -21,7 +21,7 @@ The extension stores only a usage counter (number of opens) in `chrome.storage.l
 
 ## Uninstall survey
 
-When you remove the extension, your browser opens fahrtrichtung.info/tschuess with an optional one-click survey. The address only contains the version, browser type and language, with no identifier and no travel data. The extension itself sends nothing. Details: https://fahrtrichtung.info/datenschutz
+When you remove the extension, your browser opens fahrtrichtung.info/tschuess with an optional one-click survey. The extension itself sends no data at all; it only opens this page. Details: https://fahrtrichtung.info/datenschutz
 
 ## Website access
 

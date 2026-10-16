@@ -46,16 +46,10 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 // Beim Deinstallieren oeffnet der Browser eine freiwillige Kurzumfrage auf
-// fahrtrichtung.info. Die URL enthaelt nur Version, Browser und Sprache —
-// keine Kennung, keine Reisedaten. Die Extension selbst sendet dabei nichts.
-function uninstallSurveyUrl() {
-  const ua = navigator.userAgent;
-  const browser = /Firefox\//.test(ua) ? 'firefox' : /Edg\//.test(ua) ? 'edge' : /OPR\//.test(ua) ? 'opera' : 'chrome';
-  const lang = (chrome.i18n?.getUILanguage?.() || 'de').toLowerCase().startsWith('de') ? 'de' : 'en';
-  const version = chrome.runtime.getManifest?.().version || '';
-  return `https://fahrtrichtung.info/tschuess?v=${encodeURIComponent(version)}&b=${browser}&lang=${lang}`;
-}
-try { chrome.runtime.setUninstallURL?.(uninstallSurveyUrl()); } catch (e) { /* nicht kritisch */ }
+// fahrtrichtung.info. Bewusst OHNE Parameter: Die Extension uebermittelt dabei
+// nichts (Store-Angabe "keine Datenerhebung"); Sprache und Browser erkennt die
+// Seite selbst wie jede Website.
+try { chrome.runtime.setUninstallURL?.('https://fahrtrichtung.info/tschuess'); } catch (e) { /* nicht kritisch */ }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'fetchFernbahn') {

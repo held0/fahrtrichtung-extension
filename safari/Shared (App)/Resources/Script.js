@@ -11,6 +11,9 @@ const EN = {
     ios2: 'Switch on <b>Allow Extension</b> and set bahn.de and fernbahn.de to <b>“Allow”</b>.',
     ios3: 'In Safari, go to <b>“Sitzplatz auswählen”</b> on bahn.de, then tap <b>Fahrtrichtung</b> via the extensions icon in the address bar.',
     button: 'Open Safari Settings',
+    blockTitle: 'Please quit first:',
+    blockText: 'While this app is running, Safari won’t let you switch on extensions. You can reopen it afterwards.',
+    hint: 'Does Safari say it “detected apps or services that prevented clicks”? Then briefly quit apps that sit on top of other windows or control your Mac (e.g. dictation, window or remote-access apps).',
     demoTitle: 'Extensions',
     demoEdit: 'Edit Websites…',
     demoAllow: 'Allow',
@@ -22,10 +25,14 @@ if (!/^de/i.test(navigator.language || '')) {
     document.querySelectorAll('[data-t]').forEach(el => { if (EN[el.dataset.t]) el.innerHTML = EN[el.dataset.t]; });
 }
 
-function show(platform, enabled) {
+function show(platform, enabled, blockers) {
     document.body.classList.add(`platform-${platform}`);
     document.body.classList.toggle('state-on', enabled === true);
     document.body.classList.toggle('state-off', enabled === false);
+    const box = document.querySelector('.blockers');
+    const names = Array.isArray(blockers) ? blockers : [];
+    box.hidden = names.length === 0;
+    box.querySelector('.names').textContent = names.join(', ');
 }
 
 document.querySelector('button.open-preferences').addEventListener('click', () => {

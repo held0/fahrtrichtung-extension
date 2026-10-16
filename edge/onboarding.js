@@ -13,7 +13,7 @@
       obTitle: 'Train Direction',
       obHeading: 'One click is all it takes',
       obSub: 'As soon as you select a seat on bahn.de, simply click the ICE icon at the top of your browser — and the direction of travel is shown immediately.',
-      obPinTip: 'Tip: click the puzzle icon 🧩 next to the address bar and pin Train Direction so the icon is always visible.',
+      obPinTip: 'Tip: click the puzzle icon next to the address bar and pin Train Direction so the icon is always visible.',
       obPrivacy: 'Free · Open source · No tracking'
     }
   };

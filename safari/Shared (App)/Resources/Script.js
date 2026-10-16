@@ -11,6 +11,9 @@ const EN = {
     ios2: 'Switch on <b>Allow Extension</b> and set bahn.de and fernbahn.de to <b>“Allow”</b>.',
     ios3: 'In Safari, go to <b>“Sitzplatz auswählen”</b> on bahn.de, then tap <b>Fahrtrichtung</b> via the extensions icon in the address bar.',
     button: 'Open Safari Settings',
+    demoTitle: 'Extensions',
+    demoEdit: 'Edit Websites…',
+    demoAllow: 'Allow',
     note: 'This app only contains the Safari extension. No data is collected.',
 };
 

@@ -85,7 +85,7 @@
     "message": "Select a connection on bahn.de"
   },
   "stepSeatDialog": {
-    "message": "Open “Select seat” during booking"
+    "message": "Click “Select seat” during booking"
   },
   "stepClickIcon": {
     "message": "Then click this icon"

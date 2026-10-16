@@ -63,6 +63,7 @@ try { chrome.runtime.setUninstallURL?.('https://fahrtrichtung.info/tschuess'); }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'fetchFernbahn') {
+    pageFetchTabId = Number.isInteger(request.tabId) ? request.tabId : null;
     handleFetchFernbahn(request)
       .then(sendResponse)
       .catch(err => sendResponse({ error: err.message }));
@@ -297,6 +298,30 @@ async function resolveStationEva(name) {
 // full day scan up to ~25, so keep a gap between calls and wait properly on 429.
 const BAHN_DE_MIN_GAP_MS = 250;
 let bahnDeNextSlot = 0;
+// Safari schickt bei Anfragen aus der Erweiterung keine bahn.de-Cookies mit
+// (Tracking-Schutz) → Akamai antwortet mit 403, die Stationsliste fehlt (keine
+// Fahrzeiten). Fallback: dieselbe Anfrage aus der geoeffneten bahn.de-Seite
+// stellen (Content-Script, gleiche Herkunft, Cookies vorhanden). Nur wenn der
+// direkte Weg scheitert und das Popup die Tab-ID mitgeschickt hat.
+let pageFetchTabId = null;
+
+async function bahnDeGetJsonViaPage(path, qs) {
+  if (pageFetchTabId == null || !chrome.scripting?.executeScript) return null;
+  const [res] = await chrome.scripting.executeScript({
+    target: { tabId: pageFetchTabId },
+    func: async (url) => {
+      try {
+        const r = await fetch(url, { headers: { Accept: 'application/json' }, credentials: 'include' });
+        return { status: r.status, text: r.ok ? await r.text() : '' };
+      } catch (e) { return { status: 0, text: '' }; }
+    },
+    args: [`${path}?${qs}`],
+  });
+  const out = res?.result;
+  if (!out || out.status !== 200) throw new Error(`bahn.de ${path} via Seite HTTP ${out?.status ?? '?'}`);
+  return JSON.parse(out.text);
+}
+
 async function bahnDeGetJson(path, params, extraPairs = []) {
   const qs = new URLSearchParams(params);
   for (const [k, v] of extraPairs) qs.append(k, v);
@@ -330,6 +355,10 @@ async function bahnDeGetJson(path, params, extraPairs = []) {
       }
     }
   }
+  try {
+    const viaPage = await bahnDeGetJsonViaPage(path, qs.toString());
+    if (viaPage) return viaPage;
+  } catch (e) { lastErr = e; }
   throw lastErr || new Error('bahn.de unreachable');
 }
 

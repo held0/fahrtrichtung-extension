@@ -5,6 +5,7 @@ if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'Mac
   document.documentElement.classList.add('ios');
 }
 // Gebunden aufrufen: Safari liefert bei losgeloester Methode undefined
+let currentTabId = null;   // fuer den Safari-Fallback (bahn.de-Anfragen ueber die Seite)
 const msg = (key, subs) => chrome.i18n.getMessage(key, subs) || "";
 
 // Set static i18n texts
@@ -41,6 +42,7 @@ document.getElementById('donate-button-text').textContent = msg('donateButton');
 async function init() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    currentTabId = tab?.id ?? null;
 
     if (!tab?.url?.includes('bahn.de')) {
       showHowTo(msg('notOnBahnDe'));
@@ -278,7 +280,8 @@ async function fetchAndDisplay(train, fromStation, toStation, travelDate, journe
       fromStation: fromStation || '',
       toStation: toStation || '',
       travelDate: travelDate || new Date().toISOString().slice(0, 10),
-      journeyHint: journeyHint || null
+      journeyHint: journeyHint || null,
+      tabId: currentTabId
     });
 
     if (result.error) {

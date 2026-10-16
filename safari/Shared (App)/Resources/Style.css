@@ -14,11 +14,11 @@
 
 html, body { height: 100%; margin: 0; }
 body {
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: flex-start; justify-content: center;
     font: -apple-system-body; font-family: -apple-system, system-ui, sans-serif;
-    color: var(--ink); padding: 24px;
+    color: var(--ink); padding: 20px 24px; overflow-y: auto;
 }
-main { width: 100%; max-width: 460px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+main { width: 100%; max-width: 460px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
 h1 { font-size: 1.35em; margin: 4px 0 0; }
 
 .status { margin: 0; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--card); }

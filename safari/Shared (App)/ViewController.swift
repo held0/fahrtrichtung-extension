@@ -78,6 +78,19 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
     }
 
 #if os(macOS)
+    // Fensterhoehe an den Inhalt anpassen, aber nie hoeher als der sichtbare Bildschirm
+    func fitWindow(toContentHeight height: CGFloat) {
+        guard let window = view.window else { return }
+        let maxHeight = (window.screen ?? NSScreen.main)?.visibleFrame.height ?? 800
+        let target = min(ceil(height), maxHeight - 40)
+        let newFrame = window.frameRect(forContentRect: NSRect(origin: .zero, size: NSSize(width: window.contentLayoutRect.width, height: target)))
+        var frame = window.frame
+        frame.origin.y += frame.height - newFrame.height   // obere Kante bleibt stehen
+        frame.size = newFrame.size
+        window.setFrame(frame, display: true, animate: false)
+        if let screen = window.screen?.visibleFrame, frame.minY < screen.minY || frame.maxY > screen.maxY { window.center() }
+    }
+
     func refreshState() {
         SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: extensionBundleIdentifier) { (state, error) in
             guard let state = state, error == nil else { return }
@@ -95,7 +108,12 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
 #if os(macOS)
-        if (message.body as! String != "open-preferences") {
+        let body = message.body as? String ?? ""
+        if body.hasPrefix("height:"), let h = Double(body.dropFirst(7)) {
+            fitWindow(toContentHeight: CGFloat(h))
+            return
+        }
+        if body != "open-preferences" {
             return
         }
 

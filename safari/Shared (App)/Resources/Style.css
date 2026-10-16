@@ -118,7 +118,7 @@ body:not(.state-off) .state-off-only { display: none; }
 .ready .small { font-size: .85em; color: var(--soft); }
 body:not(.state-on) .ready { display: none; }
 body.state-on .steps { display: none; }
-body.state-on button.open-preferences { background: transparent; color: var(--soft); border: 1px solid rgba(128,128,128,.4); font-weight: 500; font-size: .95em; padding: 8px 14px; }
+body.state-on button.open-preferences { display: none; }
 
 /* Onboarding-Animation (wie Onboarding-Tab/Landing): Cursor klickt das Symbol, Popup erscheint */
 .ob-browser { position: relative; width: 100%; background: #fff; border: 1px solid rgba(128,128,128,.35); border-radius: 12px;

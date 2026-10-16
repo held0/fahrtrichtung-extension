@@ -89,5 +89,8 @@
   },
   "stepClickIcon": {
     "message": "Then click this icon"
+  },
+  "almostThere": {
+    "message": "Almost there: click “Sitzplatz auswählen” (choose seat) for your train, then click this icon again."
   }
 }

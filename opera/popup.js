@@ -61,6 +61,7 @@ async function init() {
         if (res.fromStation && !trainInfo.fromStation) trainInfo.fromStation = res.fromStation;
         if (res.toStation && !trainInfo.toStation) trainInfo.toStation = res.toStation;
         if (res.travelDate && !trainInfo.travelDate) trainInfo.travelDate = res.travelDate;
+        if (res.seatStep) trainInfo.seatStep = true;
         if (res.dialogTrain) {
           trainInfo.dialogTrain = res.dialogTrain;
           trainInfo.fromStation = res.fromStation || trainInfo.fromStation;
@@ -89,7 +90,9 @@ async function init() {
     }
 
     if (!trainInfo.dialogTrain) {
-      showHowTo(msg('needDialog'));
+      // Schon im Reservierungsschritt (Schaltflaeche "Sitzplatz auswaehlen" sichtbar)? Dann nur der letzte Schritt.
+      if (trainInfo.seatStep) showStatus(msg('almostThere'));
+      else showHowTo(msg('needDialog'));
       return;
     }
 
@@ -244,7 +247,10 @@ function extractTrainInfoFromPage() {
     }
   }
 
-  return { trains, fromStation, toStation, dialogTrain, travelDate, journeyHint };
+  // Reservierungsschritt der Buchung: dort gibt es die Schaltflaeche "Sitzplatz auswaehlen"
+  const seatStep = /Sitzplatz ausw(ä|ae)hlen|Select seat|Choose seat/i.test(allText);
+
+  return { trains, fromStation, toStation, dialogTrain, travelDate, journeyHint, seatStep };
 }
 
 function showStatus(message) {

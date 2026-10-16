@@ -1,24 +1,30 @@
-function show(platform, enabled, useSettingsInsteadOfPreferences) {
+// Begleit-App der Safari-Erweiterung: Anleitung, Status, Button zu den Safari-Einstellungen.
+// Sprache passend zum System: Deutsch, sonst britisches Englisch.
+const EN = {
+    title: 'Fahrtrichtung for Safari',
+    on: 'The extension is switched on.',
+    off: 'The extension is still switched off.',
+    mac1: 'Click <b>“Open Safari Settings”</b> below and tick <b>Fahrtrichtung</b>.',
+    mac2: 'Then allow bahn.de and fernbahn.de under <b>“Edit Websites…”</b> – or when you first click the icon.',
+    mac3: 'On bahn.de, go to <b>“Sitzplatz auswählen”</b> (choose seat) and click the Fahrtrichtung icon in the Safari toolbar.',
+    ios1: 'Open the <b>Settings</b> app: <b>Apps → Safari → Extensions → Fahrtrichtung</b>.',
+    ios2: 'Switch on <b>Allow Extension</b> and set bahn.de and fernbahn.de to <b>“Allow”</b>.',
+    ios3: 'In Safari, go to <b>“Sitzplatz auswählen”</b> on bahn.de, then tap <b>Fahrtrichtung</b> via the extensions icon in the address bar.',
+    button: 'Open Safari Settings',
+    note: 'This app only contains the Safari extension. No data is collected.',
+};
+
+if (!/^de/i.test(navigator.language || '')) {
+    document.documentElement.lang = 'en-GB';
+    document.querySelectorAll('[data-t]').forEach(el => { if (EN[el.dataset.t]) el.innerHTML = EN[el.dataset.t]; });
+}
+
+function show(platform, enabled) {
     document.body.classList.add(`platform-${platform}`);
-
-    if (useSettingsInsteadOfPreferences) {
-        document.getElementsByClassName('platform-mac state-on')[0].innerText = "Fahrtrichtung’s extension is currently on. You can turn it off in the Extensions section of Safari Settings.";
-        document.getElementsByClassName('platform-mac state-off')[0].innerText = "Fahrtrichtung’s extension is currently off. You can turn it on in the Extensions section of Safari Settings.";
-        document.getElementsByClassName('platform-mac state-unknown')[0].innerText = "You can turn on Fahrtrichtung’s extension in the Extensions section of Safari Settings.";
-        document.getElementsByClassName('platform-mac open-preferences')[0].innerText = "Quit and Open Safari Settings…";
-    }
-
-    if (typeof enabled === "boolean") {
-        document.body.classList.toggle(`state-on`, enabled);
-        document.body.classList.toggle(`state-off`, !enabled);
-    } else {
-        document.body.classList.remove(`state-on`);
-        document.body.classList.remove(`state-off`);
-    }
+    document.body.classList.toggle('state-on', enabled === true);
+    document.body.classList.toggle('state-off', enabled === false);
 }
 
-function openPreferences() {
-    webkit.messageHandlers.controller.postMessage("open-preferences");
-}
-
-document.querySelector("button.open-preferences").addEventListener("click", openPreferences);
+document.querySelector('button.open-preferences').addEventListener('click', () => {
+    webkit.messageHandlers.controller.postMessage('open-preferences');
+});

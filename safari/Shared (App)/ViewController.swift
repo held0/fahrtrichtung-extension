@@ -41,23 +41,24 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
         webView.evaluateJavaScript("show('ios')")
 #elseif os(macOS)
         webView.evaluateJavaScript("show('mac')")
-
-        SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: extensionBundleIdentifier) { (state, error) in
-            guard let state = state, error == nil else {
-                // Insert code to inform the user that something went wrong.
-                return
-            }
-
-            DispatchQueue.main.async {
-                if #available(macOS 13, *) {
-                    webView.evaluateJavaScript("show('mac', \(state.isEnabled), true)")
-                } else {
-                    webView.evaluateJavaScript("show('mac', \(state.isEnabled), false)")
-                }
-            }
+        refreshState()
+        // Status neu pruefen, wenn man aus den Safari-Einstellungen zurueckkommt
+        NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.refreshState()
         }
 #endif
     }
+
+#if os(macOS)
+    func refreshState() {
+        SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: extensionBundleIdentifier) { (state, error) in
+            guard let state = state, error == nil else { return }
+            DispatchQueue.main.async {
+                self.webView.evaluateJavaScript("show('mac', \(state.isEnabled))")
+            }
+        }
+    }
+#endif
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
 #if os(macOS)
@@ -65,16 +66,8 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
             return
         }
 
-        SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
-            guard error == nil else {
-                // Insert code to inform the user that something went wrong.
-                return
-            }
-
-            DispatchQueue.main.async {
-                NSApp.terminate(self)
-            }
-        }
+        // Nur die Safari-Einstellungen oeffnen; das Fenster bleibt offen und zeigt danach den neuen Status
+        SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { _ in }
 #endif
     }
 

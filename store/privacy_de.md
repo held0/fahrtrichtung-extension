@@ -21,7 +21,7 @@ Die Extension speichert ausschließlich einen Nutzungszähler (Anzahl der Aufruf
 
 ## Umfrage beim Deinstallieren
 
-Wenn Sie die Extension entfernen, öffnet Ihr Browser die Seite fahrtrichtung.info/tschuess mit einer freiwilligen Ein-Klick-Umfrage. Die Adresse enthält nur Version, Browsertyp und Sprache, aber keine Kennung und keine Reisedaten. Die Extension selbst sendet dabei nichts. Details: https://fahrtrichtung.info/datenschutz
+Wenn Sie die Extension entfernen, öffnet Ihr Browser die Seite fahrtrichtung.info/tschuess mit einer freiwilligen Ein-Klick-Umfrage. Die Extension selbst sendet dabei keinerlei Daten, es wird nur diese Seite geöffnet. Details: https://fahrtrichtung.info/datenschutz
 
 ## Zugriff auf Webseiten
 

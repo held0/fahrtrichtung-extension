@@ -99,8 +99,3 @@ body:not(.state-off) .state-off-only { display: none; }
 .blockers .names { font-weight: 600; }
 .blockers p { margin: 4px 0 0; font-size: .92em; }
 .hint { margin: 0; font-size: .82em; color: var(--soft); }
-.blockers .recheck { margin-top: 8px; width: auto; padding: 6px 12px; font-size: .92em; font-weight: 600;
-  background: rgba(255, 159, 10, .9); color: #1d1d1f; border-radius: 8px; }
-.blockers .recheck:disabled { opacity: .6; cursor: default; }
-.blockers .wait { color: var(--soft); }
-.blockers .wait[hidden] { display: none; }

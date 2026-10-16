@@ -32,6 +32,10 @@
         </div>
 
 
+        <div class="blockers platform-mac state-off-only" hidden>
+            <b data-t="blockTitle">Bitte zuerst beenden:</b> <span class="names"></span>
+            <p data-t="blockText">Solange diese App läuft, lässt Safari das Einschalten von Erweiterungen nicht zu. Danach kannst du sie wieder starten.</p>
+        </div>
         <div class="demo platform-mac state-off-only" aria-hidden="true">
             <div class="win">
                 <div class="bar"><i></i><i></i><i></i><span data-t="demoTitle">Erweiterungen</span></div>
@@ -53,10 +57,6 @@
                 <svg class="cursor" viewBox="0 0 16 24"><path d="M1 1v19l5-5 3.5 7.5 3-1.4L9 13.7h7z"/></svg>
             </div>
         </div>
-        <div class="blockers platform-mac state-off-only" hidden>
-            <b data-t="blockTitle">Bitte zuerst beenden:</b> <span class="names"></span>
-            <p data-t="blockText">Solange diese App läuft, lässt Safari das Einschalten von Erweiterungen nicht zu. Danach kannst du sie wieder starten.</p>
-        </div>
         <ol class="steps platform-mac">
             <li data-t="mac1">Unten auf <b>„Safari-Einstellungen öffnen“</b> klicken und bei <b>Fahrtrichtung</b> den Haken setzen.</li>
             <li data-t="mac2">Danach unter <b>„Websites bearbeiten …“</b> bahn.de und fernbahn.de erlauben – oder beim ersten Klick auf das Symbol.</li>
@@ -69,8 +69,7 @@
         </ol>
 
         <button class="platform-mac open-preferences" data-t="button">Safari-Einstellungen öffnen</button>
-        <p class="hint platform-mac state-off-only" data-t="hint">Meldet Safari „Apps oder Dienste erkannt, durch die Klicks verhindert wurden“? Dann kurz Apps beenden, die über anderen Fenstern liegen oder den Mac steuern (z. B. Diktier-, Fenster- oder Fernwartungs-Apps).</p>
-        <p class="note" data-t="note">Diese App enthält nur die Safari-Erweiterung. Es werden keine Daten erfasst.</p>
+        <p class="hint platform-mac state-off-only" data-t="hint">Meldet Safari, dass Klicks verhindert wurden? Dann Diktier-, Fenster- oder Fernwartungs-Apps kurz beenden.</p>
     </main>
 </body>
 </html>

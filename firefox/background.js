@@ -19,7 +19,16 @@ const STORE_IDS = new Set([
   'fahrtrichtung@extension',            // Firefox AMO (gecko id)
 ]);
 
+// Safari: Die Erweiterung steckt in einer Mac-/iOS-App (Xcode-Build), es gibt weder
+// update_url noch eine feste ID. Dort nie als DEV kennzeichnen, und das Onboarding
+// uebernimmt die Begleit-App (kein zusaetzlicher Tab).
+function isSafari() {
+  const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+  return /Safari\//.test(ua) && !/Chrome|Chromium|Edg\/|OPR\/|Firefox/.test(ua);
+}
+
 function isDevInstall() {
+  if (isSafari()) return false;
   try {
     const manifest = chrome.runtime.getManifest ? chrome.runtime.getManifest() : null;
     if (manifest && manifest.update_url) return false;
@@ -36,11 +45,12 @@ applyDevIcon();
 chrome.runtime.onInstalled.addListener(applyDevIcon);
 chrome.runtime.onStartup?.addListener(applyDevIcon);
 
-// Nach der Erst-Installation einmalig die Onboarding-Tour öffnen.
+// Nach der Erst-Installation einmalig die Onboarding-Tour öffnen (nicht in Safari,
+// dort zeigt die Begleit-App die Anleitung).
 // Bewusst NUR bei reason === 'install' — Updates und Browser-Starts
 // dürfen kein Tab aufreißen.
 chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === 'install') {
+  if (details.reason === 'install' && !isSafari()) {
     chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
   }
 });

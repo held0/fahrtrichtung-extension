@@ -37,6 +37,20 @@ for dir in chrome firefox edge opera; do
 done
 echo "Fertig."
 
+# Safari (macOS + iOS, Xcode-Projekt in safari/): Ressourcen nachziehen und die
+# App-Version an manifest.json angleichen. Das Projekt referenziert jede Datei
+# EINZELN — neue Dateien in chrome/ muessen einmal in Xcode hinzugefuegt werden.
+if [ -d "safari/Shared (Extension)/Resources" ]; then
+  rsync -a --exclude='.*' chrome/ "safari/Shared (Extension)/Resources/"
+  VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' chrome/manifest.json | head -1)
+  sed -i '' "s/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = $VERSION;/" safari/Fahrtrichtung.xcodeproj/project.pbxproj
+  for f in $(cd chrome && find . -type f ! -name '.*' ! -path './_locales/*' | sed 's|^\./||'); do  # _locales ist ein Ordner-Verweis
+    grep -q "/\* $(basename "$f") \*/" safari/Fahrtrichtung.xcodeproj/project.pbxproj \
+      || echo "  ⚠️  Safari: $f ist neu — in Xcode zum Target 'Fahrtrichtung Extension' hinzufuegen"
+  done
+  echo "safari/ (Resources + Version $VERSION) synchronisiert."
+fi
+
 # Landing-Page (fahrtrichtung.info): der manuelle Zug-Check auf der Startseite
 # nutzt serverseitig EXAKT dieselbe Logik wie die Extension. Kopie nachziehen,
 # damit Website und Extension nie auseinanderlaufen (landing/ ist ein eigenes Repo).

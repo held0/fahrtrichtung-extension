@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  Fahrtrichtung
+//  macOS (App)
 //
 //  Created by blackbox on 16.10.26.
 //

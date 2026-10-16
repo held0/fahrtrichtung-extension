@@ -16,7 +16,7 @@ const EN = {
     button: 'Open Safari Settings',
     blockTitle: 'Please quit first:',
     blockText: 'While this app is running, Safari won’t let you switch on extensions. You can reopen it afterwards.',
-    hint: 'Does Safari say clicks were prevented? Then briefly quit dictation, window or remote-access apps.',
+    hint: 'Does Safari say clicks were prevented? Then briefly quit apps that sit on top of other windows or control your Mac – e.g. dictation, window or remote-access apps.',
     demoTitle: 'Extensions',
     demoEdit: 'Edit Websites…',
     demoAllow: 'Allow',

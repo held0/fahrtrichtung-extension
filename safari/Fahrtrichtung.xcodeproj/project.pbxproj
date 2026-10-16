@@ -7,97 +7,160 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F859BB533082264F00CAD67A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F859BB523082264F00CAD67A /* AppDelegate.swift */; };
-		F859BB573082264F00CAD67A /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = F859BB553082264F00CAD67A /* Main.html */; };
-		F859BB593082264F00CAD67A /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB583082264F00CAD67A /* Icon.png */; };
-		F859BB5B3082264F00CAD67A /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = F859BB5A3082264F00CAD67A /* Style.css */; };
-		F859BB5D3082264F00CAD67A /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = F859BB5C3082264F00CAD67A /* Script.js */; };
-		F859BB5F3082264F00CAD67A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F859BB5E3082264F00CAD67A /* ViewController.swift */; };
-		F859BB623082264F00CAD67A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F859BB603082264F00CAD67A /* Main.storyboard */; };
-		F859BB643082265000CAD67A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F859BB633082265000CAD67A /* Assets.xcassets */; };
-		F859BB6B3082265000CAD67A /* Fahrtrichtung Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F859BB6A3082265000CAD67A /* Fahrtrichtung Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F859BB703082265000CAD67A /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F859BB6F3082265000CAD67A /* SafariWebExtensionHandler.swift */; };
-		F859BB8D3082265000CAD67A /* icon-dev128.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB7C3082265000CAD67A /* icon-dev128.png */; };
-		F859BB8E3082265000CAD67A /* icon16.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB7D3082265000CAD67A /* icon16.png */; };
-		F859BB8F3082265000CAD67A /* onboarding.js in Resources */ = {isa = PBXBuildFile; fileRef = F859BB7E3082265000CAD67A /* onboarding.js */; };
-		F859BB903082265000CAD67A /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = F859BB7F3082265000CAD67A /* popup.js */; };
-		F859BB913082265000CAD67A /* app-screenshot.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB803082265000CAD67A /* app-screenshot.png */; };
-		F859BB923082265000CAD67A /* icon-dev48.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB813082265000CAD67A /* icon-dev48.png */; };
-		F859BB933082265000CAD67A /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = F859BB823082265000CAD67A /* background.js */; };
-		F859BB943082265000CAD67A /* bahn-dialog.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB833082265000CAD67A /* bahn-dialog.png */; };
-		F859BB953082265000CAD67A /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = F859BB843082265000CAD67A /* popup.html */; };
-		F859BB963082265000CAD67A /* icon48.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB853082265000CAD67A /* icon48.png */; };
-		F859BB973082265000CAD67A /* icon-dev16.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB863082265000CAD67A /* icon-dev16.png */; };
-		F859BB983082265000CAD67A /* icon128.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB873082265000CAD67A /* icon128.png */; };
-		F859BB993082265000CAD67A /* ice-drawing.png in Resources */ = {isa = PBXBuildFile; fileRef = F859BB883082265000CAD67A /* ice-drawing.png */; };
-		F859BB9A3082265000CAD67A /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = F859BB893082265000CAD67A /* manifest.json */; };
-		F859BB9B3082265000CAD67A /* utils.js in Resources */ = {isa = PBXBuildFile; fileRef = F859BB8A3082265000CAD67A /* utils.js */; };
-		F859BB9C3082265000CAD67A /* _locales in Resources */ = {isa = PBXBuildFile; fileRef = F859BB8B3082265000CAD67A /* _locales */; };
-		F859BB9D3082265000CAD67A /* onboarding.html in Resources */ = {isa = PBXBuildFile; fileRef = F859BB8C3082265000CAD67A /* onboarding.html */; };
+		F803E9B530824D3B007A2CAD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F803E9B430824D3B007A2CAD /* AppDelegate.swift */; };
+		F803E9B730824D3B007A2CAD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F803E9B630824D3B007A2CAD /* SceneDelegate.swift */; };
+		F803E9BA30824D3B007A2CAD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F803E9B830824D3B007A2CAD /* LaunchScreen.storyboard */; };
+		F803E9BD30824D3B007A2CAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F803E9BB30824D3B007A2CAD /* Main.storyboard */; };
+		F803E9C630824D3B007A2CAD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F803E9C530824D3B007A2CAD /* AppDelegate.swift */; };
+		F803E9C930824D3B007A2CAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F803E9C730824D3B007A2CAD /* Main.storyboard */; };
+		F803E9D030824D3B007A2CAD /* Fahrtrichtung Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F803E9CF30824D3B007A2CAD /* Fahrtrichtung Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F803E9DA30824D3B007A2CAD /* Fahrtrichtung Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F803E9D930824D3B007A2CAD /* Fahrtrichtung Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F803E9DF30824D3B007A2CAD /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A430824D39007A2CAD /* Main.html */; };
+		F803E9E030824D3B007A2CAD /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A430824D39007A2CAD /* Main.html */; };
+		F803E9E130824D3B007A2CAD /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A630824D39007A2CAD /* Icon.png */; };
+		F803E9E230824D3B007A2CAD /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A630824D39007A2CAD /* Icon.png */; };
+		F803E9E330824D3B007A2CAD /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A730824D39007A2CAD /* Style.css */; };
+		F803E9E430824D3B007A2CAD /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A730824D39007A2CAD /* Style.css */; };
+		F803E9E530824D3B007A2CAD /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A830824D39007A2CAD /* Script.js */; };
+		F803E9E630824D3B007A2CAD /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = F803E9A830824D39007A2CAD /* Script.js */; };
+		F803E9E730824D3B007A2CAD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F803E9A930824D3A007A2CAD /* ViewController.swift */; };
+		F803E9E830824D3B007A2CAD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F803E9A930824D3A007A2CAD /* ViewController.swift */; };
+		F803E9E930824D3B007A2CAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F803E9AA30824D3B007A2CAD /* Assets.xcassets */; };
+		F803E9EA30824D3B007A2CAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F803E9AA30824D3B007A2CAD /* Assets.xcassets */; };
+		F803E9EB30824D3B007A2CAD /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F803E9AC30824D3B007A2CAD /* SafariWebExtensionHandler.swift */; };
+		F803E9EC30824D3B007A2CAD /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F803E9AC30824D3B007A2CAD /* SafariWebExtensionHandler.swift */; };
+		F803EA0F30824D3B007A2CAD /* icon-dev128.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9FE30824D3B007A2CAD /* icon-dev128.png */; };
+		F803EA1030824D3B007A2CAD /* icon16.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9FF30824D3B007A2CAD /* icon16.png */; };
+		F803EA1130824D3B007A2CAD /* onboarding.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0030824D3B007A2CAD /* onboarding.js */; };
+		F803EA1230824D3B007A2CAD /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0130824D3B007A2CAD /* popup.js */; };
+		F803EA1330824D3B007A2CAD /* app-screenshot.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0230824D3B007A2CAD /* app-screenshot.png */; };
+		F803EA1430824D3B007A2CAD /* icon-dev48.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0330824D3B007A2CAD /* icon-dev48.png */; };
+		F803EA1530824D3B007A2CAD /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0430824D3B007A2CAD /* background.js */; };
+		F803EA1630824D3B007A2CAD /* bahn-dialog.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0530824D3B007A2CAD /* bahn-dialog.png */; };
+		F803EA1730824D3B007A2CAD /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0630824D3B007A2CAD /* popup.html */; };
+		F803EA1830824D3B007A2CAD /* icon48.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0730824D3B007A2CAD /* icon48.png */; };
+		F803EA1930824D3B007A2CAD /* icon-dev16.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0830824D3B007A2CAD /* icon-dev16.png */; };
+		F803EA1A30824D3B007A2CAD /* icon128.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0930824D3B007A2CAD /* icon128.png */; };
+		F803EA1B30824D3B007A2CAD /* ice-drawing.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0A30824D3B007A2CAD /* ice-drawing.png */; };
+		F803EA1C30824D3B007A2CAD /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0B30824D3B007A2CAD /* manifest.json */; };
+		F803EA1D30824D3B007A2CAD /* utils.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0C30824D3B007A2CAD /* utils.js */; };
+		F803EA1E30824D3B007A2CAD /* _locales in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0D30824D3B007A2CAD /* _locales */; };
+		F803EA1F30824D3B007A2CAD /* onboarding.html in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0E30824D3B007A2CAD /* onboarding.html */; };
+		F803EA2030824D3B007A2CAD /* icon-dev128.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9FE30824D3B007A2CAD /* icon-dev128.png */; };
+		F803EA2130824D3B007A2CAD /* icon16.png in Resources */ = {isa = PBXBuildFile; fileRef = F803E9FF30824D3B007A2CAD /* icon16.png */; };
+		F803EA2230824D3B007A2CAD /* onboarding.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0030824D3B007A2CAD /* onboarding.js */; };
+		F803EA2330824D3B007A2CAD /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0130824D3B007A2CAD /* popup.js */; };
+		F803EA2430824D3B007A2CAD /* app-screenshot.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0230824D3B007A2CAD /* app-screenshot.png */; };
+		F803EA2530824D3B007A2CAD /* icon-dev48.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0330824D3B007A2CAD /* icon-dev48.png */; };
+		F803EA2630824D3B007A2CAD /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0430824D3B007A2CAD /* background.js */; };
+		F803EA2730824D3B007A2CAD /* bahn-dialog.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0530824D3B007A2CAD /* bahn-dialog.png */; };
+		F803EA2830824D3B007A2CAD /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0630824D3B007A2CAD /* popup.html */; };
+		F803EA2930824D3B007A2CAD /* icon48.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0730824D3B007A2CAD /* icon48.png */; };
+		F803EA2A30824D3B007A2CAD /* icon-dev16.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0830824D3B007A2CAD /* icon-dev16.png */; };
+		F803EA2B30824D3B007A2CAD /* icon128.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0930824D3B007A2CAD /* icon128.png */; };
+		F803EA2C30824D3B007A2CAD /* ice-drawing.png in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0A30824D3B007A2CAD /* ice-drawing.png */; };
+		F803EA2D30824D3B007A2CAD /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0B30824D3B007A2CAD /* manifest.json */; };
+		F803EA2E30824D3B007A2CAD /* utils.js in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0C30824D3B007A2CAD /* utils.js */; };
+		F803EA2F30824D3B007A2CAD /* _locales in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0D30824D3B007A2CAD /* _locales */; };
+		F803EA3030824D3B007A2CAD /* onboarding.html in Resources */ = {isa = PBXBuildFile; fileRef = F803EA0E30824D3B007A2CAD /* onboarding.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		F859BB6C3082265000CAD67A /* PBXContainerItemProxy */ = {
+		F803E9D130824D3B007A2CAD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F859BB473082264F00CAD67A /* Project object */;
+			containerPortal = F803E99E30824D39007A2CAD /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = F859BB693082265000CAD67A;
-			remoteInfo = "Fahrtrichtung Extension";
+			remoteGlobalIDString = F803E9CE30824D3B007A2CAD;
+			remoteInfo = "Fahrtrichtung Extension (iOS)";
+		};
+		F803E9DB30824D3B007A2CAD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F803E99E30824D39007A2CAD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F803E9D830824D3B007A2CAD;
+			remoteInfo = "Fahrtrichtung Extension (macOS)";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		F859BB773082265000CAD67A /* Embed Foundation Extensions */ = {
+		F803E9F230824D3B007A2CAD /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = "";
 			dstSubfolder = PlugIns;
 			files = (
-				F859BB6B3082265000CAD67A /* Fahrtrichtung Extension.appex in Embed Foundation Extensions */,
+				F803E9D030824D3B007A2CAD /* Fahrtrichtung Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+		F803E9F930824D3B007A2CAD /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				F803E9DA30824D3B007A2CAD /* Fahrtrichtung Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F859BB4F3082264F00CAD67A /* Fahrtrichtung.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fahrtrichtung.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F859BB523082264F00CAD67A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F859BB563082264F00CAD67A /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
-		F859BB583082264F00CAD67A /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		F859BB5A3082264F00CAD67A /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
-		F859BB5C3082264F00CAD67A /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
-		F859BB5E3082264F00CAD67A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		F859BB613082264F00CAD67A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		F859BB633082265000CAD67A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F859BB653082265000CAD67A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F859BB6A3082265000CAD67A /* Fahrtrichtung Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Fahrtrichtung Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F859BB6F3082265000CAD67A /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
-		F859BB713082265000CAD67A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F859BB7C3082265000CAD67A /* icon-dev128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-dev128.png"; path = "Resources/icon-dev128.png"; sourceTree = "<group>"; };
-		F859BB7D3082265000CAD67A /* icon16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon16.png; path = Resources/icon16.png; sourceTree = "<group>"; };
-		F859BB7E3082265000CAD67A /* onboarding.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = onboarding.js; path = Resources/onboarding.js; sourceTree = "<group>"; };
-		F859BB7F3082265000CAD67A /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = Resources/popup.js; sourceTree = "<group>"; };
-		F859BB803082265000CAD67A /* app-screenshot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "app-screenshot.png"; path = "Resources/app-screenshot.png"; sourceTree = "<group>"; };
-		F859BB813082265000CAD67A /* icon-dev48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-dev48.png"; path = "Resources/icon-dev48.png"; sourceTree = "<group>"; };
-		F859BB823082265000CAD67A /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = Resources/background.js; sourceTree = "<group>"; };
-		F859BB833082265000CAD67A /* bahn-dialog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bahn-dialog.png"; path = "Resources/bahn-dialog.png"; sourceTree = "<group>"; };
-		F859BB843082265000CAD67A /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = Resources/popup.html; sourceTree = "<group>"; };
-		F859BB853082265000CAD67A /* icon48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon48.png; path = Resources/icon48.png; sourceTree = "<group>"; };
-		F859BB863082265000CAD67A /* icon-dev16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-dev16.png"; path = "Resources/icon-dev16.png"; sourceTree = "<group>"; };
-		F859BB873082265000CAD67A /* icon128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon128.png; path = Resources/icon128.png; sourceTree = "<group>"; };
-		F859BB883082265000CAD67A /* ice-drawing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ice-drawing.png"; path = "Resources/ice-drawing.png"; sourceTree = "<group>"; };
-		F859BB893082265000CAD67A /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = Resources/manifest.json; sourceTree = "<group>"; };
-		F859BB8A3082265000CAD67A /* utils.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = utils.js; path = Resources/utils.js; sourceTree = "<group>"; };
-		F859BB8B3082265000CAD67A /* _locales */ = {isa = PBXFileReference; lastKnownFileType = folder; name = _locales; path = Resources/_locales; sourceTree = "<group>"; };
-		F859BB8C3082265000CAD67A /* onboarding.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = onboarding.html; path = Resources/onboarding.html; sourceTree = "<group>"; };
+		F803E9A530824D39007A2CAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		F803E9A630824D39007A2CAD /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		F803E9A730824D39007A2CAD /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		F803E9A830824D39007A2CAD /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		F803E9A930824D3A007A2CAD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F803E9AA30824D3B007A2CAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F803E9AC30824D3B007A2CAD /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		F803E9B130824D3B007A2CAD /* Fahrtrichtung.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fahrtrichtung.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F803E9B430824D3B007A2CAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F803E9B630824D3B007A2CAD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		F803E9B930824D3B007A2CAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F803E9BC30824D3B007A2CAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F803E9BE30824D3B007A2CAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F803E9C330824D3B007A2CAD /* Fahrtrichtung.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fahrtrichtung.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F803E9C530824D3B007A2CAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F803E9C830824D3B007A2CAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F803E9CA30824D3B007A2CAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F803E9CF30824D3B007A2CAD /* Fahrtrichtung Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Fahrtrichtung Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F803E9D430824D3B007A2CAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F803E9D930824D3B007A2CAD /* Fahrtrichtung Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Fahrtrichtung Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F803E9DE30824D3B007A2CAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F803E9FE30824D3B007A2CAD /* icon-dev128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-dev128.png"; path = "Resources/icon-dev128.png"; sourceTree = "<group>"; };
+		F803E9FF30824D3B007A2CAD /* icon16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon16.png; path = Resources/icon16.png; sourceTree = "<group>"; };
+		F803EA0030824D3B007A2CAD /* onboarding.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = onboarding.js; path = Resources/onboarding.js; sourceTree = "<group>"; };
+		F803EA0130824D3B007A2CAD /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = Resources/popup.js; sourceTree = "<group>"; };
+		F803EA0230824D3B007A2CAD /* app-screenshot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "app-screenshot.png"; path = "Resources/app-screenshot.png"; sourceTree = "<group>"; };
+		F803EA0330824D3B007A2CAD /* icon-dev48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-dev48.png"; path = "Resources/icon-dev48.png"; sourceTree = "<group>"; };
+		F803EA0430824D3B007A2CAD /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = Resources/background.js; sourceTree = "<group>"; };
+		F803EA0530824D3B007A2CAD /* bahn-dialog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bahn-dialog.png"; path = "Resources/bahn-dialog.png"; sourceTree = "<group>"; };
+		F803EA0630824D3B007A2CAD /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = Resources/popup.html; sourceTree = "<group>"; };
+		F803EA0730824D3B007A2CAD /* icon48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon48.png; path = Resources/icon48.png; sourceTree = "<group>"; };
+		F803EA0830824D3B007A2CAD /* icon-dev16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-dev16.png"; path = "Resources/icon-dev16.png"; sourceTree = "<group>"; };
+		F803EA0930824D3B007A2CAD /* icon128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon128.png; path = Resources/icon128.png; sourceTree = "<group>"; };
+		F803EA0A30824D3B007A2CAD /* ice-drawing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ice-drawing.png"; path = "Resources/ice-drawing.png"; sourceTree = "<group>"; };
+		F803EA0B30824D3B007A2CAD /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = Resources/manifest.json; sourceTree = "<group>"; };
+		F803EA0C30824D3B007A2CAD /* utils.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = utils.js; path = Resources/utils.js; sourceTree = "<group>"; };
+		F803EA0D30824D3B007A2CAD /* _locales */ = {isa = PBXFileReference; lastKnownFileType = folder; name = _locales; path = Resources/_locales; sourceTree = "<group>"; };
+		F803EA0E30824D3B007A2CAD /* onboarding.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = onboarding.html; path = Resources/onboarding.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F859BB4C3082264F00CAD67A /* Frameworks */ = {
+		F803E9AE30824D3B007A2CAD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
 			);
 		};
-		F859BB673082265000CAD67A /* Frameworks */ = {
+		F803E9C030824D3B007A2CAD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		F803E9CC30824D3B007A2CAD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		F803E9D630824D3B007A2CAD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
 			);
@@ -105,231 +168,382 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F859BB463082264F00CAD67A = {
+		F803E99D30824D39007A2CAD = {
 			isa = PBXGroup;
 			children = (
-				F859BB513082264F00CAD67A /* Fahrtrichtung */,
-				F859BB6E3082265000CAD67A /* Fahrtrichtung Extension */,
-				F859BB503082264F00CAD67A /* Products */,
+				F803E9A230824D39007A2CAD /* Shared (App) */,
+				F803E9AB30824D3B007A2CAD /* Shared (Extension) */,
+				F803E9B330824D3B007A2CAD /* iOS (App) */,
+				F803E9C430824D3B007A2CAD /* macOS (App) */,
+				F803E9D330824D3B007A2CAD /* iOS (Extension) */,
+				F803E9DD30824D3B007A2CAD /* macOS (Extension) */,
+				F803E9B230824D3B007A2CAD /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		F859BB503082264F00CAD67A /* Products */ = {
+		F803E9A230824D39007A2CAD /* Shared (App) */ = {
 			isa = PBXGroup;
 			children = (
-				F859BB4F3082264F00CAD67A /* Fahrtrichtung.app */,
-				F859BB6A3082265000CAD67A /* Fahrtrichtung Extension.appex */,
+				F803E9A930824D3A007A2CAD /* ViewController.swift */,
+				F803E9AA30824D3B007A2CAD /* Assets.xcassets */,
+				F803E9A330824D39007A2CAD /* Resources */,
 			);
-			name = Products;
+			path = "Shared (App)";
 			sourceTree = "<group>";
 		};
-		F859BB513082264F00CAD67A /* Fahrtrichtung */ = {
+		F803E9A330824D39007A2CAD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F859BB523082264F00CAD67A /* AppDelegate.swift */,
-				F859BB5E3082264F00CAD67A /* ViewController.swift */,
-				F859BB603082264F00CAD67A /* Main.storyboard */,
-				F859BB633082265000CAD67A /* Assets.xcassets */,
-				F859BB653082265000CAD67A /* Info.plist */,
-				F859BB543082264F00CAD67A /* Resources */,
-			);
-			path = Fahrtrichtung;
-			sourceTree = "<group>";
-		};
-		F859BB543082264F00CAD67A /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				F859BB553082264F00CAD67A /* Main.html */,
-				F859BB583082264F00CAD67A /* Icon.png */,
-				F859BB5A3082264F00CAD67A /* Style.css */,
-				F859BB5C3082264F00CAD67A /* Script.js */,
+				F803E9A430824D39007A2CAD /* Main.html */,
+				F803E9A630824D39007A2CAD /* Icon.png */,
+				F803E9A730824D39007A2CAD /* Style.css */,
+				F803E9A830824D39007A2CAD /* Script.js */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		F859BB6E3082265000CAD67A /* Fahrtrichtung Extension */ = {
+		F803E9AB30824D3B007A2CAD /* Shared (Extension) */ = {
 			isa = PBXGroup;
 			children = (
-				F859BB7B3082265000CAD67A /* Resources */,
-				F859BB6F3082265000CAD67A /* SafariWebExtensionHandler.swift */,
-				F859BB713082265000CAD67A /* Info.plist */,
+				F803E9FD30824D3B007A2CAD /* Resources */,
+				F803E9AC30824D3B007A2CAD /* SafariWebExtensionHandler.swift */,
 			);
-			path = "Fahrtrichtung Extension";
+			path = "Shared (Extension)";
 			sourceTree = "<group>";
 		};
-		F859BB7B3082265000CAD67A /* Resources */ = {
+		F803E9B230824D3B007A2CAD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F859BB7C3082265000CAD67A /* icon-dev128.png */,
-				F859BB7D3082265000CAD67A /* icon16.png */,
-				F859BB7E3082265000CAD67A /* onboarding.js */,
-				F859BB7F3082265000CAD67A /* popup.js */,
-				F859BB803082265000CAD67A /* app-screenshot.png */,
-				F859BB813082265000CAD67A /* icon-dev48.png */,
-				F859BB823082265000CAD67A /* background.js */,
-				F859BB833082265000CAD67A /* bahn-dialog.png */,
-				F859BB843082265000CAD67A /* popup.html */,
-				F859BB853082265000CAD67A /* icon48.png */,
-				F859BB863082265000CAD67A /* icon-dev16.png */,
-				F859BB873082265000CAD67A /* icon128.png */,
-				F859BB883082265000CAD67A /* ice-drawing.png */,
-				F859BB893082265000CAD67A /* manifest.json */,
-				F859BB8A3082265000CAD67A /* utils.js */,
-				F859BB8B3082265000CAD67A /* _locales */,
-				F859BB8C3082265000CAD67A /* onboarding.html */,
+				F803E9B130824D3B007A2CAD /* Fahrtrichtung.app */,
+				F803E9C330824D3B007A2CAD /* Fahrtrichtung.app */,
+				F803E9CF30824D3B007A2CAD /* Fahrtrichtung Extension.appex */,
+				F803E9D930824D3B007A2CAD /* Fahrtrichtung Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F803E9B330824D3B007A2CAD /* iOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				F803E9B430824D3B007A2CAD /* AppDelegate.swift */,
+				F803E9B630824D3B007A2CAD /* SceneDelegate.swift */,
+				F803E9B830824D3B007A2CAD /* LaunchScreen.storyboard */,
+				F803E9BB30824D3B007A2CAD /* Main.storyboard */,
+				F803E9BE30824D3B007A2CAD /* Info.plist */,
+			);
+			path = "iOS (App)";
+			sourceTree = "<group>";
+		};
+		F803E9C430824D3B007A2CAD /* macOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				F803E9C530824D3B007A2CAD /* AppDelegate.swift */,
+				F803E9C730824D3B007A2CAD /* Main.storyboard */,
+				F803E9CA30824D3B007A2CAD /* Info.plist */,
+			);
+			path = "macOS (App)";
+			sourceTree = "<group>";
+		};
+		F803E9D330824D3B007A2CAD /* iOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				F803E9D430824D3B007A2CAD /* Info.plist */,
+			);
+			path = "iOS (Extension)";
+			sourceTree = "<group>";
+		};
+		F803E9DD30824D3B007A2CAD /* macOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				F803E9DE30824D3B007A2CAD /* Info.plist */,
+			);
+			path = "macOS (Extension)";
+			sourceTree = "<group>";
+		};
+		F803E9FD30824D3B007A2CAD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F803E9FE30824D3B007A2CAD /* icon-dev128.png */,
+				F803E9FF30824D3B007A2CAD /* icon16.png */,
+				F803EA0030824D3B007A2CAD /* onboarding.js */,
+				F803EA0130824D3B007A2CAD /* popup.js */,
+				F803EA0230824D3B007A2CAD /* app-screenshot.png */,
+				F803EA0330824D3B007A2CAD /* icon-dev48.png */,
+				F803EA0430824D3B007A2CAD /* background.js */,
+				F803EA0530824D3B007A2CAD /* bahn-dialog.png */,
+				F803EA0630824D3B007A2CAD /* popup.html */,
+				F803EA0730824D3B007A2CAD /* icon48.png */,
+				F803EA0830824D3B007A2CAD /* icon-dev16.png */,
+				F803EA0930824D3B007A2CAD /* icon128.png */,
+				F803EA0A30824D3B007A2CAD /* ice-drawing.png */,
+				F803EA0B30824D3B007A2CAD /* manifest.json */,
+				F803EA0C30824D3B007A2CAD /* utils.js */,
+				F803EA0D30824D3B007A2CAD /* _locales */,
+				F803EA0E30824D3B007A2CAD /* onboarding.html */,
 			);
 			name = Resources;
-			path = "Fahrtrichtung Extension";
+			path = "Shared (Extension)";
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F859BB4E3082264F00CAD67A /* Fahrtrichtung */ = {
+		F803E9B030824D3B007A2CAD /* Fahrtrichtung (iOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F859BB783082265000CAD67A /* Build configuration list for PBXNativeTarget "Fahrtrichtung" */;
+			buildConfigurationList = F803E9F330824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung (iOS)" */;
 			buildPhases = (
-				F859BB4B3082264F00CAD67A /* Sources */,
-				F859BB4C3082264F00CAD67A /* Frameworks */,
-				F859BB4D3082264F00CAD67A /* Resources */,
-				F859BB773082265000CAD67A /* Embed Foundation Extensions */,
+				F803E9AD30824D3B007A2CAD /* Sources */,
+				F803E9AE30824D3B007A2CAD /* Frameworks */,
+				F803E9AF30824D3B007A2CAD /* Resources */,
+				F803E9F230824D3B007A2CAD /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F859BB6D3082265000CAD67A /* PBXTargetDependency */,
+				F803E9D230824D3B007A2CAD /* PBXTargetDependency */,
 			);
-			name = Fahrtrichtung;
-			productName = Fahrtrichtung;
-			productReference = F859BB4F3082264F00CAD67A /* Fahrtrichtung.app */;
+			name = "Fahrtrichtung (iOS)";
+			productName = "Fahrtrichtung (iOS)";
+			productReference = F803E9B130824D3B007A2CAD /* Fahrtrichtung.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F859BB693082265000CAD67A /* Fahrtrichtung Extension */ = {
+		F803E9C230824D3B007A2CAD /* Fahrtrichtung (macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F859BB743082265000CAD67A /* Build configuration list for PBXNativeTarget "Fahrtrichtung Extension" */;
+			buildConfigurationList = F803E9FA30824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung (macOS)" */;
 			buildPhases = (
-				F859BB663082265000CAD67A /* Sources */,
-				F859BB673082265000CAD67A /* Frameworks */,
-				F859BB683082265000CAD67A /* Resources */,
+				F803E9BF30824D3B007A2CAD /* Sources */,
+				F803E9C030824D3B007A2CAD /* Frameworks */,
+				F803E9C130824D3B007A2CAD /* Resources */,
+				F803E9F930824D3B007A2CAD /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
-			name = "Fahrtrichtung Extension";
-			productName = "Fahrtrichtung Extension";
-			productReference = F859BB6A3082265000CAD67A /* Fahrtrichtung Extension.appex */;
+			dependencies = (
+				F803E9DC30824D3B007A2CAD /* PBXTargetDependency */,
+			);
+			name = "Fahrtrichtung (macOS)";
+			productName = "Fahrtrichtung (macOS)";
+			productReference = F803E9C330824D3B007A2CAD /* Fahrtrichtung.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F803E9CE30824D3B007A2CAD /* Fahrtrichtung Extension (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F803E9EF30824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung Extension (iOS)" */;
+			buildPhases = (
+				F803E9CB30824D3B007A2CAD /* Sources */,
+				F803E9CC30824D3B007A2CAD /* Frameworks */,
+				F803E9CD30824D3B007A2CAD /* Resources */,
+			);
+			buildRules = (
+			);
+			name = "Fahrtrichtung Extension (iOS)";
+			productName = "Fahrtrichtung Extension (iOS)";
+			productReference = F803E9CF30824D3B007A2CAD /* Fahrtrichtung Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		F803E9D830824D3B007A2CAD /* Fahrtrichtung Extension (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F803E9F630824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung Extension (macOS)" */;
+			buildPhases = (
+				F803E9D530824D3B007A2CAD /* Sources */,
+				F803E9D630824D3B007A2CAD /* Frameworks */,
+				F803E9D730824D3B007A2CAD /* Resources */,
+			);
+			buildRules = (
+			);
+			name = "Fahrtrichtung Extension (macOS)";
+			productName = "Fahrtrichtung Extension (macOS)";
+			productReference = F803E9D930824D3B007A2CAD /* Fahrtrichtung Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		F859BB473082264F00CAD67A /* Project object */ = {
+		F803E99E30824D39007A2CAD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2710;
 				LastUpgradeCheck = 2710;
 				TargetAttributes = {
-					F859BB4E3082264F00CAD67A = {
+					F803E9B030824D3B007A2CAD = {
 						CreatedOnToolsVersion = 27.1;
 					};
-					F859BB693082265000CAD67A = {
+					F803E9C230824D3B007A2CAD = {
+						CreatedOnToolsVersion = 27.1;
+					};
+					F803E9CE30824D3B007A2CAD = {
+						CreatedOnToolsVersion = 27.1;
+					};
+					F803E9D830824D3B007A2CAD = {
 						CreatedOnToolsVersion = 27.1;
 					};
 				};
 			};
-			buildConfigurationList = F859BB4A3082264F00CAD67A /* Build configuration list for PBXProject "Fahrtrichtung" */;
+			buildConfigurationList = F803E9A130824D39007A2CAD /* Build configuration list for PBXProject "Fahrtrichtung" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = F859BB463082264F00CAD67A;
+			mainGroup = F803E99D30824D39007A2CAD;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = F859BB503082264F00CAD67A /* Products */;
+			productRefGroup = F803E9B230824D3B007A2CAD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F859BB4E3082264F00CAD67A /* Fahrtrichtung */,
-				F859BB693082265000CAD67A /* Fahrtrichtung Extension */,
+				F803E9B030824D3B007A2CAD /* Fahrtrichtung (iOS) */,
+				F803E9C230824D3B007A2CAD /* Fahrtrichtung (macOS) */,
+				F803E9CE30824D3B007A2CAD /* Fahrtrichtung Extension (iOS) */,
+				F803E9D830824D3B007A2CAD /* Fahrtrichtung Extension (macOS) */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		F859BB4D3082264F00CAD67A /* Resources */ = {
+		F803E9AF30824D3B007A2CAD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
-				F859BB593082264F00CAD67A /* Icon.png in Resources */,
-				F859BB623082264F00CAD67A /* Main.storyboard in Resources */,
-				F859BB5D3082264F00CAD67A /* Script.js in Resources */,
-				F859BB573082264F00CAD67A /* Main.html in Resources */,
-				F859BB643082265000CAD67A /* Assets.xcassets in Resources */,
-				F859BB5B3082264F00CAD67A /* Style.css in Resources */,
+				F803E9E130824D3B007A2CAD /* Icon.png in Resources */,
+				F803E9BA30824D3B007A2CAD /* LaunchScreen.storyboard in Resources */,
+				F803E9DF30824D3B007A2CAD /* Main.html in Resources */,
+				F803E9E530824D3B007A2CAD /* Script.js in Resources */,
+				F803E9E930824D3B007A2CAD /* Assets.xcassets in Resources */,
+				F803E9BD30824D3B007A2CAD /* Main.storyboard in Resources */,
+				F803E9E330824D3B007A2CAD /* Style.css in Resources */,
 			);
 		};
-		F859BB683082265000CAD67A /* Resources */ = {
+		F803E9C130824D3B007A2CAD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
-				F859BB943082265000CAD67A /* bahn-dialog.png in Resources */,
-				F859BB913082265000CAD67A /* app-screenshot.png in Resources */,
-				F859BB9D3082265000CAD67A /* onboarding.html in Resources */,
-				F859BB983082265000CAD67A /* icon128.png in Resources */,
-				F859BB973082265000CAD67A /* icon-dev16.png in Resources */,
-				F859BB8D3082265000CAD67A /* icon-dev128.png in Resources */,
-				F859BB993082265000CAD67A /* ice-drawing.png in Resources */,
-				F859BB933082265000CAD67A /* background.js in Resources */,
-				F859BB963082265000CAD67A /* icon48.png in Resources */,
-				F859BB9A3082265000CAD67A /* manifest.json in Resources */,
-				F859BB953082265000CAD67A /* popup.html in Resources */,
-				F859BB9C3082265000CAD67A /* _locales in Resources */,
-				F859BB9B3082265000CAD67A /* utils.js in Resources */,
-				F859BB8E3082265000CAD67A /* icon16.png in Resources */,
-				F859BB8F3082265000CAD67A /* onboarding.js in Resources */,
-				F859BB923082265000CAD67A /* icon-dev48.png in Resources */,
-				F859BB903082265000CAD67A /* popup.js in Resources */,
+				F803E9E230824D3B007A2CAD /* Icon.png in Resources */,
+				F803E9E430824D3B007A2CAD /* Style.css in Resources */,
+				F803E9C930824D3B007A2CAD /* Main.storyboard in Resources */,
+				F803E9E630824D3B007A2CAD /* Script.js in Resources */,
+				F803E9EA30824D3B007A2CAD /* Assets.xcassets in Resources */,
+				F803E9E030824D3B007A2CAD /* Main.html in Resources */,
+			);
+		};
+		F803E9CD30824D3B007A2CAD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				F803EA2730824D3B007A2CAD /* bahn-dialog.png in Resources */,
+				F803EA2430824D3B007A2CAD /* app-screenshot.png in Resources */,
+				F803EA3030824D3B007A2CAD /* onboarding.html in Resources */,
+				F803EA2B30824D3B007A2CAD /* icon128.png in Resources */,
+				F803EA2A30824D3B007A2CAD /* icon-dev16.png in Resources */,
+				F803EA2030824D3B007A2CAD /* icon-dev128.png in Resources */,
+				F803EA2C30824D3B007A2CAD /* ice-drawing.png in Resources */,
+				F803EA2630824D3B007A2CAD /* background.js in Resources */,
+				F803EA2930824D3B007A2CAD /* icon48.png in Resources */,
+				F803EA2D30824D3B007A2CAD /* manifest.json in Resources */,
+				F803EA2830824D3B007A2CAD /* popup.html in Resources */,
+				F803EA2F30824D3B007A2CAD /* _locales in Resources */,
+				F803EA2E30824D3B007A2CAD /* utils.js in Resources */,
+				F803EA2130824D3B007A2CAD /* icon16.png in Resources */,
+				F803EA2230824D3B007A2CAD /* onboarding.js in Resources */,
+				F803EA2530824D3B007A2CAD /* icon-dev48.png in Resources */,
+				F803EA2330824D3B007A2CAD /* popup.js in Resources */,
+			);
+		};
+		F803E9D730824D3B007A2CAD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				F803EA1630824D3B007A2CAD /* bahn-dialog.png in Resources */,
+				F803EA1330824D3B007A2CAD /* app-screenshot.png in Resources */,
+				F803EA1F30824D3B007A2CAD /* onboarding.html in Resources */,
+				F803EA1A30824D3B007A2CAD /* icon128.png in Resources */,
+				F803EA1930824D3B007A2CAD /* icon-dev16.png in Resources */,
+				F803EA0F30824D3B007A2CAD /* icon-dev128.png in Resources */,
+				F803EA1B30824D3B007A2CAD /* ice-drawing.png in Resources */,
+				F803EA1530824D3B007A2CAD /* background.js in Resources */,
+				F803EA1830824D3B007A2CAD /* icon48.png in Resources */,
+				F803EA1C30824D3B007A2CAD /* manifest.json in Resources */,
+				F803EA1730824D3B007A2CAD /* popup.html in Resources */,
+				F803EA1E30824D3B007A2CAD /* _locales in Resources */,
+				F803EA1D30824D3B007A2CAD /* utils.js in Resources */,
+				F803EA1030824D3B007A2CAD /* icon16.png in Resources */,
+				F803EA1130824D3B007A2CAD /* onboarding.js in Resources */,
+				F803EA1430824D3B007A2CAD /* icon-dev48.png in Resources */,
+				F803EA1230824D3B007A2CAD /* popup.js in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F859BB4B3082264F00CAD67A /* Sources */ = {
+		F803E9AD30824D3B007A2CAD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				F859BB5F3082264F00CAD67A /* ViewController.swift in Sources */,
-				F859BB533082264F00CAD67A /* AppDelegate.swift in Sources */,
+				F803E9E730824D3B007A2CAD /* ViewController.swift in Sources */,
+				F803E9B530824D3B007A2CAD /* AppDelegate.swift in Sources */,
+				F803E9B730824D3B007A2CAD /* SceneDelegate.swift in Sources */,
 			);
 		};
-		F859BB663082265000CAD67A /* Sources */ = {
+		F803E9BF30824D3B007A2CAD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				F859BB703082265000CAD67A /* SafariWebExtensionHandler.swift in Sources */,
+				F803E9E830824D3B007A2CAD /* ViewController.swift in Sources */,
+				F803E9C630824D3B007A2CAD /* AppDelegate.swift in Sources */,
+			);
+		};
+		F803E9CB30824D3B007A2CAD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				F803E9EB30824D3B007A2CAD /* SafariWebExtensionHandler.swift in Sources */,
+			);
+		};
+		F803E9D530824D3B007A2CAD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				F803E9EC30824D3B007A2CAD /* SafariWebExtensionHandler.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		F859BB6D3082265000CAD67A /* PBXTargetDependency */ = {
+		F803E9D230824D3B007A2CAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F859BB693082265000CAD67A /* Fahrtrichtung Extension */;
-			targetProxy = F859BB6C3082265000CAD67A /* PBXContainerItemProxy */;
+			target = F803E9CE30824D3B007A2CAD /* Fahrtrichtung Extension (iOS) */;
+			targetProxy = F803E9D130824D3B007A2CAD /* PBXContainerItemProxy */;
+		};
+		F803E9DC30824D3B007A2CAD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F803E9D830824D3B007A2CAD /* Fahrtrichtung Extension (macOS) */;
+			targetProxy = F803E9DB30824D3B007A2CAD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		F859BB553082264F00CAD67A /* Main.html */ = {
+		F803E9A430824D39007A2CAD /* Main.html */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F859BB563082264F00CAD67A /* Base */,
+				F803E9A530824D39007A2CAD /* Base */,
 			);
 			name = Main.html;
 			sourceTree = "<group>";
 		};
-		F859BB603082264F00CAD67A /* Main.storyboard */ = {
+		F803E9B830824D3B007A2CAD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F859BB613082264F00CAD67A /* Base */,
+				F803E9B930824D3B007A2CAD /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		F803E9BB30824D3B007A2CAD /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F803E9BC30824D3B007A2CAD /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		F803E9C730824D3B007A2CAD /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F803E9C830824D3B007A2CAD /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -337,7 +551,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		F859BB723082265000CAD67A /* Debug configuration for PBXProject "Fahrtrichtung" */ = {
+		F803E9ED30824D3B007A2CAD /* Debug configuration for PBXProject "Fahrtrichtung" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -390,17 +604,15 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		F859BB733082265000CAD67A /* Release configuration for PBXProject "Fahrtrichtung" */ = {
+		F803E9EE30824D3B007A2CAD /* Release configuration for PBXProject "Fahrtrichtung" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -447,15 +659,161 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
 		};
-		F859BB753082265000CAD67A /* Debug configuration for PBXNativeTarget "Fahrtrichtung Extension" */ = {
+		F803E9F030824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung Extension (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Fahrtrichtung Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2.2;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app.Extension;
+				PRODUCT_NAME = "Fahrtrichtung Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F803E9F130824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung Extension (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Fahrtrichtung Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2.2;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app.Extension;
+				PRODUCT_NAME = "Fahrtrichtung Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F803E9F430824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Fahrtrichtung;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2.2;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app;
+				PRODUCT_NAME = Fahrtrichtung;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F803E9F530824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Fahrtrichtung;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2.2;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app;
+				PRODUCT_NAME = Fahrtrichtung;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F803E9F730824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung Extension (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -464,7 +822,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Fahrtrichtung Extension/Info.plist";
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Fahrtrichtung Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -473,13 +831,14 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.safari.Extension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app.Extension;
+				PRODUCT_NAME = "Fahrtrichtung Extension";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -489,7 +848,7 @@
 			};
 			name = Debug;
 		};
-		F859BB763082265000CAD67A /* Release configuration for PBXNativeTarget "Fahrtrichtung Extension" */ = {
+		F803E9F830824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung Extension (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -498,7 +857,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Fahrtrichtung Extension/Info.plist";
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Fahrtrichtung Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -507,13 +866,14 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.safari.Extension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app.Extension;
+				PRODUCT_NAME = "Fahrtrichtung Extension";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -523,39 +883,38 @@
 			};
 			name = Release;
 		};
-		F859BB793082265000CAD67A /* Debug configuration for PBXNativeTarget "Fahrtrichtung" */ = {
+		F803E9FB30824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Fahrtrichtung/Info.plist;
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Fahrtrichtung;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				INFOPLIST_KEY_NSViewGestureRecognizerIsExclusive = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
 					"-framework",
 					WebKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.safari;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app;
+				PRODUCT_NAME = Fahrtrichtung;
 				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -565,39 +924,38 @@
 			};
 			name = Debug;
 		};
-		F859BB7A3082265000CAD67A /* Release configuration for PBXNativeTarget "Fahrtrichtung" */ = {
+		F803E9FC30824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Fahrtrichtung/Info.plist;
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Fahrtrichtung;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				INFOPLIST_KEY_NSViewGestureRecognizerIsExclusive = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
 					"-framework",
 					WebKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.safari;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = info.fahrtrichtung.app;
+				PRODUCT_NAME = Fahrtrichtung;
 				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -610,32 +968,48 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F859BB4A3082264F00CAD67A /* Build configuration list for PBXProject "Fahrtrichtung" */ = {
+		F803E9A130824D39007A2CAD /* Build configuration list for PBXProject "Fahrtrichtung" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F859BB723082265000CAD67A /* Debug configuration for PBXProject "Fahrtrichtung" */,
-				F859BB733082265000CAD67A /* Release configuration for PBXProject "Fahrtrichtung" */,
+				F803E9ED30824D3B007A2CAD /* Debug configuration for PBXProject "Fahrtrichtung" */,
+				F803E9EE30824D3B007A2CAD /* Release configuration for PBXProject "Fahrtrichtung" */,
 			);
 			defaultConfigurationName = Release;
 		};
-		F859BB743082265000CAD67A /* Build configuration list for PBXNativeTarget "Fahrtrichtung Extension" */ = {
+		F803E9EF30824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung Extension (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F859BB753082265000CAD67A /* Debug configuration for PBXNativeTarget "Fahrtrichtung Extension" */,
-				F859BB763082265000CAD67A /* Release configuration for PBXNativeTarget "Fahrtrichtung Extension" */,
+				F803E9F030824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung Extension (iOS)" */,
+				F803E9F130824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung Extension (iOS)" */,
 			);
 			defaultConfigurationName = Release;
 		};
-		F859BB783082265000CAD67A /* Build configuration list for PBXNativeTarget "Fahrtrichtung" */ = {
+		F803E9F330824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F859BB793082265000CAD67A /* Debug configuration for PBXNativeTarget "Fahrtrichtung" */,
-				F859BB7A3082265000CAD67A /* Release configuration for PBXNativeTarget "Fahrtrichtung" */,
+				F803E9F430824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung (iOS)" */,
+				F803E9F530824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung (iOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		F803E9F630824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung Extension (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F803E9F730824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung Extension (macOS)" */,
+				F803E9F830824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung Extension (macOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		F803E9FA30824D3B007A2CAD /* Build configuration list for PBXNativeTarget "Fahrtrichtung (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F803E9FB30824D3B007A2CAD /* Debug configuration for PBXNativeTarget "Fahrtrichtung (macOS)" */,
+				F803E9FC30824D3B007A2CAD /* Release configuration for PBXNativeTarget "Fahrtrichtung (macOS)" */,
 			);
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = F859BB473082264F00CAD67A /* Project object */;
+	rootObject = F803E99E30824D39007A2CAD /* Project object */;
 	validationLevel = 1;
 }

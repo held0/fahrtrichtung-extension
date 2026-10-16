@@ -1,6 +1,6 @@
 //
 //  SafariWebExtensionHandler.swift
-//  Fahrtrichtung Extension
+//  Shared (Extension)
 //
 //  Created by blackbox on 16.10.26.
 //

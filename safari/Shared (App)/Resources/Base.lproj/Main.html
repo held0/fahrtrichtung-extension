@@ -3,18 +3,30 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <link rel="stylesheet" href="../Style.css">
     <script src="../Script.js" defer></script>
 </head>
 <body>
-    <img src="../Icon.png" width="128" height="128" alt="Fahrtrichtung Icon">
-    <p class="platform-ios">You can turn on Fahrtrichtung’s Safari extension in Settings.</p>
-    <p class="platform-mac state-unknown">You can turn on Fahrtrichtung’s extension in Safari Extensions preferences.</p>
-    <p class="platform-mac state-on">Fahrtrichtung’s extension is currently on. You can turn it off in Safari Extensions preferences.</p>
-    <p class="platform-mac state-off">Fahrtrichtung’s extension is currently off. You can turn it on in Safari Extensions preferences.</p>
-    <button class="platform-mac open-preferences">Quit and Open Safari Extensions Preferences…</button>
+    <main>
+        <img src="../Icon.png" width="96" height="96" alt="">
+        <h1 data-t="title">Fahrtrichtung für Safari</h1>
+        <p class="status state-on" data-t="on">Die Erweiterung ist aktiv.</p>
+        <p class="status state-off" data-t="off">Die Erweiterung ist noch ausgeschaltet.</p>
+
+        <ol class="steps platform-mac">
+            <li data-t="mac1">Unten auf <b>„Safari-Einstellungen öffnen“</b> klicken und bei <b>Fahrtrichtung</b> den Haken setzen.</li>
+            <li data-t="mac2">Danach unter <b>„Websites bearbeiten …“</b> bahn.de und fernbahn.de erlauben – oder beim ersten Klick auf das Symbol.</li>
+            <li data-t="mac3">Auf bahn.de bis <b>„Sitzplatz auswählen“</b> gehen und auf das Fahrtrichtung-Symbol in der Safari-Leiste klicken.</li>
+        </ol>
+        <ol class="steps platform-ios">
+            <li data-t="ios1">Die <b>Einstellungen</b>-App öffnen: <b>Apps → Safari → Erweiterungen → Fahrtrichtung</b>.</li>
+            <li data-t="ios2"><b>Erweiterung erlauben</b> einschalten und bahn.de sowie fernbahn.de auf <b>„Erlauben“</b> stellen.</li>
+            <li data-t="ios3">In Safari auf bahn.de bis <b>„Sitzplatz auswählen“</b> gehen, über das Erweiterungen-Symbol in der Adressleiste <b>Fahrtrichtung</b> antippen.</li>
+        </ol>
+
+        <button class="platform-mac open-preferences" data-t="button">Safari-Einstellungen öffnen</button>
+        <p class="note" data-t="note">Diese App enthält nur die Safari-Erweiterung. Es werden keine Daten erfasst.</p>
+    </main>
 </body>
 </html>

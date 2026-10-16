@@ -101,7 +101,39 @@ body:not(.state-off) .state-off-only { display: none; }
 .hint { margin: 0; font-size: .82em; color: var(--soft); }
 
 /* Erweiterung aktiv: keine Einrichtungsschritte mehr, nur kurzer Hinweis; Button dezent */
-.ready { margin: 0; line-height: 1.45; }
+.ready { width: 100%; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.ready h2 { margin: 2px 0 0; font-size: 1.15em; }
+.ready p { margin: 0; line-height: 1.45; }
+.ready .small { font-size: .85em; color: var(--soft); }
 body:not(.state-on) .ready { display: none; }
 body.state-on .steps { display: none; }
 body.state-on button.open-preferences { background: transparent; color: var(--soft); border: 1px solid rgba(128,128,128,.4); font-weight: 500; font-size: .95em; padding: 8px 14px; }
+
+/* Onboarding-Animation (wie Onboarding-Tab/Landing): Cursor klickt das Symbol, Popup erscheint */
+.ob-browser { position: relative; width: 100%; background: #fff; border: 1px solid rgba(128,128,128,.35); border-radius: 12px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.18); overflow: hidden; text-align: left; }
+.ob-bar { display: flex; align-items: center; gap: 6px; padding: 7px 10px; background: #f4f4f5; border-bottom: 1px solid #e0e0e0; }
+.ob-bar .dot { width: 10px; height: 10px; border-radius: 50%; }
+.ob-bar .dot.r { background: #ec6a5e; } .ob-bar .dot.y { background: #f4bf4f; } .ob-bar .dot.g { background: #61c554; }
+.ob-url { flex: 1; margin: 0 4px; background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 2px 8px;
+  font: 11px ui-monospace, Menlo, monospace; color: #666; }
+.ob-ext { position: relative; width: 26px; height: 26px; display: grid; place-items: center; }
+.ob-ext img { width: 20px; height: 20px; }
+.ob-ext::after { content: ""; position: absolute; inset: -4px; border: 2px solid #ec0016; border-radius: 10px; opacity: 0; animation: ob-ping 9s ease-out infinite; }
+.ob-body { position: relative; aspect-ratio: 2940 / 1604; overflow: hidden; background: #fff; }
+.ob-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.ob-popup { position: absolute; right: 8px; top: 6px; width: 46%; background: #fff; border-radius: 9px; box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  overflow: hidden; transform-origin: top right; transform: scale(.55); opacity: 0; animation: ob-popup 9s ease-in-out infinite; }
+.ob-popup img { width: 100%; display: block; }
+.ob-cursor { position: absolute; width: 17px; left: 48%; top: 55%; transform-origin: top left; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.35));
+  animation: ob-cursor 9s cubic-bezier(.5,0,.2,1) infinite; }
+@keyframes ob-cursor {
+  0%,18%  { left: 48%; top: 55%; transform: scale(1); }
+  38%     { left: 95%; top: 6%;  transform: scale(1); }
+  43%     { left: 95%; top: 6.5%; transform: scale(.82); }
+  48%     { left: 95%; top: 6%;  transform: scale(1); }
+  62%,100% { left: 48%; top: 55%; transform: scale(1); }
+}
+@keyframes ob-ping { 0%,42% { opacity: 0; transform: scale(.7); } 43% { opacity: .9; transform: scale(.95); } 55%,100% { opacity: 0; transform: scale(1.55); } }
+@keyframes ob-popup { 0%,43% { transform: scale(.55); opacity: 0; } 51%,90% { transform: scale(1); opacity: 1; } 100% { transform: scale(.55); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ob-cursor { display: none; } .ob-popup { animation: none; opacity: 1; transform: none; } .ob-ext::after { animation: none; } }

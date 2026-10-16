@@ -13,7 +13,23 @@
         <h1 data-t="title">Fahrtrichtung für Safari</h1>
         <p class="status state-on" data-t="on">Die Erweiterung ist aktiv.</p>
         <p class="status state-off" data-t="off">Die Erweiterung ist noch ausgeschaltet.</p>
-        <p class="ready" data-t="ready">Alles bereit. Auf bahn.de bis <b>„Sitzplatz auswählen“</b> gehen und auf das Fahrtrichtung-Symbol in der Safari-Leiste klicken. Dieses Fenster kannst du schließen.</p>
+        <div class="ready">
+            <h2 data-t="readyHead">Ein Klick genügt</h2>
+            <p data-t="ready">Sobald du auf bahn.de einen Sitzplatz auswählst, klickst du oben in Safari auf das Fahrtrichtung-Symbol – und die Fahrtrichtung wird dir sofort angezeigt.</p>
+            <div class="ob-browser" aria-hidden="true">
+                <div class="ob-bar">
+                    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                    <div class="ob-url">bahn.de</div>
+                    <div class="ob-ext"><img src="../Icon.png" alt=""></div>
+                </div>
+                <div class="ob-body">
+                    <img class="ob-shot" src="../bahn-dialog.png" alt="">
+                    <div class="ob-popup"><img src="../app-screenshot.png" alt=""></div>
+                </div>
+                <svg class="ob-cursor" viewBox="0 0 16 22"><path d="M2 2 L2 17 L6 13.5 L8.5 19 L11 18 L8.5 12.5 L13.5 12.5 Z" fill="#16150f" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="small" data-t="readyClose">Dieses Fenster kannst du jetzt schließen.</p>
+        </div>
 
 
         <div class="demo platform-mac state-off-only" aria-hidden="true">

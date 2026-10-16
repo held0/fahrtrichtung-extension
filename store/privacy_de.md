@@ -1,6 +1,6 @@
 # Datenschutzerklärung – Fahrtrichtung Extension
 
-Zuletzt aktualisiert: 19. Februar 2026
+Zuletzt aktualisiert: 16. Oktober 2026
 
 ## Welche Daten werden erhoben?
 
@@ -18,6 +18,10 @@ Diese Anfragen enthalten keine personenbezogenen Daten (keine Namen, E-Mail-Adre
 ## Welche Daten werden lokal gespeichert?
 
 Die Extension speichert ausschließlich einen Nutzungszähler (Anzahl der Aufrufe) in `chrome.storage.local`. Dieser Zähler dient dazu, gelegentlich einen Spendenhinweis anzuzeigen. Es werden keine Reisedaten, Zuginformationen oder personenbezogenen Daten gespeichert.
+
+## Umfrage beim Deinstallieren
+
+Wenn Sie die Extension entfernen, öffnet Ihr Browser die Seite fahrtrichtung.info/tschuess mit einer freiwilligen Ein-Klick-Umfrage. Die Adresse enthält nur Version, Browsertyp und Sprache, aber keine Kennung und keine Reisedaten. Die Extension selbst sendet dabei nichts. Details: https://fahrtrichtung.info/datenschutz
 
 ## Zugriff auf Webseiten
 

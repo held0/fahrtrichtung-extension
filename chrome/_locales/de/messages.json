@@ -74,5 +74,20 @@
   },
   "obPrivacy": {
     "message": "Kostenlos · Open Source · Kein Tracking"
+  },
+  "needDialog": {
+    "message": "Die Fahrtrichtung kann erst angezeigt werden, wenn Sie sich im Buchungsprozess befinden und den Dialog „Sitzplatz auswählen“ geöffnet haben."
+  },
+  "notOnBahnDe": {
+    "message": "Die Fahrtrichtung wird auf bahn.de im Buchungsprozess angezeigt."
+  },
+  "stepConnection": {
+    "message": "Verbindung auf bahn.de auswählen"
+  },
+  "stepSeatDialog": {
+    "message": "Im Buchungsprozess „Sitzplatz auswählen“ öffnen"
+  },
+  "stepClickIcon": {
+    "message": "Dann dieses Symbol anklicken"
   }
 }

@@ -89,5 +89,8 @@
   },
   "stepClickIcon": {
     "message": "Dann dieses Symbol anklicken"
+  },
+  "almostThere": {
+    "message": "Fast geschafft: Klicke bei deinem Zug auf „Sitzplatz auswählen“ und danach erneut auf dieses Symbol."
   }
 }

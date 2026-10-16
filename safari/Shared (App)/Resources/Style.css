@@ -75,22 +75,33 @@ body:not(.state-off) .state-off-only { display: none; }
   animation: cursor 9s infinite; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
 @keyframes cursor {
   0%   { left: 75%; top: 82%; }
-  15%  { left: 4.5%; top: 25%; }  /* zum Haken */
-  20%  { left: 4.5%; top: 25%; transform: scale(.85); }
-  24%  { left: 4.5%; top: 25%; transform: scale(1); }
-  42%  { left: 60%; top: 55%; }  /* zu „Websites bearbeiten …“ */
-  46%  { left: 60%; top: 55%; transform: scale(.85); }
-  50%  { left: 60%; top: 55%; transform: scale(1); }
-  66%  { left: 88%; top: 64%; }  /* zu „Erlauben“ */
-  70%  { left: 88%; top: 64%; transform: scale(.85); }
-  74%, 100% { left: 88%; top: 64%; transform: scale(1); }
+  12%  { left: 4.5%; top: 25%; }  /* zum Haken */
+  15%  { left: 4.5%; top: 25%; transform: scale(.85); }
+  18%  { left: 4.5%; top: 25%; transform: scale(1); }
+  32%  { left: 60%; top: 55%; }  /* zu „Websites bearbeiten …“ */
+  35%  { left: 60%; top: 55%; transform: scale(.85); }
+  38%  { left: 60%; top: 55%; transform: scale(1); }
+  52%  { left: 88%; top: 47%; }  /* bahn.de erlauben */
+  55%  { left: 88%; top: 47%; transform: scale(.85); }
+  58%  { left: 88%; top: 47%; transform: scale(1); }
+  68%  { left: 88%; top: 59%; }  /* fernbahn.de erlauben */
+  71%  { left: 88%; top: 59%; transform: scale(.85); }
+  74%, 100% { left: 88%; top: 59%; transform: scale(1); }
 }
-@keyframes cbOn { 0%, 19% { background: rgba(255,255,255,.6); border-color: rgba(128,128,128,.6); } 21%, 96% { background: #0a84ff; border-color: #0a84ff; } 100% { background: rgba(255,255,255,.6); } }
-@keyframes tick { 0%, 19% { opacity: 0; } 21%, 96% { opacity: 1; } 100% { opacity: 0; } }
-@keyframes btnOn { 0%, 21% { opacity: .4; } 24%, 96% { opacity: 1; } 100% { opacity: .4; } }
-@keyframes sites { 0%, 46% { opacity: 0; transform: translateY(6px); } 50%, 92% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
-.sites em { animation: allow 9s infinite; }
-@keyframes allow { 0%, 69% { opacity: .35; } 72%, 100% { opacity: 1; } }
+@keyframes cbOn { 0%, 14% { background: rgba(255,255,255,.6); border-color: rgba(128,128,128,.6); } 16%, 96% { background: #0a84ff; border-color: #0a84ff; } 100% { background: rgba(255,255,255,.6); } }
+@keyframes tick { 0%, 14% { opacity: 0; } 16%, 96% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes btnOn { 0%, 16% { opacity: .4; } 19%, 96% { opacity: 1; } 100% { opacity: .4; } }
+@keyframes sites { 0%, 35% { opacity: 0; transform: translateY(6px); } 39%, 92% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+.sites em { display: inline-grid; }
+.sites em span { grid-area: 1 / 1; text-align: right; }
+.sites em .ask { color: var(--soft); font-weight: 500; animation: ask1 9s infinite; }
+.sites em .ok { opacity: 0; animation: ok1 9s infinite; }
+.sites div + div em .ask { animation-name: ask2; }
+.sites div + div em .ok { animation-name: ok2; }
+@keyframes ask1 { 0%, 54% { opacity: 1; } 56%, 100% { opacity: 0; } }
+@keyframes ok1  { 0%, 54% { opacity: 0; } 56%, 100% { opacity: 1; } }
+@keyframes ask2 { 0%, 70% { opacity: 1; } 72%, 100% { opacity: 0; } }
+@keyframes ok2  { 0%, 70% { opacity: 0; } 72%, 100% { opacity: 1; } }
 
 /* Warnung: App läuft, die Safaris Klick-Schutz auslöst */
 .blockers { width: 100%; text-align: left; padding: 10px 14px; border-radius: 10px;

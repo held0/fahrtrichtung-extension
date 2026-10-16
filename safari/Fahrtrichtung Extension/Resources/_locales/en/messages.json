@@ -1,0 +1,93 @@
+{
+  "extName": {
+    "message": "Train Direction"
+  },
+  "extDescription": {
+    "message": "Shows the travel direction of long-distance trains during seat booking on bahn.de"
+  },
+  "wagonFront": {
+    "message": "Wagon $1 is at the front",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "wagonRange": {
+    "message": "Coaches $1–$2",
+    "placeholders": {
+      "from": { "content": "$1" },
+      "to": { "content": "$2" }
+    }
+  },
+  "mixedInfo": {
+    "message": "bahn.de always lists coaches in ascending order, however the train sets are coupled. That is why they look opposed here."
+  },
+  "mixedReal": {
+    "message": "How the train is coupled as scheduled (direction of travel →):"
+  },
+  "directionChanges": {
+    "message": "The travel direction changes during the journey as follows:"
+  },
+  "noValidityHint": {
+    "message": "No wagon order available for this date."
+  },
+  "lastValidData": {
+    "message": "Last available data is before $1",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "dataSource": {
+    "message": "Data:"
+  },
+  "disclaimer": {
+    "message": "*Wagon orders may change on the day of travel."
+  },
+  "donateMilestone": {
+    "message": "🎉 You’ve used Train Direction $1 times!",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "donateAppeal": {
+    "message": "This is a hobby project – I’d appreciate a small donation!"
+  },
+  "donateButton": {
+    "message": "Donate 1€"
+  },
+  "obTitle": {
+    "message": "Train Direction"
+  },
+  "obHeading": {
+    "message": "One click is all it takes"
+  },
+  "obSub": {
+    "message": "As soon as you select a seat on bahn.de, simply click the ICE icon at the top of your browser — and the direction of travel is shown immediately."
+  },
+  "obPinTip": {
+    "message": "Tip: click the puzzle icon 🧩 next to the address bar and pin Train Direction so the icon is always visible."
+  },
+  "obPrivacy": {
+    "message": "Free · Open source · No tracking"
+  },
+  "needDialog": {
+    "message": "The direction of travel can only be shown once you are in the booking process and have opened the “Select seat” dialog („Sitzplatz auswählen“)."
+  },
+  "notOnBahnDe": {
+    "message": "The direction of travel is shown on bahn.de during booking."
+  },
+  "stepConnection": {
+    "message": "Select a connection on bahn.de"
+  },
+  "stepSeatDialog": {
+    "message": "Open “Select seat” during booking"
+  },
+  "stepClickIcon": {
+    "message": "Then click this icon"
+  }
+}

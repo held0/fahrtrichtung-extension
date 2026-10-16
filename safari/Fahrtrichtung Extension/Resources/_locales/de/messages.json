@@ -1,0 +1,93 @@
+{
+  "extName": {
+    "message": "Fahrtrichtung"
+  },
+  "extDescription": {
+    "message": "Zeigt die Fahrtrichtung von Fernverkehrszügen während der Sitzplatzbuchung auf bahn.de an"
+  },
+  "wagonFront": {
+    "message": "Wagen $1 fährt vorne",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "wagonRange": {
+    "message": "Wagen $1–$2",
+    "placeholders": {
+      "from": { "content": "$1" },
+      "to": { "content": "$2" }
+    }
+  },
+  "mixedInfo": {
+    "message": "bahn.de zeigt die Wagen immer aufsteigend an, egal wie die Zugteile gekuppelt sind. Deshalb wirken sie hier gegenläufig."
+  },
+  "mixedReal": {
+    "message": "So ist der Zug planmäßig gekuppelt (Fahrtrichtung →):"
+  },
+  "directionChanges": {
+    "message": "Die Fahrtrichtung ändert sich während der Fahrt wie folgt:"
+  },
+  "noValidityHint": {
+    "message": "Keine Wagenreihung für dieses Datum verfügbar."
+  },
+  "lastValidData": {
+    "message": "Letzte verfügbare Daten liegen vor $1",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "dataSource": {
+    "message": "Daten:"
+  },
+  "disclaimer": {
+    "message": "*Wagenreihungen können sich am Reisetag in Einzelfällen ändern."
+  },
+  "donateMilestone": {
+    "message": "🎉 Du hast Fahrtrichtung schon $1× benutzt!",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "donateAppeal": {
+    "message": "Dies ist ein Hobby-Projekt – ich freue mich über eine kleine Spende!"
+  },
+  "donateButton": {
+    "message": "1€ spenden"
+  },
+  "obTitle": {
+    "message": "Fahrtrichtung"
+  },
+  "obHeading": {
+    "message": "Ein Klick genügt"
+  },
+  "obSub": {
+    "message": "Sobald du auf bahn.de einen Sitzplatz auswählst, klickst du oben im Browser einfach auf das ICE-Symbol — und die Fahrtrichtung wird dir sofort angezeigt."
+  },
+  "obPinTip": {
+    "message": "Tipp: Klicke auf das Puzzle-Symbol 🧩 neben der Adressleiste und pinne Fahrtrichtung an, damit das Icon immer sichtbar ist."
+  },
+  "obPrivacy": {
+    "message": "Kostenlos · Open Source · Kein Tracking"
+  },
+  "needDialog": {
+    "message": "Die Fahrtrichtung kann erst angezeigt werden, wenn Sie sich im Buchungsprozess befinden und den Dialog „Sitzplatz auswählen“ geöffnet haben."
+  },
+  "notOnBahnDe": {
+    "message": "Die Fahrtrichtung wird auf bahn.de im Buchungsprozess angezeigt."
+  },
+  "stepConnection": {
+    "message": "Verbindung auf bahn.de auswählen"
+  },
+  "stepSeatDialog": {
+    "message": "Im Buchungsprozess „Sitzplatz auswählen“ öffnen"
+  },
+  "stepClickIcon": {
+    "message": "Dann dieses Symbol anklicken"
+  }
+}

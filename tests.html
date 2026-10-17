@@ -663,14 +663,33 @@ const segs677 = [
   { from: 'Frankfurt(M)Hbf', to: 'Karlsruhe Hbf', direction: 'left', text: 'Frankfurt(M)Hbf – Karlsruhe Hbf', firstWagonIsFront: true },
 ];
 const via677 = ['Berlin Hbf','Halle(Saale)Hbf','Erfurt Hbf','Fulda','Hanau Hbf','Frankfurt(Main)Süd','Heidelberg Hbf','Karlsruhe Hbf'].map(name => ({ name }));
-const m677 = mergeBypassedBoundaries(segs677, via677);
+const m677 = mergeBypassedBoundaries(segs677, missingInnerBoundaries(segs677, via677));
 assert('bypassed Kopfbahnhof -> one segment', m677.length, 1);
 assert('merged keeps direction of the segment the train starts on', m677[0].direction, 'right');
 assert('merged spans whole route', m677[0].from + ' / ' + m677[0].to, 'Berlin Hbf / Karlsruhe Hbf');
 const normal677 = ['Berlin Hbf','Erfurt Hbf','Frankfurt(Main)Hbf','Mannheim Hbf','Karlsruhe Hbf'].map(name => ({ name }));
-assert('boundary on route -> unchanged', mergeBypassedBoundaries(segs677, normal677).length, 2);
-const lateStart = ['Frankfurt Flughafen Fernbahnhof','Mannheim Hbf','Karlsruhe Hbf'].map(name => ({ name }));
-assert('train starts after the bypassed boundary -> direction of later segment', mergeBypassedBoundaries(segs677, lateStart)[0].direction, 'left');
+assert('boundary on route -> nothing missing', missingInnerBoundaries(segs677, normal677).length, 0);
+assert('no bypass list -> unchanged', mergeBypassedBoundaries(segs677, []).length, 2);
+// Ob ein fehlender Grenzbahnhof umfahren wird, entscheidet die Geometrie:
+const FfmHbf = { lat: 50.1071, lon: 8.6638 }, FfmSued = { name: 'Frankfurt(Main)Süd', lat: 50.0991, lon: 8.6866 };
+assert('Frankfurt Hbf dicht an Frankfurt Süd -> auf der Route', isBoundaryOnRoute([{ name: 'Hanau Hbf', lat: 50.1210, lon: 8.9297 }, FfmSued, { name: 'Heidelberg Hbf', lat: 49.4035, lon: 8.6757 }], FfmHbf), true);
+assert('Nürnberg weit weg von Berlin–Hamburg -> nicht auf der Route', isBoundaryOnRoute([{ name: 'Berlin Hbf', lat: 52.5251, lon: 13.3694 }, { name: 'Hamburg Hbf', lat: 53.5530, lon: 10.0067 }], { lat: 49.4456, lon: 11.0828 }), false);
+
+// ICE 594 (Muenchen–Stuttgart–Frankfurt–Leipzig–Berlin) faehrt an Frankfurt Hbf vorbei:
+// Die Wende in Frankfurt faellt aus → ab dort steht der Zug andersherum, auch NACH Leipzig.
+const segs594 = [
+  { from: 'München Hbf', to: 'Stuttgart Hbf', direction: 'left', firstWagonIsFront: true },
+  { from: 'Stuttgart Hbf', to: 'Frankfurt(M)Hbf', direction: 'right', firstWagonIsFront: false },
+  { from: 'Frankfurt(M)Hbf', to: 'Leipzig Hbf', direction: 'left', firstWagonIsFront: true },
+  { from: 'Leipzig Hbf', to: 'Berlin-Gesundbrunnen', direction: 'right', firstWagonIsFront: false },
+];
+const via594 = ['München Hbf','Augsburg Hbf','Ulm Hbf','Stuttgart Hbf','Mannheim Hbf','Frankfurt(Main)Süd','Fulda','Erfurt Hbf','Leipzig Hbf','Berlin Hbf','Berlin Gesundbrunnen'].map(name => ({ name }));
+const m594 = mergeBypassedBoundaries(segs594, missingInnerBoundaries(segs594, via594));
+assert('594: Frankfurt-Abschnitte zusammengelegt', m594.length, 3);
+assert('594: Stuttgart–Leipzig behaelt Ausrichtung ab Stuttgart', m594[1].direction + '/' + m594[1].firstWagonIsFront, 'right/false');
+assert('594: nach der Wende in Leipzig andersherum als fernbahn.de', m594[2].direction + '/' + m594[2].firstWagonIsFront, 'left/true');
+const norm594 = ['München Hbf','Stuttgart Hbf','Mannheim Hbf','Frankfurt(Main)Hbf','Leipzig Hbf','Berlin Gesundbrunnen'].map(name => ({ name }));
+assert('594: normale Route -> keine fehlende Grenze', missingInnerBoundaries(segs594, norm594).length, 0);
 
 // ---- Summary ----
 const summary = document.createElement('div');

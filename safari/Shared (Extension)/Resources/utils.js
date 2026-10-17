@@ -169,32 +169,103 @@ function getDisplayFrontWagon(seg, wagonNumbers) {
 }
 
 // Tageszug faehrt heute an einem Wende-Bahnhof (innere fernbahn-Segmentgrenze,
-// meist ein Kopfbahnhof wie Frankfurt(M)Hbf) vorbei, z. B. umgeleitet ueber
-// Frankfurt(Main)Sued: Dann wendet er NICHT — die beiden Abschnitte werden zu
-// einem zusammengelegt. Die Richtung kommt von dem Abschnitt, den der Zug heute
-// tatsaechlich faehrt: liegt der Start des vorderen Abschnitts auf der Route (oder
-// gar keiner der Aussenpunkte), gilt der vordere, sonst der hintere.
-// Bewusst strenger Namensvergleich (findInStationList): „Frankfurt(Main)Sued“
-// darf nicht als „Frankfurt(M)Hbf“ durchgehen.
-function mergeBypassedBoundaries(segments, stationOrder) {
-  if (!Array.isArray(segments) || segments.length < 2 || !stationOrder?.length) return segments;
-  const names = stationOrder.map(s => typeof s === 'string' ? s : s.name).map(normalizeStation);
-  const found = name => !!name && findInStationList(normalizeStation(name), names) >= 0;
+// meist ein Kopfbahnhof wie Frankfurt(M)Hbf) VORBEI, z. B. umgeleitet ueber
+// Frankfurt(Main)Sued: Dann wendet er dort nicht. Ob ein fehlender Grenzbahnhof
+// umfahren wird (und nicht etwa die ganze Strecke heute woanders liegt, z. B. ICE
+// 702 nur Berlin–Hamburg statt Muenchen–Nuernberg–Hamburg), entscheidet die
+// Geometrie: `isBoundaryOnRoute` (Grenzbahnhof liegt zwischen zwei Halten oder dicht
+// an einem Halt der Tagesroute).
+//
+// Fuer jeden umfahrenen Grenzbahnhof werden die beiden Abschnitte zusammengelegt
+// (Ausrichtung des vorderen — der Zug kommt von dort), und ALLE spaeteren
+// Abschnitte drehen sich um: eine Wende weniger = andersherum fuer den Rest der Fahrt.
+function mergeBypassedBoundaries(segments, bypassed) {
+  if (!Array.isArray(segments) || segments.length < 2 || !bypassed?.length) return segments;
+  const skip = new Set(bypassed.map(normalizeStation));
+  const flipSeg = s => ({ ...s, direction: s.direction === 'left' ? 'right' : s.direction === 'right' ? 'left' : s.direction,
+    firstWagonIsFront: !s.firstWagonIsFront });
   const out = [segments[0]];
+  let flipped = false;   // ungerade Zahl ausgelassener Wenden bisher?
   for (let i = 1; i < segments.length; i++) {
     const prev = out[out.length - 1];
-    const seg = segments[i];
-    const boundary = prev.to || seg.from;
-    if (!boundary || found(boundary)) { out.push(seg); continue; }
-    const keepPrev = found(prev.from) || !found(seg.to);
-    const base = keepPrev ? prev : seg;
+    const seg = flipped ? flipSeg(segments[i]) : segments[i];
+    const boundary = segments[i - 1].to || segments[i].from;
+    if (!boundary || !skip.has(normalizeStation(boundary))) { out.push(seg); continue; }
     out[out.length - 1] = {
-      ...base,
-      from: prev.from,
+      ...prev,
       to: seg.to,
       text: `${prev.from} \u2013 ${seg.to}`,
       mergedAt: [...(prev.mergedAt || []), boundary],
     };
+    flipped = !flipped;
   }
   return out;
 }
+
+// Liegt `point` (Grenzbahnhof mit lat/lon) auf der heutigen Route? Ja, wenn er sich
+// mit kleinem Umweg zwischen zwei Halte einfuegen laesst ODER dicht (≤ NEAR_STOP_KM)
+// an einem Halt liegt (z. B. Frankfurt Hbf ↔ Frankfurt Sued, 3 km).
+const NEAR_STOP_KM = 12;
+function isBoundaryOnRoute(stops, point) {
+  if (!point || point.lat == null || point.lon == null) return false;
+  const withGeo = (stops || []).filter(s => s.lat != null && s.lon != null);
+  if (withGeo.length < 2) return false;
+  if (withGeo.some(s => geoDistance(s, point) <= NEAR_STOP_KM)) return true;
+  return bestInsertIndex(withGeo, point) >= 0;
+}
+
+// Innere Grenzbahnhoefe, die in der Tagesliste fehlen (strenger Namensvergleich:
+// „Frankfurt(Main)Sued“ ist NICHT „Frankfurt(M)Hbf“)
+function missingInnerBoundaries(segments, stationOrder) {
+  if (!Array.isArray(segments) || segments.length < 2 || !stationOrder?.length) return [];
+  const names = stationOrder.map(s => typeof s === 'string' ? s : s.name).map(normalizeStation);
+  const out = [];
+  for (let i = 0; i < segments.length - 1; i++) {
+    const b = segments[i].to || segments[i + 1].from;
+    if (b && findInStationList(normalizeStation(b), names) < 0 && !out.includes(b)) out.push(b);
+  }
+  return out;
+}
+
+// Index at which `point` fits best between consecutive stops with coordinates
+// (minimal detour). Only interior gaps qualify, and the detour must be small —
+// a boundary the train does not pass at all today (e.g. "Basel SBB" for a run
+// that ends in Singen, or a rerouted train) must NOT be forced in. Returns -1
+// if no gap qualifies.
+const MAX_DETOUR_KM = 25;
+const MAX_DETOUR_RATIO = 0.3;
+function bestInsertIndex(stops, point) {
+  let best = -1, bestDetour = Infinity;
+  let prev = -1;
+  for (let i = 0; i < stops.length; i++) {
+    if (stops[i].lat == null || stops[i].lon == null) continue;
+    if (prev >= 0) {
+      const direct = geoDistance(stops[prev], stops[i]);
+      const detour = geoDistance(stops[prev], point) + geoDistance(point, stops[i]) - direct;
+      // The point must also lie BETWEEN the two stops (projection onto the
+      // connecting line inside the gap), not beyond one of them.
+      const t = projectionParam(stops[prev], stops[i], point);
+      if (t > 0 && t < 1 && detour < bestDetour && detour <= Math.max(MAX_DETOUR_KM, MAX_DETOUR_RATIO * direct)) { bestDetour = detour; best = i; }
+    }
+    prev = i;
+  }
+  return best;
+}
+
+// Where does `p` project onto the line a->b? 0 = at a, 1 = at b, outside = beyond.
+function projectionParam(a, b, p) {
+  const k = Math.cos((a.lat + b.lat) / 2 * Math.PI / 180);
+  const abx = (b.lon - a.lon) * k, aby = b.lat - a.lat;
+  const apx = (p.lon - a.lon) * k, apy = p.lat - a.lat;
+  const len2 = abx * abx + aby * aby;
+  return len2 ? (apx * abx + apy * aby) / len2 : 0;
+}
+
+// Equirectangular approximation in km — precise enough to order stops.
+function geoDistance(a, b) {
+  const toRad = d => d * Math.PI / 180;
+  const x = (toRad(b.lon) - toRad(a.lon)) * Math.cos((toRad(a.lat) + toRad(b.lat)) / 2);
+  const y = toRad(b.lat) - toRad(a.lat);
+  return Math.sqrt(x * x + y * y) * 6371;
+}
+

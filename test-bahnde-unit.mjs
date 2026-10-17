@@ -324,8 +324,21 @@ group('Fehlende Segmentgrenze (bahn.de ohne Betriebshalt) wird geometrisch einge
   ]);
   const r4b = await ctx4b.handleFetchFernbahn({ trainType: 'ICE', trainNumber: '403', fromStation: 'Amsterdam Centraal', toStation: 'Zürich HB', travelDate: '2026-09-18', journeyHint: njHint });
   assert('ICE: fehlende Grenze wird NICHT eingefuegt', r4b.stationOrder.map(s => s.name), ['Amsterdam Centraal', 'Köln Hbf', 'Bonn Hbf', 'Offenburg', 'Zürich HB']);
-  assert('ICE: keine Ortssuche', ctx4b.calls.filter(c => /orte/.test(c.url)).length, 0);
-  assert('ICE: Kanten-Logik -> eine Richtung fuer die ganze Fahrt', [r4b.fromSegmentIdx, r4b.toSegmentIdx], [0, 0]);
+  assert('ICE: genau eine Ortssuche (liegt Frankfurt Hbf auf der Route?)', ctx4b.calls.filter(c => /orte/.test(c.url)).length, 1);
+  assert('ICE: Frankfurt umfahren -> keine Wende, ein Abschnitt Amsterdam–Zürich', r4b.segments.map(s => s.from + '–' + s.to), ['Amsterdam Centraal–Zürich HB']);
+  assert('ICE: Ausrichtung des Abschnitts, auf dem der Zug startet', r4b.segments[0].direction, ctx4b.parseEntries(ICE_HTML)[0].segments[0].direction);
+  assert('ICE: eine Richtung fuer die ganze Fahrt', [r4b.fromSegmentIdx, r4b.toSegmentIdx], [0, 0]);
+
+  // ICE, Grenzbahnhof liegt weit abseits der Tagesroute (Strecke heute ganz woanders):
+  // NICHT zusammenlegen
+  const ctx4c = makeCtx([
+    { match: /fernbahn\.de\/datenbank\/suche\/\?fahrplan_jahr/, reply: () => ({ text: ICE_HTML }) },
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('ICE 403', '2026-09-18T21:01:00', 'ice')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: { ...NJ_RUN, zugName: 'ICE 403' } }) },
+    { match: /orte/, reply: () => ({ json: [{ type: 'ST', extId: '8103000', name: 'Wien Hbf', lat: 48.1850, lon: 16.3760 }] }) },
+  ]);
+  const r4c = await ctx4c.handleFetchFernbahn({ trainType: 'ICE', trainNumber: '403', fromStation: '', toStation: '', travelDate: '2026-09-18', journeyHint: njHint });
+  assert('ICE: Grenze abseits der Route -> Abschnitte unveraendert', r4c.segments.length, 2);
 
   // Grenzstation liegt gar nicht auf der Tagesroute (Zug endet frueher / Umleitung):
   // grosser Umweg -> NICHT einfuegen

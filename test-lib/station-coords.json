@@ -1,0 +1,2937 @@
+{
+"_quelle": "gtfs.de Fernverkehr (DELFI e.V., CC BY 4.0), Stand 2026-10-15",
+"stations": {
+"'s-Hertogenbosch": [
+51.69054,
+5.29372
+],
+"Aachen Hbf": [
+50.7678,
+6.0915
+],
+"Aachen Süd(Gr)": [
+50.73192,
+6.04541
+],
+"Aachen, Hbf": [
+50.7678,
+6.0915
+],
+"Aalen Hbf": [
+48.84101,
+10.09627
+],
+"Aalen, Hauptbahnhof": [
+48.84105,
+10.09604
+],
+"Altenbeken": [
+51.76609,
+8.94302
+],
+"Alvesta station": [
+56.89848,
+14.55688
+],
+"Amersfoort Centraal": [
+52.15346,
+5.37391
+],
+"Amsterdam Centraal": [
+52.37919,
+4.89943
+],
+"Andernach": [
+50.43454,
+7.40484
+],
+"Andernach Bahnhof": [
+50.43453,
+7.40482
+],
+"Angermünde": [
+53.01574,
+13.99567
+],
+"Angermünde, Bahnhof": [
+53.01582,
+13.99587
+],
+"Anklam": [
+53.85598,
+13.70156
+],
+"Ansbach": [
+49.29803,
+10.57825
+],
+"Antwerpen Centraal": [
+51.21581,
+4.42117
+],
+"Apeldoorn": [
+52.20943,
+5.96849
+],
+"Arnhem Centraal": [
+51.98478,
+5.901
+],
+"Aschaffenburg Hbf": [
+49.98056,
+9.1437
+],
+"Augsburg Hbf": [
+48.36544,
+10.88557
+],
+"Augustfehn": [
+53.22089,
+7.75968
+],
+"Bad Bentheim": [
+52.30985,
+7.15778
+],
+"Bad Bentheim Bahnhof": [
+52.30953,
+7.15879
+],
+"Bad Bentheim(Gr)": [
+52.3091,
+7.04016
+],
+"Bad Endorf": [
+47.90477,
+12.30212
+],
+"Bad Gastein": [
+47.11178,
+13.13192
+],
+"Bad Hersfeld": [
+50.86977,
+9.71658
+],
+"Bad Hofgastein": [
+47.19534,
+13.1005
+],
+"Bad Kleinen": [
+53.76698,
+11.46692
+],
+"Bad Kleinen Bahnhof": [
+53.76746,
+11.46643
+],
+"Bad Oeynhausen": [
+52.2054,
+8.79652
+],
+"Bad Oeynhausen, Bf/ZOB": [
+52.20535,
+8.79916
+],
+"Bad Zwischenahn": [
+53.18257,
+8.003
+],
+"Baden(CH)": [
+47.47642,
+8.30771
+],
+"Baden-Baden": [
+48.7902,
+8.19104
+],
+"Bahnhof, Elsterwerda": [
+51.46012,
+13.51666
+],
+"Bahnhof, Marienhafe": [
+53.51923,
+7.27488
+],
+"Bahnhof, Prenzlau": [
+53.32162,
+13.86654
+],
+"Bahnhof, Wittenberge": [
+53.0045,
+11.7625
+],
+"Bamberg": [
+49.90076,
+10.89948
+],
+"Basel Bad Bf": [
+47.56729,
+7.6078
+],
+"Basel SBB": [
+47.54741,
+7.58956
+],
+"Baunatal-Guntershausen": [
+51.22992,
+9.467
+],
+"Bebra": [
+50.96957,
+9.79779
+],
+"Bensheim": [
+49.68133,
+8.61672
+],
+"Bensheim, Bahnhof": [
+49.68095,
+8.61677
+],
+"Bergen Bahnhof": [
+54.42082,
+13.41874
+],
+"Bergen auf Rügen": [
+54.4205,
+13.41782
+],
+"Berlin Gesundbrunnen": [
+52.54839,
+13.3907
+],
+"Berlin Hbf": [
+52.525,
+13.36906
+],
+"Berlin Ostbahnhof": [
+52.51024,
+13.43459
+],
+"Berlin Ostkreuz": [
+52.50313,
+13.46962
+],
+"Berlin Südkreuz": [
+52.47541,
+13.36575
+],
+"Berlin-Lichtenberg": [
+52.51,
+13.49649
+],
+"Berlin-Schöneweide": [
+52.45462,
+13.50952
+],
+"Berlin-Spandau": [
+52.53448,
+13.1971
+],
+"Berlin-Wannsee": [
+52.42135,
+13.18045
+],
+"Bern": [
+46.94883,
+7.43913
+],
+"Biberach ZOB/Bahnhof": [
+48.10193,
+9.79311
+],
+"Biberach(Riß)": [
+48.10184,
+9.79313
+],
+"Bielefeld Hbf": [
+52.02895,
+8.53327
+],
+"Bingen(Rhein) Hbf": [
+49.96873,
+7.88426
+],
+"Bingen, Hauptbahnhof": [
+49.96874,
+7.88354
+],
+"Bischofshofen": [
+47.41786,
+13.21989
+],
+"Bitterfeld": [
+51.62286,
+12.31685
+],
+"Bludenz": [
+47.15472,
+9.81456
+],
+"Bochnia": [
+49.9773,
+20.43078
+],
+"Bochum Hbf": [
+51.47946,
+7.22333
+],
+"Bohumin": [
+49.90073,
+18.35944
+],
+"Bohumin(Gr)": [
+49.91658,
+18.32223
+],
+"Bohusovice nad Ohri": [
+50.49131,
+14.14946
+],
+"Boleslawiec": [
+51.26615,
+15.56892
+],
+"Bondorf": [
+48.52327,
+8.82788
+],
+"Bondorf(b Herrenberg)": [
+48.52355,
+8.82766
+],
+"Bonn Hbf": [
+50.73201,
+7.09713
+],
+"Brandenburg Hbf": [
+52.40021,
+12.56513
+],
+"Brandenburg, Hauptbahnhof": [
+52.4008,
+12.56604
+],
+"Bratislava hl.st.": [
+48.15891,
+17.10647
+],
+"Braunschweig Hbf": [
+52.25222,
+10.5403
+],
+"Braunschweig, Hauptbahnhof": [
+52.25264,
+10.53955
+],
+"Breclav": [
+48.7539,
+16.89324
+],
+"Breclav(Gr)": [
+48.71265,
+16.86837
+],
+"Bregenz": [
+47.503,
+9.73963
+],
+"Bregenz Riedenburg": [
+47.49291,
+9.72131
+],
+"Bremen Hbf": [
+53.08326,
+8.81386
+],
+"Brig": [
+46.31942,
+7.9881
+],
+"Brno hl.n.": [
+49.19054,
+16.61277
+],
+"Bruchsal": [
+49.12492,
+8.59035
+],
+"Bruck/Mur": [
+47.41388,
+15.27949
+],
+"Brugg AG": [
+47.48086,
+8.20885
+],
+"Brussels Airport - Zaventem": [
+50.89784,
+4.48353
+],
+"Bruxelles Midi": [
+50.83538,
+4.33569
+],
+"Bruxelles-Nord": [
+50.86024,
+4.36145
+],
+"Brzeg": [
+50.85297,
+17.47118
+],
+"Brzeg Dolny": [
+51.26619,
+16.72677
+],
+"Brzesko Okocim": [
+49.9864,
+20.6103
+],
+"Buchloe": [
+48.03372,
+10.71622
+],
+"Budapest-Kelenföld": [
+47.46435,
+19.02046
+],
+"Budapest-Keleti": [
+47.50038,
+19.08507
+],
+"Budapest-Nyugati": [
+47.51071,
+19.05747
+],
+"Bydgoszcz Glowna": [
+53.13511,
+17.99164
+],
+"Böblingen": [
+48.68785,
+9.00453
+],
+"Büchen": [
+53.47497,
+10.6233
+],
+"Büchen, Büchen": [
+53.47497,
+10.6233
+],
+"Bünde(Westf)": [
+52.20208,
+8.57388
+],
+"Bünde, Bahnhof/ZOB": [
+52.20198,
+8.57452
+],
+"Bützow": [
+53.83711,
+11.99819
+],
+"Bützow, Bahnhof": [
+53.83701,
+11.99751
+],
+"Celje": [
+46.22856,
+15.26798
+],
+"Celle": [
+52.62046,
+10.06247
+],
+"Celle Bahnhof": [
+52.62053,
+10.06321
+],
+"Ceska Trebova": [
+49.89732,
+16.44681
+],
+"Chalupki": [
+49.92548,
+18.31156
+],
+"Chelm": [
+51.1412,
+23.49404
+],
+"Chelm Miasto": [
+51.1384,
+23.45919
+],
+"Chemnitz Hbf": [
+50.83969,
+12.93088
+],
+"Chemnitz, Hauptbahnhof": [
+50.83963,
+12.93069
+],
+"Chojna": [
+52.96341,
+14.44393
+],
+"Chojnow": [
+51.27766,
+15.93705
+],
+"Choszczno": [
+53.16528,
+15.40379
+],
+"Chur": [
+46.85309,
+9.52894
+],
+"Coburg": [
+50.26292,
+10.95733
+],
+"Crailsheim": [
+49.13787,
+10.06433
+],
+"Crailsheim Bahnhof": [
+49.13791,
+10.06432
+],
+"D-Flughafen Bf": [
+51.29158,
+6.78704
+],
+"Dabrowa Gornicza": [
+50.33017,
+19.18545
+],
+"Darmstadt Hauptbahnhof": [
+49.87194,
+8.63115
+],
+"Darmstadt Hbf": [
+49.8725,
+8.62964
+],
+"Debica": [
+50.05442,
+21.40556
+],
+"Deblin": [
+51.57741,
+21.83474
+],
+"Decin hl.n.": [
+50.77319,
+14.20097
+],
+"Delmenhorst": [
+53.05278,
+8.62988
+],
+"Dessau Hbf": [
+51.83987,
+12.23494
+],
+"Deventer": [
+52.25744,
+6.16051
+],
+"Diepholz": [
+52.6046,
+8.38025
+],
+"Dobiegniew": [
+52.96842,
+15.74691
+],
+"Dobova": [
+45.89839,
+15.65518
+],
+"Dobova(Gr)": [
+45.89063,
+15.68024
+],
+"Donauwörth": [
+48.71402,
+10.77145
+],
+"Dorfgastein": [
+47.23849,
+13.10307
+],
+"Dornbirn": [
+47.41769,
+9.73881
+],
+"Dortmund Hbf": [
+51.5172,
+7.45948
+],
+"Dresden Bahnhof Neustadt": [
+51.06543,
+13.74088
+],
+"Dresden Hauptbahnhof": [
+51.03993,
+13.73293
+],
+"Dresden Hbf": [
+51.04056,
+13.73203
+],
+"Dresden-Neustadt": [
+51.0659,
+13.7407
+],
+"Duisburg Hbf": [
+51.43045,
+6.77453
+],
+"Düsseldorf Flughafen": [
+51.29201,
+6.78684
+],
+"Düsseldorf Hbf": [
+51.22025,
+6.793
+],
+"Eberswalde Hbf": [
+52.83376,
+13.79687
+],
+"Eberswalde, Hauptbahnhof": [
+52.83368,
+13.79695
+],
+"Eisenach Hbf": [
+50.97689,
+10.33197
+],
+"Ellwangen": [
+48.96412,
+10.12968
+],
+"Ellwangen, Bahnhof": [
+48.96453,
+10.12976
+],
+"Elsterwerda": [
+51.45942,
+13.51623
+],
+"Elsterwerda, Bahnhof": [
+51.45981,
+13.51641
+],
+"Emden Außenhafen": [
+53.3439,
+7.186
+],
+"Emden Hbf": [
+53.36925,
+7.1955
+],
+"Emmerich": [
+51.83418,
+6.25648
+],
+"Emmerich Bahnhof": [
+51.8338,
+6.25495
+],
+"Emmerich(Gr)": [
+51.9012,
+6.13765
+],
+"Engen": [
+47.85635,
+8.77279
+],
+"Engen Bahnhof": [
+47.85616,
+8.77267
+],
+"Erfurt Hbf": [
+50.97236,
+11.03799
+],
+"Erfurt, Hauptbahnhof": [
+50.97206,
+11.0373
+],
+"Ergenzingen": [
+48.48953,
+8.80986
+],
+"Ergenzingen Bahnhof": [
+48.48959,
+8.80995
+],
+"Erkelenz": [
+51.07659,
+6.32163
+],
+"Erlangen": [
+49.59582,
+11.00164
+],
+"Essen Hbf": [
+51.44973,
+7.01221
+],
+"Esslingen (N)": [
+48.73854,
+9.30058
+],
+"Esslingen(Neckar)": [
+48.73854,
+9.30052
+],
+"Eutingen im Gäu": [
+48.47995,
+8.78224
+],
+"Eutingen im Gäu Bahnhof": [
+48.47976,
+8.78237
+],
+"Feldkirch": [
+47.24098,
+9.6041
+],
+"Fieberbrunn": [
+47.49114,
+12.52894
+],
+"Flensburg": [
+54.77409,
+9.43673
+],
+"Flensburg [Grenze]": [
+54.81484,
+9.36324
+],
+"Flensburg(Gr)": [
+54.81484,
+9.36324
+],
+"Flughafen BER": [
+52.3646,
+13.50987
+],
+"Flughafen Köln/Bonn Bf": [
+50.8789,
+7.11929
+],
+"Flughafen Wien": [
+48.12082,
+16.56283
+],
+"Forbach(F)": [
+49.18922,
+6.90026
+],
+"Forbach(fr)": [
+49.21409,
+6.94431
+],
+"Frankfurt (Main) Flughafen Fernbahnhof": [
+50.05306,
+8.57022
+],
+"Frankfurt (Main) Flughafen Regionalbahnhof": [
+50.05121,
+8.57143
+],
+"Frankfurt (Main) Hauptbahnhof": [
+50.10681,
+8.66266
+],
+"Frankfurt (Main) Südbahnhof": [
+50.09933,
+8.68645
+],
+"Frankfurt (Oder), Bahnhof": [
+52.33671,
+14.54715
+],
+"Frankfurt(M) Flughafen Fernbf": [
+50.05316,
+8.57019
+],
+"Frankfurt(M) Flughafen Regionalbf": [
+50.05122,
+8.57125
+],
+"Frankfurt(Main)Hbf": [
+50.10668,
+8.66283
+],
+"Frankfurt(Main)Süd": [
+50.09936,
+8.68646
+],
+"Frankfurt(Oder)": [
+52.3366,
+14.54615
+],
+"Frankfurt(Oder)(Gr)": [
+52.32117,
+14.5764
+],
+"Fredericia st": [
+55.56809,
+9.73881
+],
+"Freiberg(Sachs)": [
+50.90873,
+13.34414
+],
+"Freiberg, Bahnhof": [
+50.90936,
+13.34222
+],
+"Freiburg Hauptbahnhof": [
+47.99746,
+7.84095
+],
+"Freiburg, Hauptbahnhof": [
+47.99654,
+7.84053
+],
+"Freilassing": [
+47.83691,
+12.9772
+],
+"Frick": [
+47.50735,
+8.01309
+],
+"Friedberg (Hessen) Bahnhof": [
+50.33275,
+8.76125
+],
+"Friedberg(Hess)": [
+50.33261,
+8.76206
+],
+"Friedrichsh. Stadtbahnhof": [
+47.65306,
+9.47343
+],
+"Friedrichshafen Stadt": [
+47.65322,
+9.4739
+],
+"Fulda": [
+50.5549,
+9.68417
+],
+"Fulda Bahnhof": [
+50.55492,
+9.68377
+],
+"GD, Bahnhof": [
+48.80029,
+9.78712
+],
+"Garmisch-Partenkirchen": [
+47.49144,
+11.09787
+],
+"Gdansk Glowny": [
+54.35552,
+18.6438
+],
+"Gdansk Oliwa": [
+54.40989,
+18.57174
+],
+"Gdansk Wrzeszcz": [
+54.38186,
+18.60543
+],
+"Gdynia Glowna": [
+54.52084,
+18.52956
+],
+"Geilenkirchen": [
+50.96104,
+6.12452
+],
+"Gelsenkirchen Hbf": [
+51.50493,
+7.10221
+],
+"Gesundbrunnen Bahnhof Badstr., Berlin": [
+52.54857,
+13.39052
+],
+"Gießen": [
+50.57906,
+8.66146
+],
+"Gießen Bahnhof": [
+50.57989,
+8.6638
+],
+"Gliwice": [
+50.3011,
+18.67716
+],
+"Glogow": [
+51.66896,
+16.07971
+],
+"Gniezno": [
+52.52965,
+17.60218
+],
+"Goleniow": [
+53.55948,
+14.83989
+],
+"Golling-Abtenau": [
+47.60081,
+13.16405
+],
+"Gotha": [
+50.93905,
+10.71233
+],
+"Graz Hbf": [
+47.0724,
+15.41652
+],
+"Greifswald": [
+54.09293,
+13.37026
+],
+"Gryfino": [
+53.25422,
+14.49302
+],
+"Györ": [
+47.68198,
+17.63479
+],
+"Gäufelden": [
+48.55971,
+8.8501
+],
+"Göttingen": [
+51.53672,
+9.92587
+],
+"Günzburg": [
+48.46056,
+10.27926
+],
+"Günzburg, Bahnhof": [
+48.4605,
+10.27904
+],
+"Gütersloh Hbf": [
+51.90694,
+8.38507
+],
+"Gütersloh, Hbf/ZOB": [
+51.90743,
+8.38405
+],
+"Hagen Hbf": [
+51.36196,
+7.4618
+],
+"Haiger": [
+50.74121,
+8.22168
+],
+"Haiger Bahnhof": [
+50.74112,
+8.22199
+],
+"Halle (Saale) Hbf": [
+51.47751,
+11.98709
+],
+"Halle(Saale)Hbf": [
+51.47695,
+11.98733
+],
+"Hamburg Dammtor": [
+53.56075,
+9.98957
+],
+"Hamburg Hbf": [
+53.55273,
+10.00691
+],
+"Hamburg, Bergedorf": [
+53.48986,
+10.20597
+],
+"Hamburg, Dammtor (Messe/CCH)": [
+53.56075,
+9.98957
+],
+"Hamburg, Hamburg Hbf": [
+53.55275,
+10.00792
+],
+"Hamburg, Hamburg-Altona": [
+53.5527,
+9.93517
+],
+"Hamburg, Hamburg-Harburg": [
+53.45622,
+9.99165
+],
+"Hamburg-Altona(S)": [
+53.55185,
+9.93455
+],
+"Hamburg-Bergedorf": [
+53.48983,
+10.20617
+],
+"Hamburg-Harburg(S)": [
+53.45696,
+9.99145
+],
+"Hamm (Westf), Hauptbahnhof": [
+51.67855,
+7.80917
+],
+"Hamm(Westf)Hbf": [
+51.67808,
+7.80782
+],
+"Hanau Hauptbahnhof": [
+50.12135,
+8.92842
+],
+"Hanau Hbf": [
+50.12095,
+8.929
+],
+"Hannover Hauptbahnhof": [
+52.37649,
+9.74107
+],
+"Hannover Hbf": [
+52.37676,
+9.74102
+],
+"Hannover Messe / Laatzen": [
+52.31749,
+9.79215
+],
+"Hannover Messe/Laatzen": [
+52.3169,
+9.79286
+],
+"Hauptbahnhof (oben)": [
+48.78473,
+9.18317
+],
+"Hauptbahnhof A1": [
+54.31524,
+10.13123
+],
+"Hauptbahnhof ZOB, Eberswalde": [
+52.83375,
+13.79716
+],
+"Hegyeshalom": [
+47.91398,
+17.1453
+],
+"Hegyeshalom(Gr)": [
+47.93826,
+17.09584
+],
+"Heide(Holst)": [
+54.19293,
+9.10124
+],
+"Heidelberg Hbf": [
+49.40357,
+8.67544
+],
+"Heidelberg, Hauptbahnhof": [
+49.40432,
+8.67624
+],
+"Helmstedt": [
+52.22209,
+11.01055
+],
+"Helmstedt, Bahnhof": [
+52.22207,
+11.01009
+],
+"Hengelo": [
+52.26185,
+6.79373
+],
+"Herford": [
+52.11961,
+8.66364
+],
+"Herford, Bahnhof/ZOB": [
+52.11924,
+8.66463
+],
+"Herne Wanne-Eickel Hbf": [
+51.53249,
+7.1655
+],
+"Herne-Wanne-Eickel Hbf": [
+51.53126,
+7.16578
+],
+"Herrenberg": [
+48.59396,
+8.86263
+],
+"Hildesheim Hauptbahnhof": [
+52.15967,
+9.95259
+],
+"Hildesheim Hbf": [
+52.16063,
+9.9535
+],
+"Hilversum": [
+52.22667,
+5.1814
+],
+"Hnevice": [
+50.45269,
+14.36172
+],
+"Hochfilzen": [
+47.46771,
+12.62653
+],
+"Hockenheim": [
+49.31741,
+8.53739
+],
+"Hockenheim, Bahnhof": [
+49.31756,
+8.53742
+],
+"Hohenems": [
+47.36471,
+9.681
+],
+"Homburg (Saar) Hbf": [
+49.32808,
+7.33704
+],
+"Homburg(Saar)Hbf": [
+49.32764,
+7.33636
+],
+"Hopfgarten im Brixental": [
+47.45535,
+12.14918
+],
+"Horb": [
+48.44147,
+8.68898
+],
+"Horb Bahnhof/ZOB": [
+48.44154,
+8.68868
+],
+"Horka(Gr)": [
+51.2862,
+15.03218
+],
+"Hoyerswerda": [
+51.43279,
+14.23141
+],
+"Hoyerswerda Bahnhof": [
+51.43303,
+14.23113
+],
+"Hude": [
+53.10943,
+8.46096
+],
+"Hude(Oldb)": [
+53.10937,
+8.46095
+],
+"Husum": [
+54.47201,
+9.05627
+],
+"Hässleholm Central": [
+56.15852,
+13.76392
+],
+"Immenstadt": [
+47.5592,
+10.214
+],
+"Immenstadt, Bahnhof": [
+47.55905,
+10.21426
+],
+"Ingolstadt Hbf": [
+48.74455,
+11.43734
+],
+"Innsbruck Hauptbahnhof": [
+47.26323,
+11.40103
+],
+"Innsbruck Hbf": [
+47.26324,
+11.40103
+],
+"Inowroclaw": [
+52.80495,
+18.24406
+],
+"Interlaken Ost": [
+46.6905,
+7.869
+],
+"Interlaken West": [
+46.68263,
+7.85145
+],
+"Itzehoe": [
+53.92408,
+9.51015
+],
+"Jarocin": [
+51.96912,
+17.49428
+],
+"Jaroslaw": [
+50.01067,
+22.6779
+],
+"Jaworzno Szczakowa": [
+50.24633,
+19.29742
+],
+"Jena Paradies": [
+50.92485,
+11.58747
+],
+"Jena-Göschwitz": [
+50.8838,
+11.59322
+],
+"Jenbach": [
+47.38845,
+11.77845
+],
+"Jesenice(Gr)": [
+46.48141,
+14.02033
+],
+"Jesenice(SLO)": [
+46.43632,
+14.05491
+],
+"Kaiserslautern Hbf": [
+49.43586,
+7.76863
+],
+"Kaiserslautern, Hbf": [
+49.43626,
+7.76825
+],
+"Kalisz": [
+51.74282,
+18.07192
+],
+"Kapfenberg": [
+47.44523,
+15.29236
+],
+"Karlsruhe Hauptbahnhof": [
+48.99335,
+8.40104
+],
+"Karlsruhe Hbf": [
+48.99352,
+8.40218
+],
+"Karlsruhe-Durlach": [
+49.00225,
+8.46276
+],
+"Kassel Bahnhof Wilhelmshöhe": [
+51.31313,
+9.44705
+],
+"Kassel-Wilhelmshöhe": [
+51.31256,
+9.44712
+],
+"Katowice": [
+50.25751,
+19.01716
+],
+"Kedzierzyn Kozle": [
+50.34436,
+18.20476
+],
+"Kehl": [
+48.57666,
+7.80656
+],
+"Kehl Bahnhof": [
+48.57666,
+7.80689
+],
+"Kehl(Gr)": [
+48.57565,
+7.80112
+],
+"Kempten(Allgäu)Hbf": [
+47.71175,
+10.31761
+],
+"Kempten, Hauptbahnhof": [
+47.71213,
+10.31652
+],
+"Kiel Hauptbahnhof": [
+54.3155,
+10.13069
+],
+"Kirchberg in Tirol": [
+47.44892,
+12.3091
+],
+"Kitzbühel": [
+47.45411,
+12.39105
+],
+"Kitzbühel Hahnenkamm": [
+47.44339,
+12.38986
+],
+"Klagenfurt Hbf": [
+46.6156,
+14.31358
+],
+"Koblenz Hauptbahnhof": [
+50.35091,
+7.58832
+],
+"Koblenz Hbf": [
+50.35093,
+7.58835
+],
+"Koebenhavn H": [
+55.67272,
+12.56462
+],
+"Koebenhavn Syd": [
+55.65242,
+12.51632
+],
+"Koebenhavns Lufthavn st": [
+55.6296,
+12.64938
+],
+"Kolding st": [
+55.49084,
+9.48153
+],
+"Kolin(CZ)": [
+50.02544,
+15.21428
+],
+"Koluszki": [
+51.7446,
+19.819
+],
+"Konin": [
+52.2314,
+18.25334
+],
+"Konstanz": [
+47.65875,
+9.17731
+],
+"Konstanz Bahnhof": [
+47.65874,
+9.17733
+],
+"Koscian": [
+52.07896,
+16.64183
+],
+"Kostrzyn": [
+52.59178,
+14.64799
+],
+"Krakow Glowny": [
+50.0672,
+19.94743
+],
+"Krakow Plaszow": [
+50.03509,
+19.97489
+],
+"Kralupy nad Vltavou": [
+50.23873,
+14.31347
+],
+"Kranj": [
+46.23901,
+14.34817
+],
+"Kronach": [
+50.23961,
+11.32011
+],
+"Krsko": [
+45.95624,
+15.49345
+],
+"Krzeszowice": [
+50.13096,
+19.63324
+],
+"Krzyz": [
+52.87742,
+16.01783
+],
+"Kufstein": [
+47.58308,
+12.16555
+],
+"Kutno": [
+52.22696,
+19.34862
+],
+"Kuty": [
+48.66189,
+17.0477
+],
+"Kuty(Gr)": [
+48.71108,
+17.00041
+],
+"Köln Ehrenfeld Bf Ehrenfeld": [
+50.95153,
+6.91727
+],
+"Köln Hbf": [
+50.94303,
+6.95873
+],
+"Köln Messe/Deutz": [
+50.94087,
+6.975
+],
+"Köln Messe/Deutz Bf": [
+50.94088,
+6.975
+],
+"Köln Messe/Deutz Gl.11-12": [
+50.94172,
+6.97407
+],
+"Köln Süd": [
+50.9273,
+6.93806
+],
+"Köln Süd Bf": [
+50.9273,
+6.93805
+],
+"Köln-Ehrenfeld": [
+50.95153,
+6.91728
+],
+"Köln/Bonn Flughafen": [
+50.8789,
+7.1193
+],
+"Köthen": [
+51.75193,
+11.98936
+],
+"Kühnsdorf-Klopeiner See": [
+46.62484,
+14.62089
+],
+"Lancut": [
+50.08143,
+22.22751
+],
+"Landeck-Zams": [
+47.14824,
+10.57839
+],
+"Landquart": [
+46.96744,
+9.55405
+],
+"Landstuhl": [
+49.41629,
+7.56593
+],
+"Landstuhl, Bahnhof": [
+49.41633,
+7.56616
+],
+"Langen am Arlberg": [
+47.13172,
+10.12037
+],
+"Lask": [
+51.60377,
+19.11185
+],
+"Leer(Ostfriesl)": [
+53.23141,
+7.46523
+],
+"Legnica": [
+51.21385,
+16.16892
+],
+"Leipzig Hbf": [
+51.34547,
+12.38206
+],
+"Leipzig/Halle Flughafen": [
+51.42334,
+12.22343
+],
+"Lesce-Bled": [
+46.36042,
+14.15797
+],
+"Leszno": [
+51.8464,
+16.56557
+],
+"Leuven": [
+50.88154,
+4.71615
+],
+"Lichtenfels": [
+50.14645,
+11.05947
+],
+"Liestal": [
+47.48446,
+7.73137
+],
+"Limburg (Lahn) Süd (ICE)": [
+50.38191,
+8.09553
+],
+"Limburg Süd": [
+50.3825,
+8.09611
+],
+"Lindau-Reutin": [
+47.55238,
+9.70329
+],
+"Lingen(Ems)": [
+52.51987,
+7.32173
+],
+"Lingen, Bahnhof": [
+52.51964,
+7.32127
+],
+"Linköping Central": [
+58.41601,
+15.62668
+],
+"Linz/Donau Hbf": [
+48.29024,
+14.29186
+],
+"Liège-Guillemins": [
+50.62436,
+5.56648
+],
+"Ljubljana": [
+46.05869,
+14.51294
+],
+"Lodz Chojny": [
+51.72638,
+19.48454
+],
+"Lodz Widzew": [
+51.76309,
+19.54446
+],
+"Lovosice": [
+50.50964,
+14.05953
+],
+"Lubin": [
+51.39612,
+16.19359
+],
+"Lublin": [
+51.23124,
+22.5684
+],
+"Lublin Zachodni": [
+51.21874,
+22.50839
+],
+"Ludwigshafen(Rh)Hbf": [
+49.47653,
+8.43304
+],
+"Ludwigshafen, Hauptbahnhof": [
+49.47699,
+8.43332
+],
+"Ludwigslust": [
+53.33467,
+11.49449
+],
+"Ludwigslust Bahnhof": [
+53.33445,
+11.49438
+],
+"Ludwigsstadt": [
+50.48658,
+11.38299
+],
+"Lund Central": [
+55.70552,
+13.18658
+],
+"Lunderskov st": [
+55.48012,
+9.30379
+],
+"Lutherstadt Wittenberg Hbf": [
+51.86781,
+12.66229
+],
+"Löhne(Westf)": [
+52.19665,
+8.7135
+],
+"Löhne, Remarqueplatz/Bhf": [
+52.1973,
+8.71238
+],
+"Lüneburg": [
+53.24966,
+10.41989
+],
+"MG Hbf /Europaplatz": [
+51.19716,
+6.44529
+],
+"MG Rheydt Hbf": [
+51.16316,
+6.44106
+],
+"Magdeburg Hbf": [
+52.13051,
+11.62696
+],
+"Mainz Hbf": [
+50.00112,
+8.25872
+],
+"Mainz, Hauptbahnhof": [
+50.00145,
+8.25842
+],
+"Maishofen-Saalbach": [
+47.35858,
+12.8102
+],
+"Mallnitz-Obervellach": [
+46.98165,
+13.17614
+],
+"Mannheim Hbf": [
+49.47935,
+8.46892
+],
+"Mannheim, Hauptbahnhof": [
+49.47975,
+8.46994
+],
+"Marburg Hauptbahnhof": [
+50.81926,
+8.77401
+],
+"Marburg(Lahn)": [
+50.81927,
+8.77501
+],
+"Maribor": [
+46.56206,
+15.65801
+],
+"Marienhafe": [
+53.51924,
+7.27436
+],
+"Marienhafe Bahnhof": [
+53.51989,
+7.27326
+],
+"Memmingen": [
+47.98558,
+10.18685
+],
+"Memmingen, Bahnhof ZOB": [
+47.98506,
+10.18695
+],
+"Meppen": [
+52.69602,
+7.29802
+],
+"Meppen, Bahnhof": [
+52.69565,
+7.29811
+],
+"Miedzyzdroje": [
+53.92421,
+14.45478
+],
+"Mieszkowice": [
+52.78209,
+14.48597
+],
+"Minden(Westf)": [
+52.29014,
+8.93473
+],
+"Minden, Kaiserstraße": [
+52.28941,
+8.92787
+],
+"Montabaur": [
+50.44484,
+7.82533
+],
+"Montabaur Bahnhof": [
+50.44482,
+7.82531
+],
+"Mosonmagyarovar": [
+47.85036,
+17.26642
+],
+"Murnau": [
+47.68283,
+11.19294
+],
+"Myslowice": [
+50.23779,
+19.1419
+],
+"Möhlin": [
+47.56186,
+7.83386
+],
+"Mönchengladbach Hbf": [
+51.19658,
+6.44611
+],
+"Mühlacker": [
+48.95319,
+8.8461
+],
+"Mühlacker Bahnhof": [
+48.9531,
+8.84588
+],
+"Müllheim (Baden) Bahnhof": [
+47.80945,
+7.59906
+],
+"Müllheim im Markgräflerland": [
+47.80974,
+7.59933
+],
+"München Hbf": [
+48.14029,
+11.5596
+],
+"München Hbf Gl.27-36": [
+48.14153,
+11.55671
+],
+"München Hbf Gl.5-10": [
+48.13993,
+11.55481
+],
+"München Ost": [
+48.12744,
+11.60497
+],
+"München-Pasing": [
+48.14985,
+11.46187
+],
+"Münster Hauptbahnhof": [
+51.9567,
+7.63444
+],
+"Münster(Westf)Hbf": [
+51.95657,
+7.63572
+],
+"Mürzzuschlag": [
+47.60791,
+15.67724
+],
+"Nagymaros-Visegrad": [
+47.79089,
+18.9588
+],
+"Naleczow": [
+51.31779,
+22.21296
+],
+"Naumburg(Saale)Hbf": [
+51.16307,
+11.79698
+],
+"Neu-Ulm": [
+48.39349,
+10.00577
+],
+"Neu-Ulm Bahnhof": [
+48.3935,
+10.00577
+],
+"Neumünster": [
+54.07566,
+9.97976
+],
+"Neuss Hauptbahnhof": [
+51.20353,
+6.68311
+],
+"Neuss Hbf": [
+51.20435,
+6.68453
+],
+"Neustadt(Weinstr)Hbf": [
+49.34955,
+8.14076
+],
+"Neustadt, Hauptbahnhof": [
+49.34993,
+8.14038
+],
+"Niebüll": [
+54.78956,
+8.83477
+],
+"Nienburg(Weser)": [
+52.64534,
+9.21786
+],
+"Niesky": [
+51.29874,
+14.8319
+],
+"Niesky Bahnhof": [
+51.29863,
+14.83183
+],
+"Norddeich": [
+53.62158,
+7.16082
+],
+"Norddeich Mole": [
+53.62432,
+7.15874
+],
+"Norddeich(Norden) Mole": [
+53.62432,
+7.15874
+],
+"Norddeich(Norden) Mole (Bus)": [
+53.62514,
+7.15846
+],
+"Norden": [
+53.5882,
+7.21891
+],
+"Norden(Ostfriesl)": [
+53.58801,
+7.21932
+],
+"Norrköping Central": [
+58.59656,
+16.18368
+],
+"Nove Zamky": [
+47.995,
+18.17396
+],
+"Nowa Sol": [
+51.79968,
+15.70811
+],
+"Nowy Tomysl": [
+52.30409,
+16.13294
+],
+"Nässjö Central": [
+57.65213,
+14.69479
+],
+"Nürnberg Hbf": [
+49.44561,
+11.08299
+],
+"OB Sterkrade Bf.": [
+51.51184,
+6.84435
+],
+"Oberhausen Hbf": [
+51.474,
+6.85335
+],
+"Oberhausen-Sterkrade": [
+51.51208,
+6.84354
+],
+"Oberndorf (Neckar) Bahnhof": [
+48.29609,
+8.57536
+],
+"Oberndorf(Neckar)": [
+48.29567,
+8.57551
+],
+"Oberstdorf": [
+47.41103,
+10.2781
+],
+"Oberstdorf, Bahnhof": [
+47.41096,
+10.27777
+],
+"Oborniki Slaskie": [
+51.29897,
+16.90755
+],
+"Odense st": [
+55.40178,
+10.38601
+],
+"Offenburg": [
+48.47648,
+7.94672
+],
+"Offenburg Bahnhof": [
+48.4765,
+7.94667
+],
+"Oldenburg(Oldb) Hbf": [
+53.14406,
+8.22314
+],
+"Oldenburg(Oldb)Hbf": [
+53.1443,
+8.22328
+],
+"Olten": [
+47.35194,
+7.9077
+],
+"Opalenica": [
+52.30973,
+16.40035
+],
+"Opoczno Poludnie": [
+51.35852,
+20.23171
+],
+"Opole Glowne": [
+50.66151,
+17.92586
+],
+"Osnabrück Altstadt": [
+52.28123,
+8.04529
+],
+"Osnabrück Hbf": [
+52.27313,
+8.06082
+],
+"Ostbahnhof": [
+48.12815,
+11.60454
+],
+"Ostrava hl.n.": [
+49.85209,
+18.26726
+],
+"Ostseebad Binz": [
+54.40482,
+13.6005
+],
+"Pabianice": [
+51.66095,
+19.3251
+],
+"Padborg st": [
+54.82425,
+9.3588
+],
+"Paderborn Hbf": [
+51.71298,
+8.74051
+],
+"Paderborn, Hauptbahnhof": [
+51.71329,
+8.74063
+],
+"Papenburg(Ems)": [
+53.08971,
+7.38671
+],
+"Pardubice hl.n.": [
+50.0317,
+15.75753
+],
+"Paris Est": [
+48.87698,
+2.35912
+],
+"Pasewalk": [
+53.51535,
+13.98888
+],
+"Pasewalk Bahnhof": [
+53.51504,
+13.98929
+],
+"Pasing": [
+48.14914,
+11.4607
+],
+"Pforzheim Hauptbahnhof": [
+48.89398,
+8.70325
+],
+"Pforzheim Hbf": [
+48.89411,
+8.70301
+],
+"Pilawa": [
+51.95724,
+21.53291
+],
+"Pleszew": [
+51.89199,
+17.73284
+],
+"Potsdam Hbf": [
+52.39142,
+13.06672
+],
+"Poznan Glowny": [
+52.40199,
+16.91087
+],
+"Praha hl.n.": [
+50.08306,
+14.43604
+],
+"Praha-Holesovice": [
+50.11021,
+14.44001
+],
+"Praha-Podbaba": [
+50.11236,
+14.3956
+],
+"Prenzlau": [
+53.32164,
+13.86641
+],
+"Prenzlau, Bahnhof": [
+53.32161,
+13.86656
+],
+"Prien am Chiemsee": [
+47.8547,
+12.34685
+],
+"Przemysl Glowny": [
+49.78366,
+22.77636
+],
+"Przemysl Zasanie": [
+49.79363,
+22.77411
+],
+"Przeworsk": [
+50.06721,
+22.50336
+],
+"Pulawy Miasto": [
+51.4269,
+21.9851
+],
+"Pörtschach am Wörther See": [
+46.6362,
+14.14629
+],
+"Raciborz": [
+50.09035,
+18.2264
+],
+"Radolfzell": [
+47.73587,
+8.96898
+],
+"Radolfzell Bahnhof": [
+47.73581,
+8.96925
+],
+"Radymno": [
+49.93953,
+22.82915
+],
+"Rankweil": [
+47.27302,
+9.63725
+],
+"Ravensburg": [
+47.78448,
+9.6061
+],
+"Ravensburg, Bahnhof": [
+47.78455,
+9.60667
+],
+"Rawicz": [
+51.60868,
+16.84012
+],
+"Recklinghausen Hbf": [
+51.61598,
+7.20137
+],
+"Regensburg Hbf": [
+49.01167,
+12.09962
+],
+"Rejowiec": [
+51.11764,
+23.23926
+],
+"Remagen": [
+50.577,
+7.23027
+],
+"Remagen Bahnhof": [
+50.5772,
+7.22977
+],
+"Rheine": [
+52.2763,
+7.43426
+],
+"Rheine, Bahnhof": [
+52.27651,
+7.43573
+],
+"Rheinfelden(CH)": [
+47.55121,
+7.79217
+],
+"Rheydt Hbf": [
+51.16303,
+6.43956
+],
+"Ribnitz-Damgarten West": [
+54.23935,
+12.43684
+],
+"Riesa": [
+51.30965,
+13.28773
+],
+"Riesa Busbf/Bahnhof": [
+51.3094,
+13.28838
+],
+"Ringsheim/Europa-Park": [
+48.24867,
+7.77303
+],
+"Ringsted st": [
+55.43804,
+11.78616
+],
+"Roedekro st": [
+55.06969,
+9.33275
+],
+"Ropczyce": [
+50.07858,
+21.58288
+],
+"Rosenheim": [
+47.85002,
+12.11921
+],
+"Rostock Hauptbahnhof": [
+54.07818,
+12.13072
+],
+"Rostock Hbf": [
+54.07825,
+12.13108
+],
+"Rottweil": [
+48.1653,
+8.6393
+],
+"Rottweil Bahnhof": [
+48.16524,
+8.63974
+],
+"Roudnice nad Labem": [
+50.4266,
+14.26383
+],
+"Rudolstadt (Thüringen)": [
+50.718,
+11.33916
+],
+"Rudolstadt(Thür)": [
+50.71793,
+11.3389
+],
+"Ruhland": [
+51.45516,
+13.87019
+],
+"Ruhland, Bahnhof": [
+51.45533,
+13.86993
+],
+"Rybnik(PL)": [
+50.08913,
+18.54764
+],
+"Rzepin": [
+52.35022,
+14.81507
+],
+"Rzeszow Glowny": [
+50.04311,
+22.0068
+],
+"S Ostbahnhof (Berlin)": [
+52.51033,
+13.43509
+],
+"S Ostkreuz Bhf (Berlin)": [
+52.50311,
+13.46922
+],
+"S Potsdam Hauptbahnhof": [
+52.39144,
+13.06716
+],
+"S Schöneweide Bhf (Berlin)": [
+52.45461,
+13.51015
+],
+"S Spandau Bhf (Berlin)": [
+52.5348,
+13.19748
+],
+"S Südkreuz Bhf (Berlin)": [
+52.4755,
+13.36555
+],
+"S Wannsee Bhf (Berlin)": [
+52.42173,
+13.17893
+],
+"S+U Berlin Hauptbahnhof": [
+52.5256,
+13.36908
+],
+"S+U Gesundbrunnen Bhf (Berlin)": [
+52.54864,
+13.38837
+],
+"S+U Lichtenberg Bhf (Berlin)": [
+52.51067,
+13.49836
+],
+"Saalfeld (Saale)": [
+50.65049,
+11.37455
+],
+"Saalfeld(Saale)": [
+50.65027,
+11.37458
+],
+"Saalfelden": [
+47.42686,
+12.82977
+],
+"Saarbrücken Hbf": [
+49.24107,
+6.99102
+],
+"Salzburg Hbf": [
+47.81305,
+13.04582
+],
+"Salzwedel": [
+52.85811,
+11.16203
+],
+"Sargans": [
+47.04482,
+9.44626
+],
+"Schaffhausen": [
+47.69828,
+8.63276
+],
+"Schleswig": [
+54.49952,
+9.53815
+],
+"Schorndorf": [
+48.80694,
+9.52569
+],
+"Schwarzach-St.Veit": [
+47.31853,
+13.15446
+],
+"Schwerin Hauptbahnhof": [
+53.6347,
+11.4075
+],
+"Schwerin Hbf": [
+53.63474,
+11.40746
+],
+"Schwäbisch Gmünd": [
+48.80101,
+9.78779
+],
+"Scinawa": [
+51.40966,
+16.42136
+],
+"Sedziszow Malopolski": [
+50.07528,
+21.6947
+],
+"Sevnica": [
+46.00968,
+15.30123
+],
+"Siegburg Bf": [
+50.7939,
+7.20301
+],
+"Siegburg/Bonn": [
+50.79391,
+7.20303
+],
+"Sieradz": [
+51.59766,
+18.71499
+],
+"Simbach (Inn)": [
+48.26281,
+13.02296
+],
+"Simbach(Inn)": [
+48.26281,
+13.02295
+],
+"Singen (Htw) Bahnhof": [
+47.75899,
+8.84135
+],
+"Singen(Hohentwiel)": [
+47.75888,
+8.84127
+],
+"Skierniewice": [
+51.96718,
+20.14975
+],
+"Soest": [
+51.57842,
+8.10459
+],
+"Soest, Bahnhof": [
+51.57811,
+8.10422
+],
+"Solingen Hbf": [
+51.16077,
+7.00419
+],
+"Solingen, Hauptbahnhof": [
+51.16054,
+7.00371
+],
+"Sonthofen": [
+47.51328,
+10.27209
+],
+"Sonthofen, Bahnhof": [
+47.51341,
+10.27205
+],
+"Sopot": [
+54.44017,
+18.56232
+],
+"Sosnowiec Glowny": [
+50.2789,
+19.12641
+],
+"Spaichingen": [
+48.06899,
+8.74015
+],
+"Spaichingen Bahnhof": [
+48.0691,
+8.74017
+],
+"Spandau S+U Rathaus Spandau Position 2, Berlin": [
+52.53467,
+13.19719
+],
+"Spielfeld(Gr)": [
+46.69478,
+15.64219
+],
+"Spiez": [
+46.6864,
+7.6801
+],
+"Spittal-Millstätter See": [
+46.79573,
+13.48754
+],
+"Sroda Wielkopolska": [
+52.21805,
+17.27482
+],
+"St. Anton am Arlberg": [
+47.12733,
+10.26709
+],
+"St. Gallen(CH)": [
+47.42318,
+9.3699
+],
+"St. Johann im Pongau": [
+47.34838,
+13.19496
+],
+"St. Johann in Tirol": [
+47.51962,
+12.43078
+],
+"St. Margrethen SG": [
+47.45322,
+9.63826
+],
+"St. Paul im Lavanttal": [
+46.72139,
+14.85579
+],
+"St.Pölten Hbf": [
+48.20828,
+15.62468
+],
+"Stargard": [
+53.33975,
+15.03175
+],
+"Stein-Säckingen": [
+47.54161,
+7.94884
+],
+"Stendal Hbf": [
+52.59472,
+11.85441
+],
+"Stockholm Central": [
+59.33001,
+18.05763
+],
+"Stralsund Hauptbahnhof": [
+54.30911,
+13.07777
+],
+"Stralsund Hbf": [
+54.30829,
+13.07802
+],
+"Strasbourg": [
+48.58534,
+7.73407
+],
+"Sturovo": [
+47.80013,
+18.67992
+],
+"Stuttgart Hbf": [
+48.78478,
+9.18276
+],
+"Stuttgart-Vaihingen": [
+48.72628,
+9.11323
+],
+"Sulz (Neckar) Bahnhof": [
+48.36669,
+8.63676
+],
+"Sulz(Neckar)": [
+48.36649,
+8.63675
+],
+"Swidnik Miasto": [
+51.22385,
+22.69532
+],
+"Swiebodzin": [
+52.24514,
+15.53954
+],
+"Swinoujscie": [
+53.90482,
+14.26663
+],
+"Szamotuly": [
+52.60354,
+16.58542
+],
+"Szczecin Dabie": [
+53.39123,
+14.66947
+],
+"Szczecin Glowny": [
+53.41878,
+14.55032
+],
+"Szob": [
+47.821,
+18.86206
+],
+"Szob(Gr)": [
+47.8249,
+18.84477
+],
+"Tarnow": [
+50.0054,
+20.97418
+],
+"Tatabanya": [
+47.58493,
+18.39361
+],
+"Tczew": [
+54.09732,
+18.79015
+],
+"Thun": [
+46.75485,
+7.62961
+],
+"Tinglev st": [
+54.93617,
+9.25823
+],
+"Traunstein": [
+47.86973,
+12.6388
+],
+"Trebbin": [
+52.21658,
+13.22956
+],
+"Trebbin, Bahnhof": [
+52.21706,
+13.22996
+],
+"Treuchtlingen": [
+48.96127,
+10.90816
+],
+"Treysa": [
+50.91066,
+9.18567
+],
+"Trzebinia": [
+50.15393,
+19.45322
+],
+"Tuttlingen": [
+47.98058,
+8.79854
+],
+"Tuttlingen Bahnhof": [
+47.98058,
+8.7987
+],
+"Tutzing": [
+47.9074,
+11.27373
+],
+"Uelzen": [
+52.96979,
+10.55302
+],
+"Ulm Hauptbahnhof": [
+48.39912,
+9.98418
+],
+"Ulm Hbf": [
+48.3994,
+9.98261
+],
+"Usti nad Labem hl.n.": [
+50.65956,
+14.04473
+],
+"Usti nad Labem-Strekov": [
+50.64979,
+14.04837
+],
+"Utrecht Centraal": [
+52.0894,
+5.10986
+],
+"Vac": [
+47.78273,
+19.13306
+],
+"Vaihingen": [
+48.72698,
+9.11391
+],
+"Vaihingen (E)": [
+48.94815,
+8.95758
+],
+"Vaihingen(Enz)": [
+48.94812,
+8.95763
+],
+"Vamdrup st": [
+55.42809,
+9.28645
+],
+"Velden am Wörther See": [
+46.62006,
+14.04472
+],
+"Velgast": [
+54.27726,
+12.80315
+],
+"Venlo(Gr)": [
+51.34089,
+6.19271
+],
+"Verden(Aller)": [
+52.92086,
+9.23791
+],
+"Villach Hbf": [
+46.61861,
+13.84845
+],
+"Visp": [
+46.29403,
+7.88147
+],
+"Vojens st": [
+55.24848,
+9.30491
+],
+"Wabern(Bz Kassel)": [
+51.10297,
+9.35814
+],
+"Wannsee Bahnhof (S), Berlin": [
+52.4214,
+13.18036
+],
+"Warburg(Westf)": [
+51.49295,
+9.16385
+],
+"Warburg, Bahnhof": [
+51.49275,
+9.16386
+],
+"Warnemünde": [
+54.17711,
+12.09084
+],
+"Warszawa Centralna": [
+52.22886,
+21.00324
+],
+"Warszawa Wschodnia": [
+52.25155,
+21.05234
+],
+"Warszawa Zachodnia": [
+52.21997,
+20.96525
+],
+"Wegliniec": [
+51.29011,
+15.22308
+],
+"Weil am Rhein": [
+47.59361,
+7.60844
+],
+"Weil am Rhein Bahnhof": [
+47.5938,
+7.60854
+],
+"Weilheim": [
+47.84511,
+11.1435
+],
+"Weilheim(Oberbay)": [
+47.84536,
+11.14286
+],
+"Weinheim(Bergstr)Hbf": [
+49.5533,
+8.66535
+],
+"Weinheim, Hauptbahnhof": [
+49.55333,
+8.6657
+],
+"Weißenfels": [
+51.20462,
+11.97093
+],
+"Wels Hbf": [
+48.16608,
+14.02657
+],
+"Westerland(Sylt)": [
+54.90684,
+8.31092
+],
+"Westerland(Sylt) ZOB/Bahnhof": [
+54.90689,
+8.31088
+],
+"Westerstede-Ocholt": [
+53.20229,
+7.88653
+],
+"Weststeiermark": [
+46.81392,
+15.29677
+],
+"Wien Hauptbahnhof": [
+48.1851,
+16.37711
+],
+"Wien Hbf": [
+48.1851,
+16.37711
+],
+"Wien Meidling": [
+48.17458,
+16.33374
+],
+"Wiener Neustadt Hbf": [
+47.81108,
+16.23365
+],
+"Wiesbaden Hauptbahnhof": [
+50.06948,
+8.24463
+],
+"Wiesbaden Hbf": [
+50.07079,
+8.24373
+],
+"Wiesloch-Walldorf": [
+49.29135,
+8.66415
+],
+"Wiesloch-Walldorf, Bf": [
+49.29105,
+8.6643
+],
+"Winterthur": [
+47.50034,
+8.72382
+],
+"Wittenberge": [
+53.00387,
+11.76247
+],
+"Wittenberge, Bahnhof": [
+53.00237,
+11.7632
+],
+"Wloszczowa Polnoc": [
+50.85811,
+19.947
+],
+"Wolow": [
+51.33302,
+16.63376
+],
+"Worms Hbf": [
+49.63494,
+8.35645
+],
+"Worms, Hauptbahnhof": [
+49.63511,
+8.35695
+],
+"Wroclaw Glowny": [
+51.09808,
+17.03709
+],
+"Wronki": [
+52.70497,
+16.38615
+],
+"Wunstorf": [
+52.42234,
+9.45042
+],
+"Wuppertal Hbf": [
+51.25508,
+7.14932
+],
+"Wysoka Kamienska": [
+53.82494,
+14.83258
+],
+"Wörgl Hbf": [
+47.4918,
+12.06058
+],
+"Würzburg Hbf": [
+49.8018,
+9.93578
+],
+"Zabrze": [
+50.30528,
+18.78695
+],
+"Zagreb Glavni kolodvor": [
+45.80444,
+15.9787
+],
+"Zapresic": [
+45.84449,
+15.81319
+],
+"Zawiercie": [
+50.48102,
+19.42299
+],
+"Zbaszyn": [
+52.2595,
+15.89497
+],
+"Zbaszynek": [
+52.24251,
+15.81809
+],
+"Zdunska Wola": [
+51.61125,
+18.94657
+],
+"Zell am See": [
+47.32052,
+12.79657
+],
+"Zidani Most": [
+46.08559,
+15.17032
+],
+"Zielona Gora Glowna": [
+51.94744,
+15.51371
+],
+"Zmigrod": [
+51.47468,
+16.90173
+],
+"Zyrardow": [
+52.05212,
+20.44834
+],
+"Zürich Flughafen": [
+47.45039,
+8.5624
+],
+"Zürich HB": [
+47.37818,
+8.54021
+],
+"Züssow": [
+53.97388,
+13.54819
+],
+"Züssow Bahnhof": [
+53.97299,
+13.54944
+],
+"Ötztal": [
+47.23848,
+10.85911
+]
+}
+}

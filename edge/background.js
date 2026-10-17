@@ -157,11 +157,16 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   // durchgefahren wird (insertMissingBoundaries).
   let segments = validEntry.segments;
   if (stationSource === 'bahn.de' && !NIGHT_TRAIN_TYPES.has(String(trainType || '').toUpperCase())) {
-    const merged = mergeBypassedBoundaries(segments, stationOrder);
-    if (merged.length !== segments.length) {
-      console.log('[Fahrtrichtung] Wende-Bahnhof heute nicht auf der Route, Abschnitte zusammengelegt:',
-        merged.flatMap(s => s.mergedAt || []).join(', '));
-      segments = merged;
+    const missing = missingInnerBoundaries(segments, stationOrder);
+    const bypassed = [];
+    for (const bnd of missing) {
+      let geo = null;
+      try { geo = await resolveStation(bnd); } catch (e) { /* bahn.de nicht erreichbar → nichts zusammenlegen */ }
+      if (isBoundaryOnRoute(stationOrder, geo)) bypassed.push(bnd);
+    }
+    if (bypassed.length) {
+      console.log('[Fahrtrichtung] Wende-Bahnhof heute umfahren, keine Wende:', bypassed.join(', '));
+      segments = mergeBypassedBoundaries(segments, bypassed);
     }
   }
 
@@ -494,47 +499,7 @@ async function insertMissingBoundaries(stationOrder, validEntry, trainType) {
   return result;
 }
 
-// Index at which `point` fits best between consecutive stops with coordinates
-// (minimal detour). Only interior gaps qualify, and the detour must be small —
-// a boundary the train does not pass at all today (e.g. "Basel SBB" for a run
-// that ends in Singen, or a rerouted train) must NOT be forced in. Returns -1
-// if no gap qualifies.
-const MAX_DETOUR_KM = 25;
-const MAX_DETOUR_RATIO = 0.3;
-function bestInsertIndex(stops, point) {
-  let best = -1, bestDetour = Infinity;
-  let prev = -1;
-  for (let i = 0; i < stops.length; i++) {
-    if (stops[i].lat == null || stops[i].lon == null) continue;
-    if (prev >= 0) {
-      const direct = geoDistance(stops[prev], stops[i]);
-      const detour = geoDistance(stops[prev], point) + geoDistance(point, stops[i]) - direct;
-      // The point must also lie BETWEEN the two stops (projection onto the
-      // connecting line inside the gap), not beyond one of them.
-      const t = projectionParam(stops[prev], stops[i], point);
-      if (t > 0 && t < 1 && detour < bestDetour && detour <= Math.max(MAX_DETOUR_KM, MAX_DETOUR_RATIO * direct)) { bestDetour = detour; best = i; }
-    }
-    prev = i;
-  }
-  return best;
-}
-
-// Where does `p` project onto the line a->b? 0 = at a, 1 = at b, outside = beyond.
-function projectionParam(a, b, p) {
-  const k = Math.cos((a.lat + b.lat) / 2 * Math.PI / 180);
-  const abx = (b.lon - a.lon) * k, aby = b.lat - a.lat;
-  const apx = (p.lon - a.lon) * k, apy = p.lat - a.lat;
-  const len2 = abx * abx + aby * aby;
-  return len2 ? (apx * abx + apy * aby) / len2 : 0;
-}
-
-// Equirectangular approximation in km — precise enough to order stops.
-function geoDistance(a, b) {
-  const toRad = d => d * Math.PI / 180;
-  const x = (toRad(b.lon) - toRad(a.lon)) * Math.cos((toRad(a.lat) + toRad(b.lat)) / 2);
-  const y = toRad(b.lat) - toRad(a.lat);
-  return Math.sqrt(x * x + y * y) * 6371;
-}
+// bestInsertIndex / projectionParam / geoDistance: siehe utils.js
 
 // Verify a station list actually belongs to the train we parsed from
 // fernbahn.de. We anchor on stations we KNOW are on the route — the route

@@ -92,5 +92,17 @@
   },
   "almostThere": {
     "message": "Almost there: click “Sitzplatz auswählen” (choose seat) for your train, then click this icon again."
+  },
+  "fernbahnAccessNeeded": {
+    "message": "To show the coach order, the extension still needs access to fernbahn.de."
+  },
+  "fernbahnAccessButton": {
+    "message": "Allow fernbahn.de"
+  },
+  "fernbahnAccessPathMac": {
+    "message": "If nothing happens: Safari → Settings → Extensions → Fahrtrichtung → “Edit Websites…” → set fernbahn.de to “Allow”."
+  },
+  "fernbahnAccessPathIos": {
+    "message": "If nothing happens: Settings → Apps → Safari → Extensions → Fahrtrichtung → set fernbahn.de to “Allow”."
   }
 }

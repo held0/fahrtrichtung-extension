@@ -251,3 +251,21 @@ body.state-on button.open-preferences { display: none; }
 
 .ios-btn { margin-top: 2px; }
 .ios-btn.secondary { background: transparent; color: var(--red); border: 1.5px solid var(--red); }
+
+/* Kombinierte Einstellungs-Animation (Schalter + Websites), Finger-Positionen fuer diese Karte */
+.iph-c .tap { animation: tapC 10s infinite; }
+@keyframes tapC {
+  0%, 8%  { left: 86%; top: 31%; opacity: 0; transform: scale(1); }
+  13%     { left: 86%; top: 31%; opacity: 1; transform: scale(1); }
+  18%     { left: 86%; top: 31%; opacity: 1; transform: scale(.7); }
+  25%     { left: 86%; top: 31%; opacity: 0; transform: scale(1); }
+  38%     { left: 84%; top: 66%; opacity: 0; }
+  43%     { left: 84%; top: 66%; opacity: 1; transform: scale(1); }
+  48%     { left: 84%; top: 66%; opacity: 1; transform: scale(.7); }
+  55%     { left: 84%; top: 66%; opacity: 0; }
+  62%     { left: 84%; top: 84%; opacity: 0; }
+  67%     { left: 84%; top: 84%; opacity: 1; transform: scale(1); }
+  72%     { left: 84%; top: 84%; opacity: 1; transform: scale(.7); }
+  79%, 100% { left: 84%; top: 84%; opacity: 0; transform: scale(1); }
+}
+.iosnote { margin: 0; font-size: .85em; color: var(--soft); }

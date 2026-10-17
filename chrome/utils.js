@@ -167,3 +167,34 @@ function getDisplayFrontWagon(seg, wagonNumbers) {
     ? String(Math.max(...units.map(u => u.to)))
     : String(Math.min(...units.map(u => u.from)));
 }
+
+// Tageszug faehrt heute an einem Wende-Bahnhof (innere fernbahn-Segmentgrenze,
+// meist ein Kopfbahnhof wie Frankfurt(M)Hbf) vorbei, z. B. umgeleitet ueber
+// Frankfurt(Main)Sued: Dann wendet er NICHT — die beiden Abschnitte werden zu
+// einem zusammengelegt. Die Richtung kommt von dem Abschnitt, den der Zug heute
+// tatsaechlich faehrt: liegt der Start des vorderen Abschnitts auf der Route (oder
+// gar keiner der Aussenpunkte), gilt der vordere, sonst der hintere.
+// Bewusst strenger Namensvergleich (findInStationList): „Frankfurt(Main)Sued“
+// darf nicht als „Frankfurt(M)Hbf“ durchgehen.
+function mergeBypassedBoundaries(segments, stationOrder) {
+  if (!Array.isArray(segments) || segments.length < 2 || !stationOrder?.length) return segments;
+  const names = stationOrder.map(s => typeof s === 'string' ? s : s.name).map(normalizeStation);
+  const found = name => !!name && findInStationList(normalizeStation(name), names) >= 0;
+  const out = [segments[0]];
+  for (let i = 1; i < segments.length; i++) {
+    const prev = out[out.length - 1];
+    const seg = segments[i];
+    const boundary = prev.to || seg.from;
+    if (!boundary || found(boundary)) { out.push(seg); continue; }
+    const keepPrev = found(prev.from) || !found(seg.to);
+    const base = keepPrev ? prev : seg;
+    out[out.length - 1] = {
+      ...base,
+      from: prev.from,
+      to: seg.to,
+      text: `${prev.from} \u2013 ${seg.to}`,
+      mergedAt: [...(prev.mergedAt || []), boundary],
+    };
+  }
+  return out;
+}

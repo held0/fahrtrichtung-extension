@@ -92,5 +92,17 @@
   },
   "almostThere": {
     "message": "Fast geschafft: Klicke bei deinem Zug auf „Sitzplatz auswählen“ und danach erneut auf dieses Symbol."
+  },
+  "fernbahnAccessNeeded": {
+    "message": "Für die Wagenreihung braucht die Erweiterung noch Zugriff auf fernbahn.de."
+  },
+  "fernbahnAccessButton": {
+    "message": "fernbahn.de erlauben"
+  },
+  "fernbahnAccessPathMac": {
+    "message": "Falls nichts passiert: Safari → Einstellungen → Erweiterungen → Fahrtrichtung → „Websites bearbeiten …“ → fernbahn.de auf „Erlauben“ stellen."
+  },
+  "fernbahnAccessPathIos": {
+    "message": "Falls nichts passiert: Einstellungen → Apps → Safari → Erweiterungen → Fahrtrichtung → fernbahn.de auf „Erlauben“ stellen."
   }
 }

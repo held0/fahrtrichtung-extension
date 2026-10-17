@@ -285,6 +285,7 @@ async function fetchAndDisplay(train, fromStation, toStation, travelDate, journe
     });
 
     if (result.error) {
+      if (isNetworkBlock(result.error) && await offerFernbahnAccess(() => fetchAndDisplay(train, fromStation, toStation, travelDate, journeyHint))) return;
       contentEl.innerHTML = `<div class="status error">${escHtml(result.error)}</div>`;
       return;
     }
@@ -293,6 +294,33 @@ async function fetchAndDisplay(train, fromStation, toStation, travelDate, journe
   } catch (err) {
     contentEl.innerHTML = `<div class="status error">Fehler: ${escHtml(err.message)}</div>`;
   }
+}
+
+// Safari fragt nur fuer die geoeffnete Seite (bahn.de) nach; fernbahn.de ruft der Nutzer nie selbst
+// auf, steht dort also auf „Fragen“ und die Hintergrund-Anfrage scheitert still ("Load failed").
+// Dann Freigabe per Button anfragen (permissions.request braucht einen Klick) und neu laden.
+const FERNBAHN_ORIGIN = 'https://www.fernbahn.de/*';
+function isNetworkBlock(message) {
+  return /load failed|failed to fetch|networkerror|network connection was lost/i.test(String(message || ''));
+}
+async function offerFernbahnAccess(retry) {
+  if (!chrome.permissions?.request) return false;
+  try {
+    if (await chrome.permissions.contains({ origins: [FERNBAHN_ORIGIN] })) return false;   // Rechte da → echter Netzfehler
+  } catch (e) { /* contains nicht verfuegbar: trotzdem anbieten */ }
+  const path = document.documentElement.classList.contains('ios') ? msg('fernbahnAccessPathIos') : msg('fernbahnAccessPathMac');
+  contentEl.innerHTML = `<div class="status howto">
+      <p>${escHtml(msg('fernbahnAccessNeeded'))}</p>
+      <button class="access-btn" id="fernbahn-access">${escHtml(msg('fernbahnAccessButton'))}</button>
+      <p class="access-path">${escHtml(path)}</p>
+    </div>`;
+  document.getElementById('fernbahn-access').addEventListener('click', async () => {
+    let granted = false;
+    try { granted = await chrome.permissions.request({ origins: [FERNBAHN_ORIGIN] }); } catch (e) {}
+    if (granted) { contentEl.innerHTML = '<div class="status"><div class="spinner"></div></div>'; retry(); }
+    else document.querySelector('.access-path')?.classList.add('emph');
+  });
+  return true;
 }
 
 // Filter segments to only those relevant to the user's journey

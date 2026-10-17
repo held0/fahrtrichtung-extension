@@ -248,3 +248,6 @@ body.state-on button.open-preferences { display: none; }
   62% { left: 84%; top: 80%; opacity: 1; transform: scale(.7); }
   70%, 100% { left: 84%; top: 80%; opacity: 0; transform: scale(1); }
 }
+
+.ios-btn { margin-top: 2px; }
+.ios-btn.secondary { background: transparent; color: var(--red); border: 1.5px solid var(--red); }

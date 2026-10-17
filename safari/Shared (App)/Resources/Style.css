@@ -277,9 +277,9 @@ body.state-on button.open-preferences { display: none; }
 .cursor { animation-name: cursorTick; }
 @keyframes cursorTick {
   0%   { left: 75%; top: 82%; }
-  35%  { left: 4.5%; top: 25%; transform: scale(1); }
-  40%  { left: 4.5%; top: 25%; transform: scale(.85); }
-  45%, 100% { left: 4.5%; top: 25%; transform: scale(1); }
+  35%  { left: 4.2%; top: 40%; transform: scale(1); }
+  40%  { left: 4.2%; top: 40%; transform: scale(.85); }
+  45%, 100% { left: 4.2%; top: 40%; transform: scale(1); }
 }
 .row:not(.ghost) .cb { animation-name: cbOn5; } .row:not(.ghost) .cb svg { animation-name: tick5; }
 @keyframes cbOn5 { 0%, 40% { background: rgba(255,255,255,.6); border-color: rgba(128,128,128,.6); } 43%, 94% { background: #0a84ff; border-color: #0a84ff; } 100% { background: rgba(255,255,255,.6); } }

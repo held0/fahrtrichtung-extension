@@ -144,7 +144,12 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
                 openSettingsApp()
             }
         } else if body == "open-bahn" {
-            UIApplication.shared.open(URL(string: "https://www.bahn.de/")!)
+            // Gezielt Safari oeffnen (die Erweiterung laeuft nur dort), auch wenn ein anderer
+            // Standardbrowser eingestellt ist; Rueckfall: normaler Link
+            let safari = URL(string: "x-safari-https://www.bahn.de/")!
+            UIApplication.shared.open(safari) { ok in
+                if !ok { UIApplication.shared.open(URL(string: "https://www.bahn.de/")!) }
+            }
         }
 #endif
 #if os(macOS)

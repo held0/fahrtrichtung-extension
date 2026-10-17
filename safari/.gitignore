@@ -1,3 +1,4 @@
 build/
 *.app
 xcuserdata/
+build-sim/

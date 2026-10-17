@@ -390,13 +390,16 @@ function renderResult(data, userFrom, userTo) {
     html.push(`<div class="validity">${escHtml(hint)}</div>`);
   }
 
+  // Richtungswechsel-Bahnhoefe zwischen den Abschnitten (fuer die Fahrzeit-Berechnung)
+  const innerBoundaries = (data.segments || []).slice(0, -1).map(s => s.to).filter(Boolean);
+
   for (const { seg, segFrom, segTo } of displaySegments) {
     const displayDir = getDisplayDirection(seg, data.wagonNumbers);
     const dirClass = displayDir === 'left' ? 'direction-left' : displayDir === 'right' ? 'direction-right'
       : displayDir === 'mixed' ? 'direction-mixed' : '';
     const arrow = displayDir === 'left' ? '\u2190' : displayDir === 'right' ? '\u2192' : '?';
     const segText = segTo ? `${segFrom} \u2013 ${segTo}` : segFrom;
-    const durationStr = formatDuration(computeSegmentDuration(segFrom, segTo, data.stationOrder));
+    const durationStr = formatDuration(computeSegmentDuration(segFrom, segTo, data.stationOrder, innerBoundaries));
     const routeHtml = `
         <div class="segment-route">
           ${escHtml(segText)}

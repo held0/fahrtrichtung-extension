@@ -57,7 +57,11 @@ function stationMatchLoose(a, b) {
 
 // Compute duration between two station names using the stationOrder (with times).
 // stationOrder = [{name, dep, arr}, ...] from bahn.de (times = local ISO strings without zone)
-function computeSegmentDuration(fromName, toName, stationOrder) {
+// innerBoundaries (optional): Namen der Richtungswechsel-Bahnhoefe ZWISCHEN zwei
+// Abschnitten. Fehlt so ein Bahnhof in der Tages-Stationsliste (z. B. ICE ueber
+// Frankfurt Flughafen statt Hbf), waere der Rueckfall auf den Listenrand falsch —
+// jeder Abschnitt bekaeme die Gesamtfahrzeit. Dann lieber keine Dauer anzeigen.
+function computeSegmentDuration(fromName, toName, stationOrder, innerBoundaries = []) {
   if (!stationOrder?.length || !fromName || !toName) return null;
 
   const names = stationOrder.map(s => typeof s === 'string' ? s : s.name).map(normalizeStation);
@@ -65,7 +69,10 @@ function computeSegmentDuration(fromName, toName, stationOrder) {
   let fromIdx = findInStationList(normalizeStation(fromName), names);
   let toIdx = findInStationList(normalizeStation(toName), names);
 
-  // Fall back to list edges if a boundary isn't found
+  const isInner = name => innerBoundaries.some(b => normalizeStation(b) === normalizeStation(name));
+  if ((fromIdx < 0 && isInner(fromName)) || (toIdx < 0 && isInner(toName))) return null;
+
+  // Fall back to list edges if an outer boundary (route start/end) isn't found
   if (fromIdx < 0 && toIdx >= 0) fromIdx = 0;
   if (toIdx < 0 && fromIdx >= 0) toIdx = names.length - 1;
 

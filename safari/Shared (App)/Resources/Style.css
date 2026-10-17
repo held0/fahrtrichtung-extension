@@ -269,3 +269,6 @@ body.state-on button.open-preferences { display: none; }
   79%, 100% { left: 84%; top: 84%; opacity: 0; transform: scale(1); }
 }
 .iosnote { margin: 0; font-size: .85em; color: var(--soft); }
+
+/* „Optional“-Kennzeichnung fuer die Website-Freigabe (Safari fragt sonst beim ersten Klick nach) */
+.opt { display: inline-block; font-size: .72em; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--soft); border: 1px solid currentColor; border-radius: 4px; padding: 0 5px; margin-right: 4px; vertical-align: 1px; }

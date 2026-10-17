@@ -151,8 +151,22 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
     stationOrder = await insertMissingBoundaries(stationOrder, validEntry, trainType);
   }
 
-  const fromSegmentIdx = findSegmentForStation(validEntry.segments, fromStation, stationOrder);
-  const toSegmentIdx = findSegmentForStation(validEntry.segments, toStation, stationOrder);
+  // Tageszuege: liegt ein Wende-Bahnhof heute nicht auf der Route (Umleitung,
+  // z. B. ueber Frankfurt Sued statt Hbf), wendet der Zug dort nicht → Abschnitte
+  // zusammenlegen. Nachtzuege nicht: dort fehlen Wende-Bahnhoefe nur, weil ohne Halt
+  // durchgefahren wird (insertMissingBoundaries).
+  let segments = validEntry.segments;
+  if (stationSource === 'bahn.de' && !NIGHT_TRAIN_TYPES.has(String(trainType || '').toUpperCase())) {
+    const merged = mergeBypassedBoundaries(segments, stationOrder);
+    if (merged.length !== segments.length) {
+      console.log('[Fahrtrichtung] Wende-Bahnhof heute nicht auf der Route, Abschnitte zusammengelegt:',
+        merged.flatMap(s => s.mergedAt || []).join(', '));
+      segments = merged;
+    }
+  }
+
+  const fromSegmentIdx = findSegmentForStation(segments, fromStation, stationOrder);
+  const toSegmentIdx = findSegmentForStation(segments, toStation, stationOrder);
 
   return {
     bgVersion: BG_VERSION,
@@ -161,7 +175,7 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
     validity: validEntry.validity,
     validityExact: !!exactMatch,
     latestValidityTo,
-    segments: validEntry.segments,
+    segments,
     wagonNumbers: validEntry.wagonNumbers,
     stationOrder,
     stationSource,

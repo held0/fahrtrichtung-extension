@@ -656,6 +656,22 @@ assert('sub-segment: Mannheim to K\u00f6ln',
   computeSegmentDuration('Mannheim Hbf', 'K\u00f6ln Hbf', stationOrder),
   { hours: 1, minutes: 36 });
 
+// --- mergeBypassedBoundaries (Tageszug umgeleitet, z. B. ICE 677 am 29.10.2026 ueber Frankfurt Sued) ---
+group('mergeBypassedBoundaries()');
+const segs677 = [
+  { from: 'Berlin Hbf', to: 'Frankfurt(M)Hbf', direction: 'right', text: 'Berlin Hbf – Frankfurt(M)Hbf', firstWagonIsFront: false },
+  { from: 'Frankfurt(M)Hbf', to: 'Karlsruhe Hbf', direction: 'left', text: 'Frankfurt(M)Hbf – Karlsruhe Hbf', firstWagonIsFront: true },
+];
+const via677 = ['Berlin Hbf','Halle(Saale)Hbf','Erfurt Hbf','Fulda','Hanau Hbf','Frankfurt(Main)Süd','Heidelberg Hbf','Karlsruhe Hbf'].map(name => ({ name }));
+const m677 = mergeBypassedBoundaries(segs677, via677);
+assert('bypassed Kopfbahnhof -> one segment', m677.length, 1);
+assert('merged keeps direction of the segment the train starts on', m677[0].direction, 'right');
+assert('merged spans whole route', m677[0].from + ' / ' + m677[0].to, 'Berlin Hbf / Karlsruhe Hbf');
+const normal677 = ['Berlin Hbf','Erfurt Hbf','Frankfurt(Main)Hbf','Mannheim Hbf','Karlsruhe Hbf'].map(name => ({ name }));
+assert('boundary on route -> unchanged', mergeBypassedBoundaries(segs677, normal677).length, 2);
+const lateStart = ['Frankfurt Flughafen Fernbahnhof','Mannheim Hbf','Karlsruhe Hbf'].map(name => ({ name }));
+assert('train starts after the bypassed boundary -> direction of later segment', mergeBypassedBoundaries(segs677, lateStart)[0].direction, 'left');
+
 // ---- Summary ----
 const summary = document.createElement('div');
 summary.className = `summary ${failed === 0 ? 'all-pass' : 'has-fail'}`;

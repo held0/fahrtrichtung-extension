@@ -639,6 +639,18 @@ assert('unknown from falls back to first station',
   computeSegmentDuration('Basel Bad Bf', 'K\u00f6ln Hbf', stationOrder),
   { hours: 2, minutes: 6 });
 
+// Inner direction-change station missing from today's list (e.g. ICE via Frankfurt Flughafen):
+// no duration instead of the full trip for every segment
+assert('missing inner boundary -> null (from)',
+  computeSegmentDuration('Frankfurt Süd', 'K\u00f6ln Hbf', stationOrder, ['Frankfurt Süd']),
+  null);
+assert('missing inner boundary -> null (to)',
+  computeSegmentDuration('Karlsruhe Hbf', 'Frankfurt Süd', stationOrder, ['Frankfurt Süd']),
+  null);
+assert('missing outer boundary still falls back with inner list',
+  computeSegmentDuration('Basel Bad Bf', 'Frankfurt(M)Hbf', stationOrder, ['Frankfurt(M)Hbf']),
+  { hours: 1, minutes: 12 });
+
 // Duration with adjusted segment boundaries (the bug fix)
 assert('sub-segment: Mannheim to K\u00f6ln',
   computeSegmentDuration('Mannheim Hbf', 'K\u00f6ln Hbf', stationOrder),

@@ -9,6 +9,7 @@ import WebKit
 
 #if os(iOS)
 import UIKit
+import SafariServices
 typealias PlatformViewController = UIViewController
 #elseif os(macOS)
 import Cocoa
@@ -95,6 +96,12 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
 #endif
     }
 
+#if os(iOS)
+    func openSettingsApp() {
+        if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+    }
+#endif
+
 #if os(macOS)
     // Fensterhoehe an den Inhalt anpassen, aber nie hoeher als der sichtbare Bildschirm
     func fitWindow(toContentHeight height: CGFloat) {
@@ -125,6 +132,21 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
 #endif
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+#if os(iOS)
+        let body = message.body as? String ?? ""
+        if body == "open-ios-settings" {
+            // iOS 26.2+: direkt zu Safari → Erweiterungen (gezielt Fahrtrichtung); sonst Einstellungen-App
+            if #available(iOS 26.2, *) {
+                SFSafariSettings.openExtensionsSettings(forIdentifiers: [extensionBundleIdentifier]) { error in
+                    if error != nil { self.openSettingsApp() }
+                }
+            } else {
+                openSettingsApp()
+            }
+        } else if body == "open-bahn" {
+            UIApplication.shared.open(URL(string: "https://www.bahn.de/")!)
+        }
+#endif
 #if os(macOS)
         let body = message.body as? String ?? ""
         if body.hasPrefix("height:"), let h = Double(body.dropFirst(7)) {

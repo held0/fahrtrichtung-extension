@@ -24,6 +24,8 @@ const EN = {
     iosBack: 'Safari',
     iosAllow: 'Allow Extension',
     iosPerms: 'Permissions',
+    iosBtnSettings: 'Open Settings',
+    iosBtnBahn: 'Open bahn.de in Safari',
 };
 
 if (!/^de/i.test(navigator.language || '')) {
@@ -52,3 +54,8 @@ function reportHeight() {
 }
 new ResizeObserver(reportHeight).observe(document.querySelector('main'));
 window.addEventListener('load', reportHeight);
+
+// iPhone: Buttons zu den Einstellungen bzw. zu bahn.de
+document.querySelectorAll('.ios-btn').forEach(b => b.addEventListener('click', () => {
+    try { webkit.messageHandlers.controller.postMessage(b.dataset.msg); } catch (e) {}
+}));

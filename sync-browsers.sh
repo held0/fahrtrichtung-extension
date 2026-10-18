@@ -43,7 +43,8 @@ echo "Fertig."
 if [ -d "safari/Shared (Extension)/Resources" ]; then
   rsync -a --exclude='.*' chrome/ "safari/Shared (Extension)/Resources/"
   VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' chrome/manifest.json | head -1)
-  sed -i '' "s/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = $VERSION;/" safari/Fahrtrichtung.xcodeproj/project.pbxproj
+  # perl statt sed -i: laeuft auf macOS (BSD) und im Linux-CI (GNU) gleich
+  perl -pi -e "s/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = $VERSION;/" safari/Fahrtrichtung.xcodeproj/project.pbxproj
   for f in $(cd chrome && find . -type f ! -name '.*' ! -path './_locales/*' | sed 's|^\./||'); do  # _locales ist ein Ordner-Verweis
     grep -q "/\* $(basename "$f") \*/" safari/Fahrtrichtung.xcodeproj/project.pbxproj \
       || echo "  ⚠️  Safari: $f ist neu — in Xcode zum Target 'Fahrtrichtung Extension' hinzufuegen"

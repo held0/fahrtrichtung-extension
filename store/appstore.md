@@ -86,3 +86,18 @@ Open source: https://github.com/held0/fahrtrichtung-extension
 
 **What’s new in this version:**
 First version for Safari on Mac, iPhone and iPad.
+
+---
+
+## Hinweise für die Prüfung (App Review Information → Notes, Englisch)
+
+No account or sign-in is needed.
+
+How to test:
+1. Open the Fahrtrichtung app and switch on the extension in Safari (iPhone/iPad: Settings → Apps → Safari → Extensions → Fahrtrichtung; Mac: Safari → Settings → Extensions).
+2. In Safari, open https://www.bahn.de, search for a long-distance connection (e.g. Berlin Hbf → München Hbf, any ICE in the coming days) and select a fare.
+3. Click “Sitzplatz auswählen” (choose seat) to open the seat map.
+4. Tap/click the Fahrtrichtung extension (iPhone/iPad: page icon on the left of the address bar → Fahrtrichtung; Mac: toolbar icon). If Safari asks for permission for bahn.de or fernbahn.de, allow it.
+5. The popup shows the direction of travel for each section of the journey and which coach is at the front.
+
+The extension only reads the train number from the bahn.de seat dialog and requests the published timetable (bahn.de) and coach sequence (fernbahn.de). It collects no personal data.

@@ -59,7 +59,7 @@ Train direction on bahn.de
 Book a forward-facing seat: this Safari extension shows you in bahn.de’s seat selection which way your ICE or IC train will travel.
 
 **Keywords (max. 100 characters):**
-train direction,ICE,seat,coach order,Deutsche Bahn,rail,reservation,Safari,extension,forward
+train direction,ICE,seat,coach order,railway,rail,reservation,Safari,extension,forward
 
 **Description:**
 Want a seat facing the direction of travel, but bahn.de doesn’t tell you which way the train goes? “Fahrtrichtung” shows it right in Safari, based on the planned coach sequences. In rare cases the data can still change before the day of travel – but it’s far better than no information at all!
@@ -100,4 +100,4 @@ How to test:
 4. Tap/click the Fahrtrichtung extension (iPhone/iPad: page icon on the left of the address bar → Fahrtrichtung; Mac: toolbar icon). If Safari asks for permission for bahn.de or fernbahn.de, allow it.
 5. The popup shows the direction of travel for each section of the journey and which coach is at the front.
 
-The extension only reads the train number from the bahn.de seat dialog and requests the published timetable (bahn.de) and coach sequence (fernbahn.de). It collects no personal data.
+The extension only reads the train number from the bahn.de seat dialogue and requests the published timetable (bahn.de) and coach sequence (fernbahn.de). It collects no personal data.

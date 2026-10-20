@@ -104,5 +104,17 @@
   },
   "fernbahnAccessPathIos": {
     "message": "Falls nichts passiert: Einstellungen → Apps → Safari → Erweiterungen → Fahrtrichtung → fernbahn.de auf „Erlauben“ stellen."
+  },
+  "errSourceDown": {
+    "message": "Die Wagenreihungen kommen von fernbahn.de – die Seite ist gerade überlastet oder kurz nicht erreichbar. Bitte versuche es in ein paar Minuten noch einmal."
+  },
+  "errNoData": {
+    "message": "Für diesen Zug liegt leider keine Wagenreihung vor."
+  },
+  "errGeneric": {
+    "message": "Die Fahrtrichtung konnte gerade nicht geladen werden. Bitte versuche es gleich noch einmal."
+  },
+  "cachedNotice": {
+    "message": "fernbahn.de ist gerade nicht erreichbar – angezeigt wird die zuletzt geladene Wagenreihung (vom $1)."
   }
 }

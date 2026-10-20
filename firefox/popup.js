@@ -273,7 +273,9 @@ function showHowTo(lead) {
 
 async function fetchAndDisplay(train, fromStation, toStation, travelDate, journeyHint) {
   try {
-    const result = await chrome.runtime.sendMessage({
+    // Sicherheitsnetz: nie endlos „Lade Zugdaten…“ (z. B. Service Worker beendet, Quelle haengt)
+    const timeout = new Promise(resolve => setTimeout(() => resolve({ error: 'timeout', code: 'POPUP_TIMEOUT' }), 45000));
+    const result = await Promise.race([timeout, chrome.runtime.sendMessage({
       type: 'fetchFernbahn',
       trainNumber: train.number,
       trainType: train.type,
@@ -282,17 +284,17 @@ async function fetchAndDisplay(train, fromStation, toStation, travelDate, journe
       travelDate: travelDate || new Date().toISOString().slice(0, 10),
       journeyHint: journeyHint || null,
       tabId: currentTabId
-    });
+    })]);
 
-    if (result.error) {
-      if (isNetworkBlock(result.error) && await offerFernbahnAccess(() => fetchAndDisplay(train, fromStation, toStation, travelDate, journeyHint))) return;
-      contentEl.innerHTML = `<div class="status error">${escHtml(result.error)}</div>`;
+    if (!result || result.error) {
+      if (result && isNetworkBlock(result.error) && await offerFernbahnAccess(() => fetchAndDisplay(train, fromStation, toStation, travelDate, journeyHint))) return;
+      showFriendlyError(result);
       return;
     }
 
     renderResult(result, fromStation, toStation);
   } catch (err) {
-    contentEl.innerHTML = `<div class="status error">Fehler: ${escHtml(err.message)}</div>`;
+    showFriendlyError({ error: err.message });
   }
 }
 
@@ -404,6 +406,11 @@ function renderResult(data, userFrom, userTo) {
     displaySegments.push({ seg, segFrom, segTo });
   }
 
+  if (data.cachedAt) {
+    const d = new Date(data.cachedAt);
+    html.push(`<div class="validity cached">${escHtml(msg('cachedNotice', `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.`))}</div>`);
+  }
+
   if (displaySegments.length > 1) {
     html.push(`<div class="validity">${escHtml(msg('directionChanges'))}</div>`);
   } else if (displaySegments.length === 1 && !data.validityExact) {
@@ -479,6 +486,18 @@ function renderResult(data, userFrom, userTo) {
 
   // Track usage and show donate banner at milestones
   showDonateIfMilestone();
+}
+
+// Fehler fuer Laien verstaendlich; die technische Ursache steht klein darunter (hilft bei Rueckfragen)
+const SOURCE_DOWN_CODES = new Set(['FERNBAHN_BUSY', 'FERNBAHN_DOWN', 'FERNBAHN_TIMEOUT', 'FERNBAHN_ERROR']);
+function showFriendlyError(result) {
+  const code = result?.code || '';
+  const raw = result?.error || '';
+  let text;
+  if (SOURCE_DOWN_CODES.has(code) || /fernbahn\.de (returned|antwortet)/.test(raw)) text = msg('errSourceDown');
+  else if (/^Keine Wagenreihung/.test(raw)) text = msg('errNoData');
+  else text = msg('errGeneric');
+  contentEl.innerHTML = `<div class="status error"><p>${escHtml(text)}</p>${raw ? `<p class="error-detail">${escHtml(raw)}</p>` : ''}</div>`;
 }
 
 function showError(msg) {

@@ -425,5 +425,37 @@ group('popup.js: journeyHint aus dem GSD-Sitzplatzdialog');
   assert('Reisedatum aus abfahrtZeit, wenn kein Seitentext', vm.runInContext(fnSrc + '\nextractTrainInfoFromPage()', pageCtx3).travelDate, '2026-09-12');
 }
 
+// ==============================================================================
+group('fernbahn.de down/ueberlastet: Cache-Fallback und Fehlercodes (2026-10-20, 429/504/Timeout)');
+{
+  const store = {};
+  const withStorage = ctx => { ctx.chrome.storage = { local: { get: async k => ({ [k]: store[k] }), set: async o => Object.assign(store, o) } }; return ctx; };
+  const bahnOk = [
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('ICE 1005', '2026-09-12T08:36:00', 'j1005')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: RUN }) },
+  ];
+  // 1. erfolgreicher Abruf fuellt den Cache
+  const ok = withStorage(makeCtx([...fernbahnRoutes, ...bahnOk]));
+  const r1 = await ok.handleFetchFernbahn({ ...baseReq, journeyHint: HINT });
+  assert('erfolgreicher Abruf: kein cachedAt', r1.cachedAt, null);
+  assert('Cache-Eintrag angelegt', Object.keys(store.fernbahnCache || {}), ['2026:1005']);
+  // 2. fernbahn 504 (3 Versuche) -> Reihung aus dem Cache
+  const down = withStorage(makeCtx([{ match: /fernbahn\.de/, reply: () => ({ status: 504, text: '' }) }, ...bahnOk]));
+  const r2 = await down.handleFetchFernbahn({ ...baseReq, journeyHint: HINT });
+  assert('504: Ergebnis trotzdem da (aus Cache)', r2.segments?.[0]?.direction, 'left');
+  assert('504: cachedAt gesetzt', typeof r2.cachedAt, 'number');
+  assert('504: hoechstens 3 fernbahn-Versuche', down.calls.filter(c => /fernbahn/.test(c.url)).length, 3);
+  // 3. ohne Cache: Fehler mit Code statt endlosem Laden
+  for (const [status, code] of [[429, 'FERNBAHN_BUSY'], [504, 'FERNBAHN_DOWN']]) {
+    const ctx = makeCtx([{ match: /fernbahn\.de/, reply: () => ({ status, text: '' }) }, ...bahnOk]);
+    let err = null; try { await ctx.handleFetchFernbahn({ ...baseReq, journeyHint: HINT }); } catch (e) { err = e; }
+    assert(`${status} ohne Cache: Fehlercode ${code}`, err?.code, code);
+  }
+  // 4. Netzfehler/Timeout ohne Cache -> Code gesetzt
+  const hang = makeCtx([{ match: /fernbahn\.de/, reply: () => Object.assign(new Error('fernbahn.de antwortet nicht (Timeout nach 12 s)'), { code: 'FERNBAHN_TIMEOUT' }) }, ...bahnOk]);
+  let e4 = null; try { await hang.handleFetchFernbahn({ ...baseReq, journeyHint: HINT }); } catch (e) { e4 = e; }
+  assert('Timeout ohne Cache: Fehlercode FERNBAHN_TIMEOUT', e4?.code, 'FERNBAHN_TIMEOUT');
+}
+
 console.log(`\n${passed + failed} tests: ${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

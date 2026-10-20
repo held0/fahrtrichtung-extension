@@ -116,5 +116,8 @@
   },
   "cachedNotice": {
     "message": "fernbahn.de ist gerade nicht erreichbar – angezeigt wird die zuletzt geladene Wagenreihung (vom $1)."
+  },
+  "mirrorNotice": {
+    "message": "fernbahn.de ist gerade nicht erreichbar – angezeigt wird eine zwischengespeicherte Wagenreihung (Stand $1)."
   }
 }

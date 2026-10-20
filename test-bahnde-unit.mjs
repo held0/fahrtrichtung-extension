@@ -232,7 +232,7 @@ group('Robustheit: 429/5xx-Backoff, Host-Fallback, kaputte Antworten');
   let msg = '';
   try { await ctx7.handleFetchFernbahn(baseReq); } catch (e) { msg = e.message; }
   assert('fernbahn 504 -> Fehler "fernbahn.de returned 504"', msg, 'fernbahn.de returned 504');
-  assert('fernbahn 504 -> genau 2 Versuche, nicht mehr', ctx7.calls.length, 2);
+  assert('fernbahn 504 -> genau 2 Versuche, nicht mehr', ctx7.calls.filter(c => /fernbahn/.test(c.url)).length, 2);
 
   // fernbahn einmal 429 (Watchdog 2026-10-05), dann ok -> Ergebnis wie normal
   const ctx8 = makeCtx([
@@ -247,7 +247,7 @@ group('Robustheit: 429/5xx-Backoff, Host-Fallback, kaputte Antworten');
   // 404 ist kein Retry-Fall
   const ctx9 = makeCtx([{ match: /fernbahn/, reply: () => ({ status: 404, text: '' }) }]);
   try { await ctx9.handleFetchFernbahn(baseReq); } catch (e) {}
-  assert('fernbahn 404 -> kein Retry', ctx9.calls.length, 1);
+  assert('fernbahn 404 -> kein Retry', ctx9.calls.filter(c => /fernbahn/.test(c.url)).length, 1);
 }
 
 group('Fehlende Segmentgrenze (bahn.de ohne Betriebshalt) wird geometrisch eingefuegt');
@@ -455,6 +455,35 @@ group('fernbahn.de down/ueberlastet: Cache-Fallback und Fehlercodes (2026-10-20,
   const hang = makeCtx([{ match: /fernbahn\.de/, reply: () => Object.assign(new Error('fernbahn.de antwortet nicht (Timeout nach 12 s)'), { code: 'FERNBAHN_TIMEOUT' }) }, ...bahnOk]);
   let e4 = null; try { await hang.handleFetchFernbahn({ ...baseReq, journeyHint: HINT }); } catch (e) { e4 = e; }
   assert('Timeout ohne Cache: Fehlercode FERNBAHN_TIMEOUT', e4?.code, 'FERNBAHN_TIMEOUT');
+}
+
+// ==============================================================================
+group('fernbahn.de down, Zug nicht im Browser-Speicher: Auskunft vom eigenen Server');
+{
+  const bahnOk = [
+    { match: /abfahrten/, reply: () => ({ json: { entries: [ENTRY('ICE 1005', '2026-09-12T08:36:00', 'j1005')] } }) },
+    { match: /fahrt\?/, reply: () => ({ json: RUN }) },
+  ];
+  const entry = { trainName: 'ICE 1005', route: 'Berlin-Gesundbrunnen – München Hbf', segments: [{ from: 'Berlin-Gesundbrunnen', to: 'München Hbf', direction: 'left', text: 'Berlin-Gesundbrunnen – München Hbf', firstWagonIsFront: true }], wagonNumbers: ['21', '29'], validity: { text: 'tgl', from: null, to: null, days: null } };
+  const ctx = makeCtx([{ match: /fernbahn\.de/, reply: () => ({ status: 504, text: '' }) },
+    { match: /fahrtrichtung\.info\/api\/reihung/, reply: (u, o) => ({ json: { entry, exact: true, latestValidityTo: null, stand: '2026-10-20', _body: o.body } }) }, ...bahnOk]);
+  const r = await ctx.handleFetchFernbahn({ ...baseReq, journeyHint: HINT });
+  const call = ctx.calls.find(c => /api\/reihung/.test(c.url));
+  assert('Server wird per POST gefragt', call?.opts?.method, 'POST');
+  assert('nur Gattung, Nummer, Datum (+Version) im Body', Object.keys(JSON.parse(call.opts.body)), ['type', 'number', 'date', 'v']);
+  assert('Ergebnis aus der Auskunft', [r.segments[0].direction, r.wagonNumbers], ['left', ['21', '29']]);
+  assert('backupDate fuer den Hinweis im Popup', r.backupDate, '2026-10-20');
+  assert('Stationen trotzdem von bahn.de', r.stationSource, 'bahn.de');
+  // Server lehnt ab (fernbahn.de aus seiner Sicht erreichbar) -> verstaendlicher Fehler statt Laden
+  const ctx2 = makeCtx([{ match: /fernbahn\.de/, reply: () => ({ status: 504, text: '' }) },
+    { match: /fahrtrichtung\.info/, reply: () => ({ status: 409, json: { reason: 'source-available' } }) }, ...bahnOk]);
+  let e2 = null; try { await ctx2.handleFetchFernbahn({ ...baseReq, journeyHint: HINT }); } catch (e) { e2 = e; }
+  assert('Server lehnt ab -> Fehlercode FERNBAHN_DOWN', e2?.code, 'FERNBAHN_DOWN');
+  // Gattung: IC-Anfrage nimmt nicht den ICE-Eintrag gleicher Nummer
+  const both = FERNBAHN_HTML + FERNBAHN_HTML.replace('ICE 1005', 'IC 1005').replace('pfeillinks', 'pfeilrechts');
+  const ctx3 = makeCtx([{ match: /fahrplan_jahr/, reply: () => ({ text: both }) }, ...fernbahnRoutes, ...bahnOk]);
+  const r3 = await ctx3.handleFetchFernbahn({ ...baseReq, trainType: 'IC', journeyHint: HINT });
+  assert('IC 1005 bekommt den IC-Eintrag, nicht den ICE-Eintrag', r3.segments[0].direction, 'right');
 }
 
 console.log(`\n${passed + failed} tests: ${passed} passed, ${failed} failed`);

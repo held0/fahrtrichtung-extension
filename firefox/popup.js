@@ -406,7 +406,10 @@ function renderResult(data, userFrom, userTo) {
     displaySegments.push({ seg, segFrom, segTo });
   }
 
-  if (data.cachedAt) {
+  if (data.backupDate) {
+    const [y, m, d] = data.backupDate.split('-');
+    html.push(`<div class="validity cached">${escHtml(msg('mirrorNotice', `${d}.${m}.${y}`))}</div>`);
+  } else if (data.cachedAt) {
     const d = new Date(data.cachedAt);
     html.push(`<div class="validity cached">${escHtml(msg('cachedNotice', `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.`))}</div>`);
   }

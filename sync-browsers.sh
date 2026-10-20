@@ -59,3 +59,8 @@ if [ -d landing/api ]; then
   cp chrome/background.js chrome/utils.js landing/api/
   echo "landing/api/ (Website-Zugsuche) mit chrome/background.js + utils.js synchronisiert."
 fi
+# Auskunftsdienst bei fernbahn.de-Ausfall (landing/backup/) rechnet mit demselben Code wie die Extension
+if [ -d landing/backup ]; then
+  cp chrome/background.js chrome/utils.js landing/backup/
+  echo "landing/backup/ (Auskunftsdienst) mit chrome/background.js + utils.js synchronisiert."
+fi

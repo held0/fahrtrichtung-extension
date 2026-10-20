@@ -79,23 +79,29 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   const year = travelDate ? new Date(travelDate).getFullYear() : new Date().getFullYear();
   const url = `https://www.fernbahn.de/datenbank/suche/?fahrplan_jahr=${year}&zug_nummer=${trainNumber}&filterview[]=1&filterview[]=2&fv_suche_reihungsverzeichnis=1`;
 
-  const { html, cachedAt } = await fernbahnHtmlWithCache(url, `${year}:${trainNumber}`);
-  const allEntries = parseEntries(html);
+  const dateStr = travelDate || new Date().toISOString().slice(0, 10);
+  const src = await fernbahnWithFallback(url, `${year}:${trainNumber}`, { trainType, trainNumber, date: dateStr });
+  const { cachedAt = null, backupDate = null } = src;
 
-  // Filter entries by train type (fernbahn.de searches by number only, may return multiple types)
-  const entries = allEntries.filter(e => e.trainName.toUpperCase().startsWith(trainType.toUpperCase()));
-
-  if (entries.length === 0) {
-    throw new Error(`Keine Wagenreihung gefunden für ${trainType} ${trainNumber}`);
+  let entries, exactMatch, validEntry, latestValidityTo = null;
+  if (src.backup) {
+    // Auskunft vom Server: dort ist die Auswahl (Gattung, Datum) schon passiert, nur EIN Eintrag kommt zurueck
+    validEntry = src.backup.entry;
+    entries = [validEntry];
+    exactMatch = src.backup.exact ? validEntry : null;
+    latestValidityTo = src.backup.latestValidityTo || null;
+  } else {
+    // Filter entries by train type (fernbahn.de searches by number only, may return multiple types)
+    entries = entriesForType(parseEntries(src.html), trainType);
+    if (entries.length === 0) {
+      throw new Error(`Keine Wagenreihung gefunden für ${trainType} ${trainNumber}`);
+    }
+    exactMatch = findValidEntry(entries, dateStr);
+    validEntry = exactMatch || entries[entries.length - 1];
   }
 
-  const dateStr = travelDate || new Date().toISOString().slice(0, 10);
-  const exactMatch = findValidEntry(entries, dateStr);
-  const validEntry = exactMatch || entries[entries.length - 1];
-
   // Find the latest known validity end date across all entries
-  let latestValidityTo = null;
-  if (!exactMatch) {
+  if (!exactMatch && !src.backup) {
     for (const e of entries) {
       const t = e.validity?.to || e.validity?.from;
       if (t && (!latestValidityTo || t > latestValidityTo)) latestValidityTo = t;
@@ -181,7 +187,8 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
     stationSource,
     fromSegmentIdx,
     toSegmentIdx,
-    cachedAt   // != null: fernbahn.de war nicht erreichbar, Reihung aus dem lokalen Cache
+    cachedAt,   // != null: fernbahn.de war nicht erreichbar, Reihung aus dem lokalen Cache
+    backupDate   // != null: Auskunft aus der Sicherungskopie auf unserem Server (Stand)
   };
 }
 
@@ -396,14 +403,14 @@ async function fernbahnFetch(url) {
   return resp;
 }
 
-async function fetchWithTimeout(url, ms) {
-  if (typeof AbortController !== 'function' || typeof setTimeout !== 'function') return fetch(url);
+async function fetchWithTimeout(url, ms, opts = {}) {
+  if (typeof AbortController !== 'function' || typeof setTimeout !== 'function') return fetch(url, opts);
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms);
   try {
-    return await fetch(url, { signal: ctrl.signal });
+    return await fetch(url, { ...opts, signal: ctrl.signal });
   } catch (e) {
-    if (e?.name === 'AbortError') { const err = new Error(`fernbahn.de antwortet nicht (Timeout nach ${ms / 1000} s)`); err.code = 'FERNBAHN_TIMEOUT'; throw err; }
+    if (e?.name === 'AbortError') { const err = new Error(`${new URL(url).hostname} antwortet nicht (Timeout nach ${ms / 1000} s)`); err.code = 'FERNBAHN_TIMEOUT'; throw err; }
     throw e;
   } finally {
     clearTimeout(timer);
@@ -417,14 +424,14 @@ const FB_CACHE_KEY = 'fernbahnCache';
 const FB_CACHE_MAX_AGE_MS = 60 * 24 * 3600 * 1000;
 const FB_CACHE_MAX_ENTRIES = 30;
 
-async function fernbahnHtmlWithCache(url, cacheId) {
+async function fernbahnWithFallback(url, cacheId, query) {
   let failure;
   try {
     const resp = await fernbahnFetch(url);
     if (resp.ok) {
       const html = await resp.text();
       await fbCachePut(cacheId, html);
-      return { html, cachedAt: null };
+      return { html };
     }
     failure = new Error(`fernbahn.de returned ${resp.status}`);
     failure.code = resp.status === 429 ? 'FERNBAHN_BUSY' : resp.status >= 500 ? 'FERNBAHN_DOWN' : 'FERNBAHN_ERROR';
@@ -434,7 +441,26 @@ async function fernbahnHtmlWithCache(url, cacheId) {
   }
   const cached = await fbCacheGet(cacheId);
   if (cached) return { html: cached.html, cachedAt: cached.at };
+  const backup = await fernbahnBackup(query);
+  if (backup) return { backup, backupDate: backup.stand || null };
   throw failure;
+}
+
+// Zweite Rueckfallebene: Auskunft unseres Servers aus seiner Sicherungskopie (mit Erlaubnis von
+// fernbahn.de). Er antwortet nur, wenn fernbahn.de selbst gerade nicht erreichbar ist, und nur mit
+// dem einen passenden Eintrag fuer Zug + Datum. POST, damit Zug/Datum in keiner URL-Logzeile landen.
+const BACKUP_API = 'https://fahrtrichtung.info/api/reihung';
+async function fernbahnBackup({ trainType, trainNumber, date }) {
+  try {
+    const resp = await fetchWithTimeout(BACKUP_API, 8000, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: trainType, number: String(trainNumber), date, v: chrome.runtime?.getManifest?.().version || '' }),
+    });
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    return data?.entry?.segments?.length ? data : null;
+  } catch (e) { return null; }
 }
 
 async function fbCacheGet(id) {
@@ -644,6 +670,16 @@ function findSegBoundary(stationName, normNames) {
   return -1;
 }
 
+
+// fernbahn.de sucht nur nach der Nummer: „IC 856“ und „ICE 856“ kommen zusammen. Erst die exakt
+// gleiche Gattung nehmen; nur wenn es die nicht gibt, wie frueher per Praefix (fernbahn fuehrt
+// manchen Zug unter anderer Fernverkehrsgattung als bahn.de).
+function entriesForType(entries, trainType) {
+  const t = String(trainType || '').toUpperCase();
+  const typeOf = name => (String(name).toUpperCase().match(/^[A-Z]+/) || [''])[0];
+  const exact = entries.filter(e => typeOf(e.trainName) === t);
+  return exact.length ? exact : entries.filter(e => e.trainName.toUpperCase().startsWith(t));
+}
 
 function parseEntries(html) {
   const entries = [];

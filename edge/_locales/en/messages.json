@@ -116,5 +116,8 @@
   },
   "cachedNotice": {
     "message": "fernbahn.de is currently unavailable – showing the coach sequence loaded last time (on $1)."
+  },
+  "mirrorNotice": {
+    "message": "fernbahn.de is currently unavailable – showing a cached coach sequence (as of $1)."
   }
 }

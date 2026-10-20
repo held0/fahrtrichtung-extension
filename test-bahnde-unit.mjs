@@ -232,7 +232,7 @@ group('Robustheit: 429/5xx-Backoff, Host-Fallback, kaputte Antworten');
   let msg = '';
   try { await ctx7.handleFetchFernbahn(baseReq); } catch (e) { msg = e.message; }
   assert('fernbahn 504 -> Fehler "fernbahn.de returned 504"', msg, 'fernbahn.de returned 504');
-  assert('fernbahn 504 -> genau 3 Versuche, nicht mehr', ctx7.calls.length, 3);
+  assert('fernbahn 504 -> genau 2 Versuche, nicht mehr', ctx7.calls.length, 2);
 
   // fernbahn einmal 429 (Watchdog 2026-10-05), dann ok -> Ergebnis wie normal
   const ctx8 = makeCtx([
@@ -444,7 +444,7 @@ group('fernbahn.de down/ueberlastet: Cache-Fallback und Fehlercodes (2026-10-20,
   const r2 = await down.handleFetchFernbahn({ ...baseReq, journeyHint: HINT });
   assert('504: Ergebnis trotzdem da (aus Cache)', r2.segments?.[0]?.direction, 'left');
   assert('504: cachedAt gesetzt', typeof r2.cachedAt, 'number');
-  assert('504: hoechstens 3 fernbahn-Versuche', down.calls.filter(c => /fernbahn/.test(c.url)).length, 3);
+  assert('504: hoechstens 2 fernbahn-Versuche', down.calls.filter(c => /fernbahn/.test(c.url)).length, 2);
   // 3. ohne Cache: Fehler mit Code statt endlosem Laden
   for (const [status, code] of [[429, 'FERNBAHN_BUSY'], [504, 'FERNBAHN_DOWN']]) {
     const ctx = makeCtx([{ match: /fernbahn\.de/, reply: () => ({ status, text: '' }) }, ...bahnOk]);

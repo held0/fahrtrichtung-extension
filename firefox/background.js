@@ -66,7 +66,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     pageFetchTabId = Number.isInteger(request.tabId) ? request.tabId : null;
     handleFetchFernbahn(request)
       .then(sendResponse)
-      .catch(err => sendResponse({ error: err.message }));
+      .catch(err => sendResponse({ error: err.message, code: err.code || null }));
     return true;
   }
 });
@@ -79,12 +79,7 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
   const year = travelDate ? new Date(travelDate).getFullYear() : new Date().getFullYear();
   const url = `https://www.fernbahn.de/datenbank/suche/?fahrplan_jahr=${year}&zug_nummer=${trainNumber}&filterview[]=1&filterview[]=2&fv_suche_reihungsverzeichnis=1`;
 
-  const response = await fernbahnFetch(url);
-  if (!response.ok) {
-    throw new Error(`fernbahn.de returned ${response.status}`);
-  }
-
-  const html = await response.text();
+  const { html, cachedAt } = await fernbahnHtmlWithCache(url, `${year}:${trainNumber}`);
   const allEntries = parseEntries(html);
 
   // Filter entries by train type (fernbahn.de searches by number only, may return multiple types)
@@ -185,7 +180,8 @@ async function handleFetchFernbahn({ trainNumber, trainType, fromStation, toStat
     stationOrder,
     stationSource,
     fromSegmentIdx,
-    toSegmentIdx
+    toSegmentIdx,
+    cachedAt   // != null: fernbahn.de war nicht erreichbar, Reihung aus dem lokalen Cache
   };
 }
 
@@ -384,16 +380,77 @@ async function bahnDeGetJson(path, params, extraPairs = []) {
 // fernbahn.de antwortet gelegentlich mit einem einzelnen 429/503 (Watchdog
 // 2026-10-05, eine Minute spaeter wieder 200). Kurz warten und hoechstens
 // zweimal wiederholen — die Seite ist klein, also keine aggressiven Retries.
+// Haengt fernbahn.de (2026-10-20: Anfragen liefen > 40 s ins Leere, dann 504), darf das Popup nicht
+// ewig laden: jeder Versuch bricht nach FERNBAHN_TIMEOUT_MS ab, nach einem Timeout kein zweiter Versuch.
+const FERNBAHN_TIMEOUT_MS = 12000;
 async function fernbahnFetch(url) {
   let resp;
   for (let attempt = 0; attempt < 3; attempt++) {
-    resp = await fetch(url);
+    resp = await fetchWithTimeout(url, FERNBAHN_TIMEOUT_MS);   // wirft bei Timeout/Netzfehler
     if (resp.status !== 429 && resp.status < 500) return resp;
     if (attempt === 2) break;
     const retryAfter = Number(resp.headers?.get?.('retry-after')) || 0;
     await sleep(retryAfter ? Math.min(retryAfter, 5) * 1000 : 1500 * (attempt + 1));
   }
   return resp;
+}
+
+async function fetchWithTimeout(url, ms) {
+  if (typeof AbortController !== 'function' || typeof setTimeout !== 'function') return fetch(url);
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { signal: ctrl.signal });
+  } catch (e) {
+    if (e?.name === 'AbortError') { const err = new Error(`fernbahn.de antwortet nicht (Timeout nach ${ms / 1000} s)`); err.code = 'FERNBAHN_TIMEOUT'; throw err; }
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Letzte erfolgreiche fernbahn-Antwort je Zug lokal merken (chrome.storage.local, nur im Browser des
+// Nutzers). Ist fernbahn.de ueberlastet oder down, zeigen wir die gemerkte Reihung statt eines Fehlers.
+// Die Reihungen aendern sich selten (fernbahn-Updates seit 27.09. pausiert); max. 60 Tage, 30 Zuege.
+const FB_CACHE_KEY = 'fernbahnCache';
+const FB_CACHE_MAX_AGE_MS = 60 * 24 * 3600 * 1000;
+const FB_CACHE_MAX_ENTRIES = 30;
+
+async function fernbahnHtmlWithCache(url, cacheId) {
+  let failure;
+  try {
+    const resp = await fernbahnFetch(url);
+    if (resp.ok) {
+      const html = await resp.text();
+      await fbCachePut(cacheId, html);
+      return { html, cachedAt: null };
+    }
+    failure = new Error(`fernbahn.de returned ${resp.status}`);
+    failure.code = resp.status === 429 ? 'FERNBAHN_BUSY' : resp.status >= 500 ? 'FERNBAHN_DOWN' : 'FERNBAHN_ERROR';
+  } catch (e) {
+    failure = e;
+    if (!failure.code) failure.code = /load failed|failed to fetch|networkerror/i.test(e?.message || '') ? 'NETWORK' : 'FERNBAHN_DOWN';
+  }
+  const cached = await fbCacheGet(cacheId);
+  if (cached) return { html: cached.html, cachedAt: cached.at };
+  throw failure;
+}
+
+async function fbCacheGet(id) {
+  try {
+    const all = (await chrome.storage.local.get(FB_CACHE_KEY))[FB_CACHE_KEY] || {};
+    const e = all[id];
+    return e && Date.now() - e.at < FB_CACHE_MAX_AGE_MS ? e : null;
+  } catch (e) { return null; }
+}
+
+async function fbCachePut(id, html) {
+  try {
+    const all = (await chrome.storage.local.get(FB_CACHE_KEY))[FB_CACHE_KEY] || {};
+    all[id] = { html, at: Date.now() };
+    const keep = Object.entries(all).sort((a, b) => b[1].at - a[1].at).slice(0, FB_CACHE_MAX_ENTRIES);
+    await chrome.storage.local.set({ [FB_CACHE_KEY]: Object.fromEntries(keep) });
+  } catch (e) { /* Cache ist optional */ }
 }
 
 function sleep(ms) {

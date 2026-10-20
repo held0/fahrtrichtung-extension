@@ -104,5 +104,17 @@
   },
   "fernbahnAccessPathIos": {
     "message": "If nothing happens: Settings → Apps → Safari → Extensions → Fahrtrichtung → set fernbahn.de to “Allow”."
+  },
+  "errSourceDown": {
+    "message": "The coach sequences come from fernbahn.de – the site is currently overloaded or briefly unavailable. Please try again in a few minutes."
+  },
+  "errNoData": {
+    "message": "Unfortunately there is no coach sequence for this train."
+  },
+  "errGeneric": {
+    "message": "The direction of travel could not be loaded just now. Please try again in a moment."
+  },
+  "cachedNotice": {
+    "message": "fernbahn.de is currently unavailable – showing the coach sequence loaded last time (on $1)."
   }
 }

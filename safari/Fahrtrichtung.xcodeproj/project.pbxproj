@@ -401,9 +401,10 @@
 				};
 			};
 			buildConfigurationList = F803E9A130824D39007A2CAD /* Build configuration list for PBXProject "Fahrtrichtung" */;
-			developmentRegion = en;
+			developmentRegion = de;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				de,
 				en,
 				Base,
 			);

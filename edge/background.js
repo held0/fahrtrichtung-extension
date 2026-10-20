@@ -384,11 +384,12 @@ async function bahnDeGetJson(path, params, extraPairs = []) {
 // ewig laden: jeder Versuch bricht nach FERNBAHN_TIMEOUT_MS ab, nach einem Timeout kein zweiter Versuch.
 const FERNBAHN_TIMEOUT_MS = 12000;
 async function fernbahnFetch(url) {
+  // 429/5xx hoechstens EINMAL wiederholen (Seite schonen; danach greift der Cache)
   let resp;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 2; attempt++) {
     resp = await fetchWithTimeout(url, FERNBAHN_TIMEOUT_MS);   // wirft bei Timeout/Netzfehler
     if (resp.status !== 429 && resp.status < 500) return resp;
-    if (attempt === 2) break;
+    if (attempt === 1) break;
     const retryAfter = Number(resp.headers?.get?.('retry-after')) || 0;
     await sleep(retryAfter ? Math.min(retryAfter, 5) * 1000 : 1500 * (attempt + 1));
   }

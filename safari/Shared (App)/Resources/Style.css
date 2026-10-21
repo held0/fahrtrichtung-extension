@@ -75,9 +75,9 @@ body:not(.state-off) .state-off-only { display: none; }
   animation: cursor 9s infinite; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
 @keyframes cursor {
   0%   { left: 75%; top: 82%; }
-  12%  { left: 4.5%; top: 25%; }  /* zum Haken */
-  15%  { left: 4.5%; top: 25%; transform: scale(.85); }
-  18%  { left: 4.5%; top: 25%; transform: scale(1); }
+  12%  { left: 4.2%; top: 27%; }  /* zum Haken */
+  15%  { left: 4.2%; top: 27%; transform: scale(.85); }
+  18%  { left: 4.2%; top: 27%; transform: scale(1); }
   32%  { left: 60%; top: 55%; }  /* zu „Websites bearbeiten …“ */
   35%  { left: 60%; top: 55%; transform: scale(.85); }
   38%  { left: 60%; top: 55%; transform: scale(1); }
@@ -270,26 +270,3 @@ body.state-on button.open-preferences { display: none; }
 }
 .iosnote { margin: 0; font-size: .85em; color: var(--soft); }
 
-
-/* Website-Freigabe nicht mehr Teil der Anleitung (Safari fragt beim ersten Klick selbst nach):
-   Mac-Animation nur noch Haken setzen, iPhone nur noch Schalter — kuerzere Schleife */
-.row:not(.ghost) .cb, .row:not(.ghost) .cb svg, .cursor { animation-duration: 5s; }
-.cursor { animation-name: cursorTick; }
-@keyframes cursorTick {
-  0%   { left: 75%; top: 82%; }
-  35%  { left: 4.2%; top: 40%; transform: scale(1); }
-  40%  { left: 4.2%; top: 40%; transform: scale(.85); }
-  45%, 100% { left: 4.2%; top: 40%; transform: scale(1); }
-}
-.row:not(.ghost) .cb { animation-name: cbOn5; } .row:not(.ghost) .cb svg { animation-name: tick5; }
-@keyframes cbOn5 { 0%, 40% { background: rgba(255,255,255,.6); border-color: rgba(128,128,128,.6); } 43%, 94% { background: #0a84ff; border-color: #0a84ff; } 100% { background: rgba(255,255,255,.6); } }
-@keyframes tick5 { 0%, 40% { opacity: 0; } 43%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.win { height: 120px; }
-.iph-c .sw, .iph-c .sw i { animation-duration: 5s; }
-.iph-c .tap { animation: tapS 5s infinite; }
-@keyframes tapS {
-  0%, 6%  { left: 86%; top: 64%; opacity: 0; transform: scale(1); }
-  12%     { left: 86%; top: 64%; opacity: 1; transform: scale(1); }
-  18%     { left: 86%; top: 64%; opacity: 1; transform: scale(.7); }
-  26%, 100% { left: 86%; top: 64%; opacity: 0; transform: scale(1); }
-}

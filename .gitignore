@@ -21,3 +21,9 @@ reference/*-20*.json
 
 # Interne Projekt-Anleitung fuer Claude (nicht oeffentlich)
 CLAUDE.md
+
+# lokale Reste
+.DS_Store
+.playwright-mcp/
+archive/
+fahrtrichtung-*.zip
